@@ -2,15 +2,13 @@
 
 # 🧠 Recall
 
-### A grounded AI study assistant built on Retrieval-Augmented Generation
+### A grounded AI study assistant powered by Retrieval-Augmented Generation
 
-Recall helps students understand, revise, and retrieve knowledge from their own learning materials.
+Recall helps students understand, revise, and retrieve knowledge from their own learning materials using **hybrid retrieval**, **LLM reasoning**, and **source attribution**.
 
-By combining **hybrid retrieval**, **LLM reasoning**, and **source attribution**, Recall generates answers that remain connected to the original documents.
+<br>
 
-<br/>
-
-**Architecture** · **Features** · **Evaluation** · **Quick Start**
+<img src="assets/recall-demo.gif" width="900" alt="Recall demo">
 
 </div>
 
@@ -18,24 +16,13 @@ By combining **hybrid retrieval**, **LLM reasoning**, and **source attribution**
 
 ## 📚 Why Recall?
 
-Students rarely struggle because information is unavailable.
+Learning material is often scattered across lectures, PDFs, and personal notes. Recall transforms these sources into a searchable knowledge base and generates answers grounded in the original material.
 
-They struggle because knowledge is scattered across:
+The system follows a retrieval-first approach:
 
-- lecture notes
-- course documents
-- revision material
-- personal summaries
-
-General-purpose chatbots can generate fluent answers, but they cannot guarantee that answers come from the student's own learning material.
-
-Recall follows a **retrieval-first approach**:
-
-1. Retrieve relevant knowledge from user documents
-2. Generate answers grounded in retrieved evidence
-3. Expose the sources supporting each response
-
-> Make AI-assisted learning more reliable, transparent, and verifiable.
+1. Retrieve relevant knowledge
+2. Generate answers from retrieved evidence
+3. Provide supporting sources
 
 ---
 
@@ -43,135 +30,90 @@ Recall follows a **retrieval-first approach**:
 
 | Capability | Description |
 |---|---|
-| 🎯 Intent-aware responses | Adapts answers based on learning objectives such as explanation, source retrieval, and revision planning |
-| 🔎 Hybrid retrieval | Combines semantic vector retrieval with BM25 keyword search |
-| 🔗 Source attribution | Links generated answers back to supporting documents |
-| 🧠 Grounded generation | Uses retrieved evidence to reduce unsupported responses |
-| 📚 Knowledge ingestion | Processes and indexes learning materials |
+| 🎯 Intent routing | Adapts responses to explanation, retrieval, and revision tasks |
+| 🔎 Hybrid retrieval | Combines vector search and BM25 keyword retrieval |
+| 🔗 Source attribution | Connects answers back to supporting documents |
+| 🧠 Grounded generation | Uses retrieved context to improve reliability |
 | 📊 Retrieval debugging | Provides visibility into retrieval decisions |
+
+---
+
+## 🎬 Product Preview
+
+Recall provides three main workflows:
+
+| Feature | Purpose |
+|---|---|
+| Ask | Explain concepts from personal notes |
+| Add Notes | Build a personal knowledge base |
+| Library | Explore indexed sources |
 
 ---
 
 ## 🏗 Architecture
 
 <p align="center">
-<img src="diagram.png" width="700" alt="Recall architecture">
+<img src="assets/architecture.svg" width="700" alt="Recall architecture">
 </p>
 
-Recall follows a retrieval-first RAG pipeline:
+Recall uses a retrieval-first RAG pipeline:
 
 ```
 User Question
       |
-      v
 Intent Routing
       |
-      v
-+----------------------+
-|   Hybrid Retrieval   |
-|                      |
-| Vector Search        |
-| BM25 Keyword Search  |
-+----------------------+
+Hybrid Retrieval
+(Vector Search + BM25)
       |
-      v
-Reciprocal Rank Fusion
+Fusion + Reranking
       |
-      v
-Reranking
-      |
-      v
 Grounded LLM Generation
       |
-      v
 Answer + Source Attribution
 ```
-
-The architecture separates retrieval from generation to improve transparency and reliability.
 
 ---
 
 ## 🔍 Retrieval Pipeline
 
-### 1. Intent Routing
+### Hybrid Retrieval
 
-Recall identifies the user's objective:
+Recall combines:
 
-- concept explanation
-- source retrieval
-- exam preparation
+- semantic retrieval using embeddings
+- keyword retrieval using BM25
 
-### 2. Hybrid Retrieval
+Results are merged and ranked before being passed to the generation layer.
 
-Recall combines two complementary retrieval strategies:
+### Grounded Generation
 
-- **Semantic retrieval** using embeddings
-- **Keyword retrieval** using BM25
-
-This improves robustness across conceptual questions and terminology-heavy queries.
-
-### 3. Ranking
-
-Retrieved candidates are merged using Reciprocal Rank Fusion and refined before generation.
-
-### 4. Grounded Generation
-
-The LLM generates responses from retrieved evidence while preserving source references.
+Responses are generated from retrieved evidence and remain connected to the original documents.
 
 ---
 
-## 💡 Design Decisions
+## 💡 Engineering Decisions
 
 ### Why hybrid retrieval?
 
-Semantic search captures meaning, while keyword retrieval preserves exact technical terms. Combining both provides a stronger retrieval foundation.
+Semantic search captures meaning while keyword retrieval preserves exact terminology.
 
 ### Why source attribution?
 
-Generated answers need verification. Recall exposes the evidence behind responses instead of producing unsupported outputs.
-
-### Why intent-aware responses?
-
-Different learning tasks require different response strategies:
-
-| Intent | Response |
-|---|---|
-| Concept explanation | Educational explanation |
-| Source retrieval | Locate relevant passages |
-| Exam preparation | Structured revision guidance |
+Generated answers should remain verifiable by exposing the supporting evidence.
 
 ---
 
 ## 📈 Evaluation
 
-Recall includes an evaluation workflow covering:
+Current evaluation focuses on:
 
-| Component | Status |
-|---|---|
-| Intent routing | Implemented |
-| Source attribution | Implemented |
-| Retrieval inspection | Implemented |
-| API evaluation workflow | Implemented |
+- intent routing
+- source attribution
+- retrieval inspection
+- answer grounding
 
-Future benchmarking will compare retrieval strategies using metrics such as Recall@k, MRR, source relevance, and answer faithfulness.
-
----
-
-## 🧩 Repository Structure
-
-```
-Recall/
-├── app/
-│   ├── api/
-│   ├── ingestion/
-│   ├── orchestration/
-│   ├── rag/
-│   ├── schemas/
-│   └── vectordb/
-├── recall-frontend/
-├── data/
-└── run_eval.py
-```
+Future improvements include retrieval benchmarks and automated quality evaluation.
 
 ---
 
@@ -209,7 +151,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Configure environment variables and start the backend:
+Run the backend:
 
 ```bash
 python -m uvicorn app.api.main:app --reload
@@ -225,38 +167,18 @@ npm run dev
 
 ---
 
-## 🚧 Limitations & Roadmap
-
-### Current limitations
-
-- Single-user local deployment
-- Text-based ingestion
-- Limited evaluation corpus
-
-### Roadmap
-
-**Retrieval quality**
+## 🚧 Roadmap
 
 - [ ] Retrieval benchmark
 - [ ] Improved reranking
-- [ ] Automated evaluation pipeline
-
-**User experience**
-
 - [ ] PDF/DOCX ingestion
-- [ ] Streaming responses
-
-**Engineering**
-
+- [ ] Automated evaluation pipeline
 - [ ] Docker deployment
-- [ ] CI/CD pipeline
 
 ---
 
 ## 🌱 Motivation
 
-Recall started from a simple observation:
-
 > The problem was not forgetting concepts. It was forgetting where you learned them.
 
-The project explores how retrieval-based AI systems can make generated answers more useful, transparent, and trustworthy.
+Recall explores how retrieval-based AI systems can make generated answers more useful, transparent, and trustworthy.
