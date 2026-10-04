@@ -1,79 +1,90 @@
 # Recall
 
-A personal study assistant using **Retrieval-Augmented Generation over course materials**.
-Recall indexes pasted course notes, retrieves supporting passages, and generates
-study answers with source citations. An intent-routing layer adapts the prompt
-for concept explanations, source recall, and exam preparation.
+Recall is an AI study assistant grounded in personal course material. It ingests study notes, retrieves relevant evidence using hybrid search, routes questions by learning intent, and generates grounded answers with source references.
 
-**Backend:** FastAPI · OpenAI `text-embedding-3-small` · ChromaDB · Whoosh BM25 ·
-Reciprocal Rank Fusion · GPT-4o-mini
+**FastAPI ? React / TypeScript / Vite ? OpenAI ? ChromaDB ? Whoosh BM25 ? RRF**
 
-**Frontend:** React · TypeScript · Vite · Tailwind CSS
+## What Recall does
 
-## Architecture and scope
+- **Build a study library:** ingest pasted course notes, split them into overlapping chunks, and index them with document IDs, chunk IDs, and course metadata.
+- **Search meaning and terminology:** combine Chroma vector retrieval with Whoosh BM25 using Reciprocal Rank Fusion (RRF).
+- **Adapt to learning intent:** a planner selects concept explanation, source recall, exam preparation, or a general answer route.
+- **Generate source-backed study answers:** route-specific prompts request explanations, revision priorities, and citations; responses include source passages and study hints.
+- **Provide a React interface:** add notes, ask questions, inspect source references, and browse/search document previews.
+- **Measure retrieval quality:** versioned benchmarks, deterministic metrics, shared-pool reranker ablations, and saved experiment reports.
 
-```text
-Course text -> overlapping chunks -> Chroma + Whoosh indexes
-Question -> intent routing -> vector + BM25 -> RRF -> context -> GPT-4o-mini
-                                                        -> answer, sources, study hint
+Prompts request grounded answers and ?I don't know? when evidence is insufficient; generation and refusal quality remain untested.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    Material["Course material: pasted text"] --> Chunks["Chunking + metadata"]
+    Chunks --> Dense["Chroma vector index"]
+    Chunks --> Sparse["Whoosh BM25 index"]
+    Question["User question"] --> Planner["Intent planner"]
+    Planner --> Vector["Vector retrieval: OpenAI embeddings"]
+    Planner --> BM25["BM25 retrieval"]
+    Dense --> Vector
+    Sparse --> BM25
+    Vector --> RRF["Reciprocal Rank Fusion"]
+    BM25 --> RRF
+    RRF --> Context["Grounded context"]
+    Context --> Prompt["Route-specific prompt"]
+    Planner --> Prompt
+    Prompt --> LLM["GPT-4o-mini"]
+    LLM --> Answer["Answer + sources + study guidance"]
 ```
 
-The app supports text ingestion, questions, and document browsing.
-Prompts instruct the model to use supplied notes and abstain when
-evidence is insufficient; answer quality and refusal reliability have not yet
-been evaluated.
+Routes select prompt style, not different retrievers. Routed `/ask` uses the first three hybrid retrieval results; fallback generation retains the lexical heuristic reranker. MiniLM remains evaluation-only.
 
-Routed `/ask` uses the first three hybrid retrieval results. The fallback generation
-path retains the existing **lexical heuristic** reranker. Evaluation decisions
-in `evaluation/` have not been applied to those paths; MiniLM is evaluation-only.
+## Why Recall is more than a basic RAG chatbot
 
-## RAG Evaluation — Milestone 1
+Dense + sparse retrieval finds evidence; intent-aware orchestration adapts answer structure to the study task. Grounded generation connects answers to passages, and empirical evaluation tests whether retrieval complexity helps.
 
-A manually curated **19-question benchmark** (16 answerable, 3 unanswerable)
-compares vector retrieval, BM25, hybrid/RRF, heuristic reranking, and semantic
-CrossEncoder reranking. Shared-pool ablations isolate reranking; latency and
-quality are reported separately. Evidence groups accept equivalent overlapping
-chunks while requiring all answer components for complete coverage.
+## Retrieval Evaluation ? Milestone 1
 
-Final evidence scores below compare the three orderings of the same hybrid pool;
-quality averages include the 16 answerable cases only.
+**19 manually curated questions: 16 answerable, 3 unanswerable.** Experiments compare vector, BM25, hybrid/RRF, heuristic, and MiniLM CrossEncoder reranking. Evidence groups accept equivalent chunks; complete coverage requires all answer components.
 
-| Ordering | Evidence MRR | Complete evidence coverage@3 |
+Evidence scores compare orderings of the **same hybrid pool**, averaged over 16 answerable cases:
+
+| Ordering | Evidence MRR | Complete coverage@3 |
 |---|---:|---:|
 | Hybrid / RRF | **0.96875** | 0.93750 |
 | MiniLM CrossEncoder | 0.95833 | **1.00000** |
 | Heuristic reranker | 0.93750 | 0.93750 |
 
-Among the evaluated hybrid orderings, plain Vector + BM25 + RRF is currently
-retained as the preferred baseline because it offers the best quality / simplicity /
-latency trade-off on this benchmark.
+Among the evaluated hybrid orderings, plain Vector + BM25 + RRF remains the preferred evaluation baseline because it offers the best current quality / simplicity / latency trade-off on this benchmark. The earlier canonical four-mode benchmark favored vector-only, so no universal superiority claim is made.
 
-The earlier canonical four-mode benchmark favored vector-only. Evidence-group
-rescoring compared the hybrid orderings; neither comparison establishes universal
-superiority.
+## Key engineering findings
 
-The initial heuristic reranker was rejected as the preferred baseline after
-ablation showed degraded ranking quality. MiniLM was evaluated experimentally
-and not selected for production: its measured coverage gain did not justify
-approximately **0.65 s of CPU reranking latency** per query on this benchmark.
-The corpus is small (27 Chroma chunks across 12 documents), and Whoosh contains
-one additional chunk.
+- **Evaluation exposed a BM25 natural-language parsing bug:** free-text questions were interpreted as query syntax. The fix analyzes input and searches literal terms.
+- **Heuristic reranking degraded ranking quality:** canonical-rank ablation found 0 improved, 10 unchanged, and 6 worsened answerable cases.
+- **MiniLM performed better than the heuristic**, but did not clearly outperform plain RRF and added about **0.65 s CPU reranking latency** per query in the experiment. It remains evaluation-only.
+- **Evidence groups corrected exact-UUID scoring artifacts:** overlapping chunks can contain equivalent evidence, so requiring one arbitrary UUID can misrepresent retrieval quality.
 
-[Full methodology and results](evaluation/MILESTONE_1_RETRIEVAL_EVALUATION.md) ·
-[Evaluation commands and saved artifacts](evaluation/README.md)
+## Screenshots / demo
+
+*Product screenshots and a short demo will be added here.* The current interface includes note ingestion, question answering with source inspection, and a searchable library.
+
+## Tech stack
+
+| Area | Technologies |
+|---|---|
+| Backend | Python, FastAPI, Pydantic |
+| Retrieval / AI | OpenAI `text-embedding-3-small`, ChromaDB, Whoosh BM25, RRF, GPT-4o-mini |
+| Frontend | React, TypeScript, Vite, Tailwind CSS, Framer Motion |
+| Evaluation | Standard-library unittest, JSON benchmarks, deterministic metrics; optional sentence-transformers / Transformers / PyTorch |
 
 ## Run locally
 
-Tested with Python 3.12 and Node.js 22. Run backend commands from the repository
-root. OpenAI-backed ingestion and questions require your own API key and incur
-API usage; tests and saved-result verification do not.
+Python 3.12 / Node.js 22. Run backend commands from the repository root. Ingestion and questions require an OpenAI API key and incur usage costs.
 
 ```sh
 python -m venv .venv
 ```
 
-Activate with `.venv\Scripts\Activate.ps1` on PowerShell, or
-`source .venv/bin/activate` on macOS/Linux. Then:
+Activate with `.venv\Scripts\Activate.ps1` on PowerShell, or `source .venv/bin/activate` on macOS/Linux. Then:
 
 ```sh
 python -m pip install -r requirements.txt
@@ -85,7 +96,7 @@ Copy `.env.example` to `.env` and replace the placeholder locally. Start the API
 python -m uvicorn app.api.main:app --reload
 ```
 
-API: `http://127.0.0.1:8000` · interactive docs: `http://127.0.0.1:8000/docs`
+API: `http://127.0.0.1:8000` ? interactive docs: `http://127.0.0.1:8000/docs`
 
 In a second terminal:
 
@@ -95,13 +106,11 @@ npm ci
 npm run dev
 ```
 
-Open the URL printed by Vite (normally `http://localhost:5173`). Ingest **text**
-through the app or `POST /ingest`; PDF parsing is not implemented. Main endpoints
-are `POST /ask`, `POST /ingest`, and `GET /documents`.
-The app is a local development project,
-without authentication or a production deployment configuration.
+Open Vite's URL (normally `http://localhost:5173`). Ingest **text**, not PDFs. Endpoints: `POST /ask`, `POST /ingest`, `GET /documents`. This is a local development project without authentication or deployment configuration.
 
-## Verify without API calls
+## Evaluation / reproducibility
+
+Tests and saved-result verification require no API calls or model downloads:
 
 ```sh
 python -m unittest discover -s tests
@@ -109,22 +118,24 @@ python -m evaluation.validate_benchmark
 python -m evaluation.verify_saved_results
 ```
 
-Semantic model dependencies are **optional** and separate from core requirements.
-See [evaluation setup](evaluation/README.md#optional-semantic-reranking) before
-running a model experiment.
+- [Milestone 1 methodology and results](evaluation/MILESTONE_1_RETRIEVAL_EVALUATION.md)
+- [Evaluation commands, setup, and saved artifacts](evaluation/README.md)
 
-## Repository guide
+Semantic reranking dependencies are optional and separate from core requirements; see [optional semantic setup](evaluation/README.md#optional-semantic-reranking).
+
+Saved scores reproduce offline; identical live reruns require historical local indexes, which are not versioned. Re-ingestion changes UUIDs. Scope: 27 Chroma chunks / 12 documents; Whoosh has one extra chunk and the catalog is stale. Latency is experimental, not a production benchmark.
+
+## Repository structure
 
 | Path | Purpose |
 |---|---|
-| `app/` | Backend, ingestion, retrieval, routing, and generation |
-| `recall-frontend/` | React application source and frontend lockfile |
-| `evaluation/benchmarks/` | Versioned manual retrieval labels and annotation rules |
-| `evaluation/results/` | Retained experiment outputs and failure analyses |
-| `tests/` | Standard-library unit tests; semantic scorers are mocked |
-| `docs/milestone1/` | Traceable results and source material for public presentation |
+| `app/` | Ingestion, retrieval, intent planning, generation, and API |
+| `recall-frontend/` | React application and frontend lockfile |
+| `evaluation/` | Benchmarks v1/v2, metrics, experiments, and saved results |
+| `tests/` | Unit tests; semantic scorers are mocked |
+| `docs/milestone1/` | Traceable public results and presentation sources |
 
-Historical databases and model caches are not versioned. Saved evidence metrics
-can be reproduced offline; live retrieval reruns require the matching persisted
-corpus and indexes. Re-ingestion changes UUIDs. The document catalog is stale
-relative to the experimental corpus; it is not benchmark ground truth.
+## Roadmap
+
+- **Milestone 1 ? Retrieval evaluation:** complete.
+- **Milestone 2 ? Generation quality, groundedness, hallucination, and refusal evaluation:** planned.
