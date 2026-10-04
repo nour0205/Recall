@@ -1,4 +1,4 @@
-# Recall
+<div align="center">
 
 A personal study assistant using **Retrieval-Augmented Generation over course materials**.
 Recall indexes pasted course notes, retrieves supporting passages, and generates
