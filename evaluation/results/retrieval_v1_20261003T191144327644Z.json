@@ -1,0 +1,522 @@
+{
+  "result_schema_version": 1,
+  "benchmark_path": "evaluation/benchmarks/retrieval_v1.json",
+  "benchmark_schema_version": 1,
+  "started_at_utc": "2026-10-03T19:11:44.327644+00:00",
+  "completed_at_utc": "2026-10-03T19:11:52.211072+00:00",
+  "configuration": {
+    "modes": [
+      "vector",
+      "bm25",
+      "hybrid",
+      "hybrid_reranked"
+    ],
+    "candidate_k": 10,
+    "k": 5
+  },
+  "corpus": {
+    "collection_name": "api-demo",
+    "chroma_path": ".chroma",
+    "whoosh_path": "data/whoosh_index",
+    "chunk_counts": {
+      "chroma": 27,
+      "whoosh": 28
+    },
+    "validation_issues": [
+      "Corpus mismatch: chunk e3380555-fb30-454c-9a43-f8e3d66c05b9 present in whoosh, missing from chroma"
+    ]
+  },
+  "aggregation": {
+    "quality": "macro mean over answerable cases only; undefined values excluded",
+    "mrr": "mean reciprocal rank within the final five returned results",
+    "latency": "mean over all queries; seconds; includes embedding requests",
+    "execution_order": "benchmark order; modes sequential in configuration order; no warmup"
+  },
+  "queries": [
+    {
+      "question_id": "retrieval_001",
+      "question": "What happens if the learning rate is too large during gradient descent?",
+      "category": "factual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "ml_gradient_descent"
+      ],
+      "relevant_chunk_ids": [
+        "4a373a64-f445-4926-964c-e32d4bef44e2"
+      ],
+      "notes": "Direct factual evidence: an excessively large learning rate may cause divergence. The document has one chunk, with no ingestion overlap.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "4a373a64-f445-4926-964c-e32d4bef44e2",
+            "1a8573db-c271-4cd4-9bc8-097466513548",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "d7755e05-d3c6-4865-9453-7d9464895375",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc"
+          ],
+          "latency_seconds": 3.202460499946028,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [],
+          "latency_seconds": 0.06138389999978244,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 0.0,
+            "recall_at_3": 0.0,
+            "hit_at_5": 0.0,
+            "recall_at_5": 0.0,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "4a373a64-f445-4926-964c-e32d4bef44e2",
+            "1a8573db-c271-4cd4-9bc8-097466513548",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "d7755e05-d3c6-4865-9453-7d9464895375",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc"
+          ],
+          "latency_seconds": 1.0160062999930233,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "4a373a64-f445-4926-964c-e32d4bef44e2",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "1a8573db-c271-4cd4-9bc8-097466513548"
+          ],
+          "latency_seconds": 0.2123374999500811,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_002",
+      "question": "When can accuracy be a misleading evaluation metric?",
+      "category": "conceptual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "ml_model_evaluation"
+      ],
+      "relevant_chunk_ids": [
+        "6d045457-927e-4d91-a801-80fb6b49a451",
+        "bd664c0a-5bcb-457d-b326-bddcb215638f"
+      ],
+      "notes": "Both overlapping chunks define accuracy and explicitly state that it can be misleading on imbalanced datasets. Both are retained because each independently contains the relevant evidence.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5"
+          ],
+          "latency_seconds": 0.18818759999703616,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [],
+          "latency_seconds": 0.017968200030736625,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 0.0,
+            "recall_at_3": 0.0,
+            "hit_at_5": 0.0,
+            "recall_at_5": 0.0,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5"
+          ],
+          "latency_seconds": 0.26428430003579706,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "1a8573db-c271-4cd4-9bc8-097466513548"
+          ],
+          "latency_seconds": 0.2132493999088183,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_003",
+      "question": "How do processes and threads differ in memory sharing and communication?",
+      "category": "comparison",
+      "answerable": true,
+      "relevant_document_ids": [
+        "os_process_vs_thread",
+        "os_processes_threads_scheduling"
+      ],
+      "relevant_chunk_ids": [
+        "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3",
+        "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+        "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+        "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+        "035326e9-1a04-4aed-9dc8-221befcf1945"
+      ],
+      "notes": "Includes overlapping evidence in both OS documents. The process-vs-thread chunk 0 supports the memory-sharing part only; chunks 1 and 2 also describe communication and IPC. Scheduling chunks 0 and 1 explain separate process memory and faster communication through shared thread memory. Generic isolation or scheduling summaries are excluded.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3"
+          ],
+          "latency_seconds": 0.1763803999638185,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.2,
+            "hit_at_3": 1.0,
+            "recall_at_3": 0.6,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [],
+          "latency_seconds": 0.02320910000707954,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 0.0,
+            "recall_at_3": 0.0,
+            "hit_at_5": 0.0,
+            "recall_at_5": 0.0,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3"
+          ],
+          "latency_seconds": 0.19876110006589442,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.2,
+            "hit_at_3": 1.0,
+            "recall_at_3": 0.6,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3"
+          ],
+          "latency_seconds": 0.2272962999995798,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.2,
+            "hit_at_3": 1.0,
+            "recall_at_3": 0.6,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_004",
+      "question": "How does aging help prevent starvation in CPU scheduling?",
+      "category": "conceptual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "os_processes_threads_scheduling"
+      ],
+      "relevant_chunk_ids": [
+        "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6"
+      ],
+      "notes": "Only chunk 2 explains aging: gradually increasing waiting tasks' priority reduces starvation. Chunk 1 overlaps the starvation definition but contains no evidence about the aging mechanism, so it is excluded.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "fddc7e74-63c8-4d3b-b343-a3aa1d8d7987"
+          ],
+          "latency_seconds": 0.27281049999874085,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [],
+          "latency_seconds": 0.0235854999627918,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 0.0,
+            "recall_at_3": 0.0,
+            "hit_at_5": 0.0,
+            "recall_at_5": 0.0,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "fddc7e74-63c8-4d3b-b343-a3aa1d8d7987"
+          ],
+          "latency_seconds": 0.19924310001078993,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "fddc7e74-63c8-4d3b-b343-a3aa1d8d7987"
+          ],
+          "latency_seconds": 0.21517390001099557,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_005",
+      "question": "What is the difference between dropout and batch normalization?",
+      "category": "out_of_scope",
+      "answerable": false,
+      "relevant_document_ids": [],
+      "relevant_chunk_ids": [],
+      "notes": "Neither dropout nor batch normalization is explained in the current corpus. Generic regularization, feature scaling, and database normalization passages do not support this comparison.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "4a373a64-f445-4926-964c-e32d4bef44e2"
+          ],
+          "latency_seconds": 0.17695210000965744,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [],
+          "latency_seconds": 0.02153390005696565,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "4a373a64-f445-4926-964c-e32d4bef44e2"
+          ],
+          "latency_seconds": 0.1942633999278769,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91"
+          ],
+          "latency_seconds": 0.1979715001070872,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        }
+      }
+    }
+  ],
+  "aggregates": {
+    "vector": {
+      "quality_query_count": 4,
+      "latency_query_count": 5,
+      "metrics": {
+        "hit_at_1": 1.0,
+        "hit_at_3": 1.0,
+        "hit_at_5": 1.0,
+        "recall_at_1": 0.675,
+        "recall_at_3": 0.9,
+        "recall_at_5": 1.0,
+        "mrr": 1.0
+      },
+      "mean_latency_seconds": 0.8033582199830562
+    },
+    "bm25": {
+      "quality_query_count": 4,
+      "latency_query_count": 5,
+      "metrics": {
+        "hit_at_1": 0.0,
+        "hit_at_3": 0.0,
+        "hit_at_5": 0.0,
+        "recall_at_1": 0.0,
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "mean_latency_seconds": 0.029536120011471212
+    },
+    "hybrid": {
+      "quality_query_count": 4,
+      "latency_query_count": 5,
+      "metrics": {
+        "hit_at_1": 1.0,
+        "hit_at_3": 1.0,
+        "hit_at_5": 1.0,
+        "recall_at_1": 0.675,
+        "recall_at_3": 0.9,
+        "recall_at_5": 1.0,
+        "mrr": 1.0
+      },
+      "mean_latency_seconds": 0.3745116400066763
+    },
+    "hybrid_reranked": {
+      "quality_query_count": 4,
+      "latency_query_count": 5,
+      "metrics": {
+        "hit_at_1": 1.0,
+        "hit_at_3": 1.0,
+        "hit_at_5": 1.0,
+        "recall_at_1": 0.675,
+        "recall_at_3": 0.9,
+        "recall_at_5": 1.0,
+        "mrr": 1.0
+      },
+      "mean_latency_seconds": 0.2132057199953124
+    }
+  }
+}

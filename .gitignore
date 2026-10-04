@@ -12,6 +12,9 @@ htmlcov/
 .venv/
 venv/
 venv_old/
+.venv/
+.venv*/
+venv*/
 
 # Environment variables and local secrets
 .env
@@ -36,6 +39,21 @@ recall-frontend/dist/
 .vscode/
 .idea/
 
-# Operating system
-.DS_Store
-Thumbs.db
+**/node_modules/
+
+# Local model/download caches; preserve evaluation definitions and results
+.eval-model-cache/
+.cache/
+.huggingface/
+
+# Frontend generated output (already tracked builds need separate review)
+recall-frontend/dist/
+*.tsbuildinfo
+
+# Tool caches and temporary output
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+*.tmp

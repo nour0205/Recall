@@ -1,0 +1,5 @@
+# Evaluation-only CPU runtime. Install torch from the official CPU wheel index.
+# uv pip install --python .venv-evaluation/Scripts/python.exe -r evaluation/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match
+sentence-transformers==5.1.2
+transformers==4.57.1
+torch==2.9.0+cpu
