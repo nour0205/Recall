@@ -1,0 +1,4 @@
+# Preserve historical bytes used by provenance hashes; leave other files alone.
+evaluation/benchmarks/*.json -text
+evaluation/results/*.json -text
+evaluation/results/*.md -text

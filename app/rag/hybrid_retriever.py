@@ -25,7 +25,7 @@ def _get_text(item: dict) -> str:
     return item.get("text") or item.get("document") or ""
 
 
-def _to_retrieved_chunk(item: dict) -> RetrievedChunk:
+def to_retrieved_chunk(item: dict) -> RetrievedChunk:
     meta = _get_metadata(item)
 
     return RetrievedChunk(
@@ -34,6 +34,7 @@ def _to_retrieved_chunk(item: dict) -> RetrievedChunk:
         chunk_id=meta.get("chunk_id"),
         chunk_index=meta.get("chunk_index"),
         text=_get_text(item),
+        metadata=meta,
         retrieval_type=item.get("retrieval_type", "unknown"),
         score=item.get("score"),
         bm25_score=item.get("bm25_score"),
@@ -89,18 +90,19 @@ def reciprocal_rank_fusion(
     for chunk_id, item in merged.items():
         new_item = dict(item)
         new_item["hybrid_score"] = scores[chunk_id]
-        fused.append(_to_retrieved_chunk(new_item))
+        fused.append(to_retrieved_chunk(new_item))
 
     fused.sort(key=lambda x: x.hybrid_score or 0.0, reverse=True)
     return fused
 
 
-def hybrid_retrieve(
+def retrieve_vector_candidates(
     store,
     question: str,
     k: int = 5,
     where: dict | None = None
-) -> list[RetrievedChunk]:
+) -> list[dict]:
+    """Return existing vector results with stable identities and input ranks."""
     query_embedding = embed_texts([question])[0]
 
     vector_results = store.query_with_scores(
@@ -114,6 +116,15 @@ def hybrid_retrieve(
         item["retrieval_type"] = "vector"
         item["id"] = _get_chunk_key(item)
 
+    return vector_results
+
+
+def retrieve_bm25_candidates(
+    question: str,
+    k: int = 5,
+    where: dict | None = None,
+) -> list[dict]:
+    """Preserve Whoosh's existing top-k search followed by metadata filtering."""
     bm25_results = search_whoosh(question, limit=k)
 
     for rank, item in enumerate(bm25_results):
@@ -134,6 +145,17 @@ def hybrid_retrieve(
                 filtered_bm25.append(item)
         bm25_results = filtered_bm25
 
+    return bm25_results
+
+
+def hybrid_retrieve(
+    store,
+    question: str,
+    k: int = 5,
+    where: dict | None = None
+) -> list[RetrievedChunk]:
+    vector_results = retrieve_vector_candidates(store, question, k=k, where=where)
+    bm25_results = retrieve_bm25_candidates(question, k=k, where=where)
     fused = reciprocal_rank_fusion(vector_results, bm25_results)
 
     return fused[:k]

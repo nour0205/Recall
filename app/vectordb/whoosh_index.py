@@ -1,7 +1,7 @@
 from pathlib import Path
 from whoosh import index
 from whoosh.fields import Schema, ID, TEXT, NUMERIC
-from whoosh.qparser import MultifieldParser
+from whoosh.query import Or, Term
 
 INDEX_DIR = Path("data/whoosh_index")
 
@@ -59,8 +59,15 @@ def search_whoosh(query_text: str, limit: int = 5):
     ix = get_or_create_index()
 
     with ix.searcher() as searcher:
-        parser = MultifieldParser(["content", "document_id", "source"], schema=ix.schema)
-        query = parser.parse(query_text)
+        # User input is natural-language text, not Whoosh query syntax.
+        tokens = list(dict.fromkeys(token.text for token in ix.schema["content"].analyzer(query_text)))
+        if not tokens:
+            return []
+        query = Or([
+            Term(field, token)
+            for token in tokens
+            for field in ("content", "document_id", "source")
+        ])
         results = searcher.search(query, limit=limit)
 
         output = []
