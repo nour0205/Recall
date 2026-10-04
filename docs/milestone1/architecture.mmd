@@ -1,0 +1,12 @@
+flowchart LR
+    Q["User question"] --> V["Vector retrieval<br/>OpenAI embeddings + Chroma"]
+    Q --> B["BM25 retrieval<br/>Whoosh"]
+    V --> F["Reciprocal Rank Fusion"]
+    B --> F
+    F --> C["Candidate context"]
+    C --> L["LLM<br/>GPT-4o-mini"]
+    L --> A["Answer + sources"]
+    F -.-> H["Heuristic reranking<br/>Evaluated experiment"]
+    F -.-> M["MiniLM CrossEncoder<br/>Evaluated experiment"]
+    classDef experiment fill:#f3f4f6,stroke:#64748b,stroke-dasharray:5 5
+    class H,M experiment

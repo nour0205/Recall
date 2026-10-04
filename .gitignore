@@ -8,12 +8,16 @@ __pycache__/
 venv/
 venv_old/
 .venv/
+.venv*/
+venv*/
 
 # Vector database storage
 .chroma/
 
 # Environment variables
 .env
+.env.*
+!.env.example
 
 # IDE
 .vscode/
@@ -33,3 +37,20 @@ recall-frontend/node_modules/
 
 
 **/node_modules/
+
+# Local model/download caches; preserve evaluation definitions and results
+.eval-model-cache/
+.cache/
+.huggingface/
+
+# Frontend generated output (already tracked builds need separate review)
+recall-frontend/dist/
+*.tsbuildinfo
+
+# Tool caches and temporary output
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+*.tmp
