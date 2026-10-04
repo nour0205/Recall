@@ -1,6 +1,6 @@
-from typing import Literal
+from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class RetrievedChunk(BaseModel):
@@ -9,6 +9,7 @@ class RetrievedChunk(BaseModel):
     chunk_id: str | None = None
     chunk_index: int | None = None
     text: str
+    metadata: dict[str, Any] = Field(default_factory=dict)
     retrieval_type: Literal["vector", "bm25", "hybrid", "unknown"] = "unknown"
     score: float | None = None
     bm25_score: float | None = None
