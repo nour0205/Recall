@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+<style>
+.title{font:700 42px Arial;fill:#25313a}.box{fill:#f8fbfd;stroke:#3b82a8;stroke-width:3}.txt{font:24px Arial;fill:#25313a}.small{font:20px Arial;fill:#25313a}.arrow{stroke:#6f7b84;stroke-width:4;marker-end:url(#m)}
+</style>
+<defs><marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#6f7b84"/></marker></defs>
+<text x="600" y="70" text-anchor="middle" class="title">Recall - Grounded RAG Architecture</text>
+<rect x="400" y="120" width="400" height="90" rx="18" class="box"/><text x="600" y="175" text-anchor="middle" class="txt">User Question</text>
+<line x1="600" y1="210" x2="600" y2="270" class="arrow"/>
+<rect x="400" y="280" width="400" height="90" rx="18" class="box"/><text x="600" y="335" text-anchor="middle" class="txt">Intent Router</text>
+<line x1="600" y1="370" x2="600" y2="430" class="arrow"/>
+<rect x="140" y="450" width="330" height="150" rx="18" class="box"/><text x="305" y="510" text-anchor="middle" class="txt">Vector Retrieval</text><text x="305" y="550" text-anchor="middle" class="small">Embeddings</text>
+<rect x="730" y="450" width="330" height="150" rx="18" class="box"/><text x="895" y="510" text-anchor="middle" class="txt">Keyword Retrieval</text><text x="895" y="550" text-anchor="middle" class="small">BM25</text>
+<line x1="600" y1="430" x2="305" y2="450" class="arrow"/><line x1="600" y1="430" x2="895" y2="450" class="arrow"/>
+<rect x="400" y="650" width="400" height="90" rx="18" class="box"/><text x="600" y="705" text-anchor="middle" class="txt">Fusion + Reranking</text>
+<line x1="305" y1="600" x2="500" y2="650" class="arrow"/><line x1="895" y1="600" x2="700" y2="650" class="arrow"/>
+<rect x="400" y="780" width="400" height="90" rx="18" class="box"/><text x="600" y="835" text-anchor="middle" class="txt">Grounded Answer + Sources</text>
+<line x1="600" y1="740" x2="600" y2="780" class="arrow"/>
+</svg>
