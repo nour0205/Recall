@@ -1,40 +1,43 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
 *.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # Virtual environments
+.venv/
 venv/
 venv_old/
 .venv/
 .venv*/
 venv*/
 
-# Vector database storage
-.chroma/
-
-# Environment variables
+# Environment variables and local secrets
 .env
 .env.*
 !.env.example
 
-# IDE
-.vscode/
-.idea/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# generated indexes / local data
+# Local databases and generated indexes
+.chroma/
 data/whoosh_index/
 *.toc
 *.seg
 
+# Frontend dependencies and build output
+**/node_modules/
+recall-frontend/dist/
+*.tsbuildinfo
 
-recall-frontend/node_modules/
+# Generated archives
+*.zip
 
+# IDE
+.vscode/
+.idea/
 
 **/node_modules/
 
