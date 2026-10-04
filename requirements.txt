@@ -1,1 +1,11 @@
-whoosh
+# Core/backend dependencies; optional semantic evaluation lives in evaluation/.
+# Versions match the environment used for Milestone 1 tests and retrieval runs.
+fastapi==0.135.1
+uvicorn==0.42.0
+openai==2.29.0
+chromadb==1.5.5
+Whoosh==2.7.4
+pydantic==2.12.5
+python-dotenv==1.2.2
+# Retained legacy HTTP smoke script (not the Milestone 1 benchmark runner).
+requests==2.32.5

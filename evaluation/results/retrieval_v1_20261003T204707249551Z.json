@@ -1,0 +1,1811 @@
+{
+  "result_schema_version": 1,
+  "benchmark_path": "evaluation/benchmarks/retrieval_v1.json",
+  "benchmark_schema_version": 1,
+  "started_at_utc": "2026-10-03T20:47:07.249551+00:00",
+  "completed_at_utc": "2026-10-03T20:47:21.552308+00:00",
+  "configuration": {
+    "modes": [
+      "vector",
+      "bm25",
+      "hybrid",
+      "hybrid_reranked"
+    ],
+    "candidate_k": 10,
+    "k": 5
+  },
+  "corpus": {
+    "collection_name": "api-demo",
+    "chroma_path": ".chroma",
+    "whoosh_path": "data/whoosh_index",
+    "chunk_counts": {
+      "chroma": 27,
+      "whoosh": 28
+    },
+    "validation_issues": [
+      "Corpus mismatch: chunk e3380555-fb30-454c-9a43-f8e3d66c05b9 present in whoosh, missing from chroma"
+    ]
+  },
+  "aggregation": {
+    "quality": "macro mean over answerable cases only; undefined values excluded",
+    "mrr": "mean reciprocal rank within the final five returned results",
+    "latency": "mean over all queries; seconds; includes embedding requests",
+    "execution_order": "benchmark order; modes sequential in configuration order; no warmup"
+  },
+  "queries": [
+    {
+      "question_id": "retrieval_001",
+      "question": "What happens if the learning rate is too large during gradient descent?",
+      "category": "factual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "ml_gradient_descent"
+      ],
+      "relevant_chunk_ids": [
+        "4a373a64-f445-4926-964c-e32d4bef44e2"
+      ],
+      "notes": "Direct factual evidence: an excessively large learning rate may cause divergence. The document has one chunk, with no ingestion overlap.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "4a373a64-f445-4926-964c-e32d4bef44e2",
+            "1a8573db-c271-4cd4-9bc8-097466513548",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "d7755e05-d3c6-4865-9453-7d9464895375",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc"
+          ],
+          "latency_seconds": 1.608136700000614,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "4a373a64-f445-4926-964c-e32d4bef44e2",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68"
+          ],
+          "latency_seconds": 0.02475449990015477,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "4a373a64-f445-4926-964c-e32d4bef44e2",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "1a8573db-c271-4cd4-9bc8-097466513548"
+          ],
+          "latency_seconds": 0.18536850006785244,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "4a373a64-f445-4926-964c-e32d4bef44e2",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "1a8573db-c271-4cd4-9bc8-097466513548"
+          ],
+          "latency_seconds": 0.7293714999686927,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_002",
+      "question": "When can accuracy be a misleading evaluation metric?",
+      "category": "conceptual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "ml_model_evaluation"
+      ],
+      "relevant_chunk_ids": [
+        "6d045457-927e-4d91-a801-80fb6b49a451"
+      ],
+      "notes": "Canonical evidence defines accuracy and states that it can be misleading on imbalanced datasets. Full equivalent evidence: bd664c0a-5bcb-457d-b326-bddcb215638f (ml_model_evaluation, chunk 1) repeats both statements and is excluded from automatic scoring.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5"
+          ],
+          "latency_seconds": 0.1844151000259444,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002"
+          ],
+          "latency_seconds": 0.007987799937836826,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7"
+          ],
+          "latency_seconds": 0.1641145000467077,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "1a8573db-c271-4cd4-9bc8-097466513548"
+          ],
+          "latency_seconds": 0.24640000006183982,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_003",
+      "question": "How do processes and threads differ in memory sharing and communication?",
+      "category": "comparison",
+      "answerable": true,
+      "relevant_document_ids": [
+        "os_process_vs_thread"
+      ],
+      "relevant_chunk_ids": [
+        "a4d8fe4d-300d-49b7-b7a9-c573f06af200"
+      ],
+      "notes": "Canonical evidence covers separate process memory, shared thread memory, IPC, and communication tradeoffs. Full equivalent evidence: 28a7c7fa-ee37-43be-a91c-7243ed15b0ac (os_process_vs_thread, chunk 2). Supporting alternatives covering the basic complete comparison: 0c277ad4-37e2-4378-ae31-64e52a11d86a (os_processes_threads_scheduling, chunk 0); 035326e9-1a04-4aed-9dc8-221befcf1945 (os_processes_threads_scheduling, chunk 1). Partial supporting evidence: dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3 (os_process_vs_thread, chunk 0) covers memory sharing but not communication. Alternatives are excluded from automatic scoring.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3"
+          ],
+          "latency_seconds": 0.13265660009346902,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3"
+          ],
+          "latency_seconds": 0.009360099909827113,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3"
+          ],
+          "latency_seconds": 0.2306331000290811,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3"
+          ],
+          "latency_seconds": 0.1762182000093162,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.3333333333333333
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_004",
+      "question": "How does aging help prevent starvation in CPU scheduling?",
+      "category": "conceptual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "os_processes_threads_scheduling"
+      ],
+      "relevant_chunk_ids": [
+        "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6"
+      ],
+      "notes": "Only canonical chunk 2 explains aging: gradually increasing waiting tasks' priority reduces starvation. Partial supporting evidence: 035326e9-1a04-4aed-9dc8-221befcf1945 (os_processes_threads_scheduling, chunk 1) defines starvation but does not explain aging and is excluded from automatic scoring.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "fddc7e74-63c8-4d3b-b343-a3aa1d8d7987"
+          ],
+          "latency_seconds": 0.2616944999899715,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "1a8573db-c271-4cd4-9bc8-097466513548"
+          ],
+          "latency_seconds": 0.00816670001950115,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac"
+          ],
+          "latency_seconds": 0.21041989990044385,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "1a8573db-c271-4cd4-9bc8-097466513548",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002"
+          ],
+          "latency_seconds": 0.16761589993257076,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_005",
+      "question": "What is the difference between dropout and batch normalization?",
+      "category": "out_of_scope",
+      "answerable": false,
+      "relevant_document_ids": [],
+      "relevant_chunk_ids": [],
+      "notes": "Neither dropout nor batch normalization is explained in the current corpus. Generic regularization, feature scaling, and database normalization passages do not support this comparison.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "4a373a64-f445-4926-964c-e32d4bef44e2"
+          ],
+          "latency_seconds": 0.1663176000583917,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "e61b17d4-d11b-47f9-9674-db13ccfdd7e8",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a"
+          ],
+          "latency_seconds": 0.011507699964568019,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "e61b17d4-d11b-47f9-9674-db13ccfdd7e8",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe"
+          ],
+          "latency_seconds": 0.15839360002428293,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "e61b17d4-d11b-47f9-9674-db13ccfdd7e8"
+          ],
+          "latency_seconds": 0.20398969994857907,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_006",
+      "question": "What does precision measure in classification evaluation?",
+      "category": "factual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "ml_model_evaluation"
+      ],
+      "relevant_chunk_ids": [
+        "6d045457-927e-4d91-a801-80fb6b49a451"
+      ],
+      "notes": "Canonical evidence supplies the complete precision definition. Full equivalent evidence: bd664c0a-5bcb-457d-b326-bddcb215638f (ml_model_evaluation, chunk 1) repeats the same definition.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002"
+          ],
+          "latency_seconds": 0.19870329997502267,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe"
+          ],
+          "latency_seconds": 0.009887399966828525,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc"
+          ],
+          "latency_seconds": 0.18922970001585782,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c"
+          ],
+          "latency_seconds": 0.2182074999436736,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_007",
+      "question": "In the student-table example, department_office depends on department_name rather than student_id. What dependency does this illustrate, and how is the table reorganized?",
+      "category": "multi_part",
+      "answerable": true,
+      "relevant_document_ids": [
+        "db_normalization_intro"
+      ],
+      "relevant_chunk_ids": [
+        "73c987b6-90bc-41e1-bbb7-12bc713de952"
+      ],
+      "notes": "Canonical evidence contains the specific identifiers, transitive dependency, and decomposition. Partial supporting evidence: f47f5e9c-59a3-4859-8580-c16ffb34ed60 (db_normalization_intro, chunk 1) defines transitive dependency but lacks the specific example and decomposition.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c"
+          ],
+          "latency_seconds": 0.175728700007312,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91"
+          ],
+          "latency_seconds": 0.010999200050719082,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68"
+          ],
+          "latency_seconds": 0.16468279995024204,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c"
+          ],
+          "latency_seconds": 0.26378929999191314,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_008",
+      "question": "How does partial dependency differ from transitive dependency, and which normal form removes each?",
+      "category": "comparison",
+      "answerable": true,
+      "relevant_document_ids": [
+        "db_normalization_intro"
+      ],
+      "relevant_chunk_ids": [
+        "73c987b6-90bc-41e1-bbb7-12bc713de952"
+      ],
+      "notes": "Canonical evidence contains both definitions, normal-form assignments, and a concrete example. Full equivalent evidence: f47f5e9c-59a3-4859-8580-c16ffb34ed60 (db_normalization_intro, chunk 1) supplies the same requested definitions and assignments.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c"
+          ],
+          "latency_seconds": 0.191865999950096,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c",
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945"
+          ],
+          "latency_seconds": 0.011801099986769259,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68"
+          ],
+          "latency_seconds": 0.21081810002215207,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6"
+          ],
+          "latency_seconds": 0.20276649994775653,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_009",
+      "question": "Which database guarantee means that an accepted change survives even if the machine fails afterward?",
+      "category": "conceptual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "db_transactions_concurrency"
+      ],
+      "relevant_chunk_ids": [
+        "b2b2b736-dbec-45ae-b811-77d5a03d785e"
+      ],
+      "notes": "Semantic paraphrase of durability; canonical evidence explicitly states persistence after commit and crash. Full equivalent evidence: ece01229-7d42-455a-a3e2-cf789c5dae2c (db_transactions_concurrency, chunk 1) repeats the durability definition.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68"
+          ],
+          "latency_seconds": 0.19405050005298108,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e"
+          ],
+          "latency_seconds": 0.01313149998895824,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 0.0,
+            "recall_at_3": 0.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.2
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60"
+          ],
+          "latency_seconds": 0.30321160005405545,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.3333333333333333
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68"
+          ],
+          "latency_seconds": 0.16990690003149211,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 0.0,
+            "recall_at_3": 0.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.25
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_010",
+      "question": "Inside one database operation, I ask for the same information twice and get different answers because someone else changed it. What problem is this?",
+      "category": "conceptual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "db_transactions_concurrency"
+      ],
+      "relevant_chunk_ids": [
+        "b2b2b736-dbec-45ae-b811-77d5a03d785e"
+      ],
+      "notes": "Semantic paraphrase of a non-repeatable read. Only the canonical chunk provides the complete definition; no full equivalent evidence is identified.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "73c987b6-90bc-41e1-bbb7-12bc713de952"
+          ],
+          "latency_seconds": 0.16732860007323325,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.3333333333333333
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281"
+          ],
+          "latency_seconds": 0.009861900005489588,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281"
+          ],
+          "latency_seconds": 0.2621015999466181,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281"
+          ],
+          "latency_seconds": 0.19751309999264777,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_011",
+      "question": "Would predicting whether a message is junk and predicting a property's sale price use the same kind of supervised-learning task? Explain the distinction.",
+      "category": "comparison",
+      "answerable": true,
+      "relevant_document_ids": [
+        "ml_classification_regression"
+      ],
+      "relevant_chunk_ids": [
+        "a991caeb-71fd-45b3-8fb8-aa3b541b8f91"
+      ],
+      "notes": "Canonical evidence gives both task definitions and spam/house-price examples. Full equivalent evidence: 66277f9c-97b1-4aa9-885f-1a7cde13ffbe (ml_supervised_learning_basics, chunk 1) supports both parts. Partial supporting evidence: 3ccba452-0e10-40ef-ade4-06a09c80b66c (ml_supervised_learning_basics, chunk 0) supports classification; 8e3c8941-518e-401e-961b-091b2c14a7cc (ml_supervised_learning_basics, chunk 2) supports regression.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "6d045457-927e-4d91-a801-80fb6b49a451"
+          ],
+          "latency_seconds": 0.18681490002200007,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "e3380555-fb30-454c-9a43-f8e3d66c05b9",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7"
+          ],
+          "latency_seconds": 0.013388300081714988,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.3333333333333333
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002"
+          ],
+          "latency_seconds": 0.18050289992243052,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002"
+          ],
+          "latency_seconds": 0.2621322999475524,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_012",
+      "question": "A predictor looks excellent on examples it practiced on but performs badly on unfamiliar examples. What learning problem does this suggest?",
+      "category": "conceptual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "ml_overfitting_underfitting"
+      ],
+      "relevant_chunk_ids": [
+        "d7755e05-d3c6-4865-9453-7d9464895375"
+      ],
+      "notes": "Semantic paraphrase of overfitting; canonical evidence directly states the training/unseen-performance pattern. Full equivalent evidence: 1a8573db-c271-4cd4-9bc8-097466513548 (ml_overfitting_underfitting, chunk 1); 66277f9c-97b1-4aa9-885f-1a7cde13ffbe (ml_supervised_learning_basics, chunk 1); 8e3c8941-518e-401e-961b-091b2c14a7cc (ml_supervised_learning_basics, chunk 2). Partial supporting evidence: c79ae468-500a-4b28-a0c9-7fc0a499e8c7 (ml_bias_variance_generalization, chunk 0); 7e65c5f9-f3f4-472e-9ed7-d90595144002 (ml_bias_variance_generalization, chunk 1); 238ddbf4-a7b9-4647-b485-79a96e6a48d5 (ml_bias_variance_generalization, chunk 2) discuss related explanations or warning signs rather than the same direct formulation.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "d7755e05-d3c6-4865-9453-7d9464895375",
+            "1a8573db-c271-4cd4-9bc8-097466513548",
+            "6d045457-927e-4d91-a801-80fb6b49a451"
+          ],
+          "latency_seconds": 0.1774469999363646,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.3333333333333333
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c",
+            "a991caeb-71fd-45b3-8fb8-aa3b541b8f91"
+          ],
+          "latency_seconds": 0.011215299949981272,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 0.0,
+            "recall_at_3": 0.0,
+            "hit_at_5": 0.0,
+            "recall_at_5": 0.0,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f"
+          ],
+          "latency_seconds": 0.2050362000009045,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 0.0,
+            "recall_at_3": 0.0,
+            "hit_at_5": 0.0,
+            "recall_at_5": 0.0,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "3ccba452-0e10-40ef-ade4-06a09c80b66c"
+          ],
+          "latency_seconds": 0.20945009996648878,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 0.0,
+            "recall_at_3": 0.0,
+            "hit_at_5": 0.0,
+            "recall_at_5": 0.0,
+            "reciprocal_rank": 0.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_013",
+      "question": "How does k-fold cross-validation rotate the held-out data, and what risk does it reduce compared with relying on one train-test split?",
+      "category": "multi_part",
+      "answerable": true,
+      "relevant_document_ids": [
+        "ml_cross_validation"
+      ],
+      "relevant_chunk_ids": [
+        "f8ba6a9b-4e38-45d9-93ce-a3d8c9d1a595"
+      ],
+      "notes": "One canonical chunk explains both rotation and the single-split rationale. Partial supporting evidence: 7e65c5f9-f3f4-472e-9ed7-d90595144002 (ml_bias_variance_generalization, chunk 1); 238ddbf4-a7b9-4647-b485-79a96e6a48d5 (ml_bias_variance_generalization, chunk 2) explain rotation but omit the single-split rationale.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "f8ba6a9b-4e38-45d9-93ce-a3d8c9d1a595",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f"
+          ],
+          "latency_seconds": 0.18414449994452298,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "f8ba6a9b-4e38-45d9-93ce-a3d8c9d1a595",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "1a8573db-c271-4cd4-9bc8-097466513548",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc"
+          ],
+          "latency_seconds": 0.03297299996484071,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "f8ba6a9b-4e38-45d9-93ce-a3d8c9d1a595",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "1a8573db-c271-4cd4-9bc8-097466513548"
+          ],
+          "latency_seconds": 0.19193640002049506,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "f8ba6a9b-4e38-45d9-93ce-a3d8c9d1a595",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "1a8573db-c271-4cd4-9bc8-097466513548",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc"
+          ],
+          "latency_seconds": 0.2113351000007242,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_014",
+      "question": "What is an update anomaly, and why does storing department_office through department_name in a student table illustrate a different dependency problem?",
+      "category": "multi_part",
+      "answerable": true,
+      "relevant_document_ids": [
+        "db_normalization_intro"
+      ],
+      "relevant_chunk_ids": [
+        "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+        "73c987b6-90bc-41e1-bbb7-12bc713de952"
+      ],
+      "notes": "Complementary canonical evidence: chunk 1 defines update anomalies and transitive dependency; chunk 2 supplies the specific department example. Component substitute: a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68 (db_normalization_intro, chunk 0) can replace chunk 1 for the update-anomaly definition; chunk 2 remains necessary. Shared overlapping definitions do not create additional relevance requirements.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c"
+          ],
+          "latency_seconds": 0.18084020004607737,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6"
+          ],
+          "latency_seconds": 0.009547099936753511,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c"
+          ],
+          "latency_seconds": 0.20250919996760786,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c"
+          ],
+          "latency_seconds": 0.17537080007605255,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_015",
+      "question": "What does atomicity guarantee for a database transaction, and what does precision measure for a classifier?",
+      "category": "multi_part",
+      "answerable": true,
+      "relevant_document_ids": [
+        "db_transactions_concurrency",
+        "ml_model_evaluation"
+      ],
+      "relevant_chunk_ids": [
+        "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+        "6d045457-927e-4d91-a801-80fb6b49a451"
+      ],
+      "notes": "Complementary canonical evidence covers two separate topics. Component substitutes: ece01229-7d42-455a-a3e2-cf789c5dae2c (db_transactions_concurrency, chunk 1) can replace the atomicity chunk; bd664c0a-5bcb-457d-b326-bddcb215638f (ml_model_evaluation, chunk 1) can replace the precision chunk. Neither substitute covers both parts.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f"
+          ],
+          "latency_seconds": 0.1599949001101777,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451"
+          ],
+          "latency_seconds": 0.00936659995932132,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 0.5,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f"
+          ],
+          "latency_seconds": 0.19045680004637688,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 0.5,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f"
+          ],
+          "latency_seconds": 0.1790280999848619,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 0.5,
+            "hit_at_3": 1.0,
+            "recall_at_3": 0.5,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_016",
+      "question": "Which execution-state items remain private to each thread even though threads share their process's memory and resources?",
+      "category": "factual",
+      "answerable": true,
+      "relevant_document_ids": [
+        "os_process_vs_thread"
+      ],
+      "relevant_chunk_ids": [
+        "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3"
+      ],
+      "notes": "Canonical evidence explicitly names the private stack and program counter alongside shared memory/resources. Full equivalent evidence: a4d8fe4d-300d-49b7-b7a9-c573f06af200 (os_process_vs_thread, chunk 1) repeats this passage.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac"
+          ],
+          "latency_seconds": 0.15862959995865822,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac"
+          ],
+          "latency_seconds": 0.012688999995589256,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3",
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac"
+          ],
+          "latency_seconds": 0.2223758000181988,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3",
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac"
+          ],
+          "latency_seconds": 0.17523650010116398,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": 0.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 0.5
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_017",
+      "question": "How do first-come first-served and round robin differ in waiting-time drawbacks and responsiveness?",
+      "category": "comparison",
+      "answerable": true,
+      "relevant_document_ids": [
+        "os_processes_threads_scheduling"
+      ],
+      "relevant_chunk_ids": [
+        "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6"
+      ],
+      "notes": "Canonical evidence covers the FCFS waiting-time drawback and round-robin quantum/responsiveness benefit. Full equivalent evidence: 035326e9-1a04-4aed-9dc8-221befcf1945 (os_processes_threads_scheduling, chunk 1) repeats the complete comparison.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+            "fddc7e74-63c8-4d3b-b343-a3aa1d8d7987"
+          ],
+          "latency_seconds": 0.24727739999070764,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f"
+          ],
+          "latency_seconds": 0.012564599979668856,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac"
+          ],
+          "latency_seconds": 0.15841490007005632,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "73c987b6-90bc-41e1-bbb7-12bc713de952",
+            "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5"
+          ],
+          "latency_seconds": 0.25179320003371686,
+          "metrics": {
+            "hit_at_1": 1.0,
+            "recall_at_1": 1.0,
+            "hit_at_3": 1.0,
+            "recall_at_3": 1.0,
+            "hit_at_5": 1.0,
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_019",
+      "question": "What is the exact mathematical formula for the F1 score in terms of precision and recall?",
+      "category": "out_of_scope",
+      "answerable": false,
+      "relevant_document_ids": [],
+      "relevant_chunk_ids": [],
+      "notes": "Unanswerable: no corpus chunk provides the formula. Related but insufficient evidence: bd664c0a-5bcb-457d-b326-bddcb215638f (ml_model_evaluation, chunk 1) names F1 and describes its purpose without the mathematical formula; it is not relevant evidence for this request.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5"
+          ],
+          "latency_seconds": 0.187258500023745,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451"
+          ],
+          "latency_seconds": 0.008975699893198907,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5"
+          ],
+          "latency_seconds": 0.2069041000213474,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451",
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "8e3c8941-518e-401e-961b-091b2c14a7cc",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5"
+          ],
+          "latency_seconds": 0.20849440002348274,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        }
+      }
+    },
+    {
+      "question_id": "retrieval_020",
+      "question": "How does the Banker's algorithm detect or avoid deadlock?",
+      "category": "out_of_scope",
+      "answerable": false,
+      "relevant_document_ids": [],
+      "relevant_chunk_ids": [],
+      "notes": "Unanswerable: the corpus does not explain the Banker's algorithm or deadlock handling. General scheduling, starvation, and process/thread passages are not evidence for this request.",
+      "results": {
+        "vector": {
+          "retrieved_chunk_ids": [
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6",
+            "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+            "035326e9-1a04-4aed-9dc8-221befcf1945",
+            "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281"
+          ],
+          "latency_seconds": 0.19722219998948276,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "bm25": {
+          "retrieved_chunk_ids": [
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "e3380555-fb30-454c-9a43-f8e3d66c05b9",
+            "4a373a64-f445-4926-964c-e32d4bef44e2",
+            "bd664c0a-5bcb-457d-b326-bddcb215638f",
+            "6d045457-927e-4d91-a801-80fb6b49a451"
+          ],
+          "latency_seconds": 0.00862149999011308,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid": {
+          "retrieved_chunk_ids": [
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "b2b2b736-dbec-45ae-b811-77d5a03d785e",
+            "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6"
+          ],
+          "latency_seconds": 0.18786679999902844,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        },
+        "hybrid_reranked": {
+          "retrieved_chunk_ids": [
+            "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+            "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+            "e3380555-fb30-454c-9a43-f8e3d66c05b9",
+            "4a373a64-f445-4926-964c-e32d4bef44e2",
+            "238ddbf4-a7b9-4647-b485-79a96e6a48d5"
+          ],
+          "latency_seconds": 0.16357750003226101,
+          "metrics": {
+            "hit_at_1": 0.0,
+            "recall_at_1": null,
+            "hit_at_3": 0.0,
+            "recall_at_3": null,
+            "hit_at_5": 0.0,
+            "recall_at_5": null,
+            "reciprocal_rank": 0.0
+          }
+        }
+      }
+    }
+  ],
+  "aggregates": {
+    "vector": {
+      "quality_query_count": 16,
+      "latency_query_count": 19,
+      "metrics": {
+        "hit_at_1": 0.75,
+        "hit_at_3": 1.0,
+        "hit_at_5": 1.0,
+        "recall_at_1": 0.6875,
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 0.8541666666666666
+      },
+      "mean_latency_seconds": 0.2610803579078301
+    },
+    "bm25": {
+      "quality_query_count": 16,
+      "latency_query_count": 19,
+      "metrics": {
+        "hit_at_1": 0.75,
+        "hit_at_3": 0.875,
+        "hit_at_5": 0.9375,
+        "recall_at_1": 0.6875,
+        "recall_at_3": 0.84375,
+        "recall_at_5": 0.9375,
+        "mrr": 0.8145833333333333
+      },
+      "mean_latency_seconds": 0.012463105235886025
+    },
+    "hybrid": {
+      "quality_query_count": 16,
+      "latency_query_count": 19,
+      "metrics": {
+        "hit_at_1": 0.6875,
+        "hit_at_3": 0.9375,
+        "hit_at_5": 0.9375,
+        "recall_at_1": 0.625,
+        "recall_at_3": 0.90625,
+        "recall_at_5": 0.9375,
+        "mrr": 0.8020833333333334
+      },
+      "mean_latency_seconds": 0.20131455263809153
+    },
+    "hybrid_reranked": {
+      "quality_query_count": 16,
+      "latency_query_count": 19,
+      "metrics": {
+        "hit_at_1": 0.5,
+        "hit_at_3": 0.875,
+        "hit_at_5": 0.9375,
+        "recall_at_1": 0.4375,
+        "recall_at_3": 0.84375,
+        "recall_at_5": 0.9375,
+        "mrr": 0.6927083333333334
+      },
+      "mean_latency_seconds": 0.2322208736839361
+    }
+  }
+}
