@@ -1,0 +1,613 @@
+{
+  "schema_version": 1,
+  "retrieval_benchmark": "retrieval_v2.json",
+  "retrieval_benchmark_sha256": "ebd93035b4738adff5f86885d569da67c6c5334a240eb86a734a399f77d32dc6",
+  "corpus": {
+    "collection_name": "api-demo",
+    "chroma_text_sha256": "649f695b7746392d29e80ad2b81c1cd64dcc5f87f8ba05bd67d8af6e897f416e",
+    "hash_policy": "SHA256 of canonical JSON records sorted by chunk_id, with chunk_id, document_id, text; UTF-8, sorted object keys, compact separators."
+  },
+  "reference_policy": "Examples of correct synthesis, not exact-match targets. References and evaluation labels must never enter generation prompts.",
+  "rubric": {
+    "correctness": {
+      "labels": [
+        1,
+        0,
+        "N/A"
+      ],
+      "rule": "1: substantive factual claims are accurate according to the corpus. 0: a claim contradicts the corpus or cannot be validated from it. Omissions affect completeness. A pure refusal is N/A."
+    },
+    "groundedness": {
+      "labels": [
+        1,
+        0
+      ],
+      "rule": "1: every substantive factual claim follows from the actual supplied context. 0: any claim adds unsupported information, even if factually correct."
+    },
+    "completeness": {
+      "rule": "For answerable cases, each required point receives 1 only when correctly expressed. Score = satisfied points / total required points. Refusal cases are N/A. Also report evidence-group coverage: a group passes only when all mapped points pass. Keep the full-reference denominator even when retrieval misses evidence."
+    },
+    "refusal_correctness": {
+      "labels": [
+        1,
+        0
+      ],
+      "rule": "1: answers supported parts and abstains on unsupported parts, or justifiably refuses an unsupported request. 0: invents missing content or refuses despite sufficient supplied evidence. A refusal followed by unsupported content fails."
+    },
+    "citation_correctness": {
+      "labels": [
+        1,
+        0,
+        "N/A"
+      ],
+      "rule": "1: every substantive factual claim has an identifiable supporting citation, and every citation resolves to a supplied source supporting its associated claim. 0: missing, fabricated, mismatched, or non-supporting citations. Pure refusals without factual claims are N/A."
+    },
+    "prompt_compliance": {
+      "optional": true,
+      "labels": [
+        1,
+        0,
+        "N/A"
+      ],
+      "rule": "Separate check of the current prompt instructions, including exact refusal wording and output structure when applicable. Never include in refusal correctness or an aggregate quality score."
+    },
+    "handling_rules": [
+      "Deterministic means fixed checklists and repeatable human semantic review, not keyword matching or deterministic model output.",
+      "Reference answers are synthesis examples, not exact-match targets. Accept equivalent paraphrases and reordered sentences; preserve distinctions, causality, and qualifiers such as may.",
+      "Partial correct supported answers can pass correctness and groundedness with fractional completeness. Omissions alone are not factual errors.",
+      "Inspect context sufficiency before reviewing the response. A justified refusal on a corpus-answerable case may pass refusal correctness while full-task completeness remains low.",
+      "With partial context, accept supported points plus an explicit limitation for missing parts. Full refusal may be justified but earns no factual completeness credit.",
+      "A corpus-correct fact absent from supplied context may pass correctness but fails groundedness.",
+      "A world-knowledge claim absent from the corpus fails groundedness and corpus-only correctness validation; this does not necessarily mean it is false.",
+      "Refusal followed by the unsupported F1 formula or Bankers algorithm fails refusal correctness and groundedness.",
+      "Pure refusals need no citation. Optional factual explanations in refusal cases still need supporting citations.",
+      "Valid citation syntax alone is insufficient; a source list in the UI alone is insufficient without association to the claim.",
+      "Flag unresolved interpretations for manual adjudication before final scoring. Do not guess or consult outside knowledge.",
+      "Report dimensions separately with eligible denominators; do not produce a single weighted quality score."
+    ]
+  },
+  "cases": [
+    {
+      "question_id": "retrieval_001",
+      "reference_answer": "A learning rate that is too large may cause gradient descent to diverge.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "divergence",
+          "text": "An excessively large learning rate may cause divergence.",
+          "evidence_group_ids": [
+            "learning_rate"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Do not require an additional mechanism or example; preserve may."
+    },
+    {
+      "question_id": "retrieval_002",
+      "reference_answer": "Accuracy can be misleading on imbalanced datasets.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "imbalance",
+          "text": "Identify imbalanced datasets as the condition.",
+          "evidence_group_ids": [
+            "accuracy_imbalance"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "Invented numerical imbalance examples or thresholds."
+      ],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "No alternative metric or detailed explanation of the mechanism is required."
+    },
+    {
+      "question_id": "retrieval_003",
+      "reference_answer": "Processes have separate memory spaces and usually communicate through inter-process communication mechanisms. Threads within a process share memory, making communication easier.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "process_memory",
+          "text": "Processes have separate memory.",
+          "evidence_group_ids": [
+            "memory"
+          ]
+        },
+        {
+          "point_id": "thread_memory",
+          "text": "Threads within one process share memory.",
+          "evidence_group_ids": [
+            "memory"
+          ]
+        },
+        {
+          "point_id": "process_ipc",
+          "text": "Process communication usually uses IPC.",
+          "evidence_group_ids": [
+            "communication"
+          ],
+          "support_chunk_ids": [
+            "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+            "28a7c7fa-ee37-43be-a91c-7243ed15b0ac"
+          ]
+        },
+        {
+          "point_id": "thread_communication",
+          "text": "Shared memory facilitates thread communication.",
+          "evidence_group_ids": [
+            "communication"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Accept easier or faster thread communication when supported. Do not require IPC examples or synchronization risks. The explicit IPC point requires os_process_vs_thread chunk 1 or 2; scheduling alternatives support the basic comparison but do not explicitly name IPC."
+    },
+    {
+      "question_id": "retrieval_004",
+      "reference_answer": "Aging gradually raises the priority of waiting tasks to reduce starvation.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "priority",
+          "text": "Gradually increase waiting-task priority.",
+          "evidence_group_ids": [
+            "aging"
+          ]
+        },
+        {
+          "point_id": "starvation",
+          "text": "Connect the priority increase to reducing starvation.",
+          "evidence_group_ids": [
+            "aging"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "A guaranteed waiting-time bound or a specific aging schedule."
+      ],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "A definition of starvation alone is incomplete."
+    },
+    {
+      "question_id": "retrieval_005",
+      "reference_answer": "I don't know.",
+      "expected_behavior": "refuse",
+      "required_points": [
+        {
+          "point_id": "abstain",
+          "text": "Clearly abstain from the requested comparison because supplied notes do not support it.",
+          "evidence_group_ids": []
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "Definitions, mechanisms, or comparisons of dropout and batch normalization."
+      ],
+      "citation_expectation": {
+        "source_support_required": false,
+        "citation_required_for_factual_claims": false
+      },
+      "review_notes": "Generic regularization, feature scaling, and database normalization do not support the comparison."
+    },
+    {
+      "question_id": "retrieval_006",
+      "reference_answer": "Precision measures the proportion of predicted positive instances that are actually positive.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "population",
+          "text": "Identify predicted positives as the population.",
+          "evidence_group_ids": [
+            "precision"
+          ]
+        },
+        {
+          "point_id": "actual_positive",
+          "text": "Identify actually positive instances within predicted positives.",
+          "evidence_group_ids": [
+            "precision"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "An added mathematical formula absent from the notes."
+      ],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Accept how many predicted positives are actually positive. Reversing the population confuses precision with recall."
+    },
+    {
+      "question_id": "retrieval_007",
+      "reference_answer": "This illustrates transitive dependency: department_office depends on department_name rather than student_id. The table is reorganized through decomposition into smaller relations while preserving the meaning of the data.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "dependency",
+          "text": "Identify the specific department dependency as transitive.",
+          "evidence_group_ids": [
+            "department_dependency"
+          ]
+        },
+        {
+          "point_id": "decomposition",
+          "text": "Describe decomposition into smaller relations.",
+          "evidence_group_ids": [
+            "department_dependency"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "Claiming the notes specify exact replacement tables, columns, primary keys, or foreign keys."
+      ],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "The corpus supports general decomposition, not a concrete redesigned schema."
+    },
+    {
+      "question_id": "retrieval_008",
+      "reference_answer": "Partial dependency means a non-key attribute depends on only part of a composite key; second normal form removes it. Transitive dependency means a non-key attribute depends on another non-key attribute; third normal form removes it.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "partial_definition",
+          "text": "Partial dependency: a non-key attribute depends on only part of a composite key.",
+          "evidence_group_ids": [
+            "normal_forms"
+          ]
+        },
+        {
+          "point_id": "second_normal_form",
+          "text": "Second normal form removes partial dependency.",
+          "evidence_group_ids": [
+            "normal_forms"
+          ]
+        },
+        {
+          "point_id": "transitive_definition",
+          "text": "Transitive dependency: a non-key attribute depends on another non-key attribute.",
+          "evidence_group_ids": [
+            "normal_forms"
+          ]
+        },
+        {
+          "point_id": "third_normal_form",
+          "text": "Third normal form removes transitive dependency.",
+          "evidence_group_ids": [
+            "normal_forms"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Score the four points separately. Correct normal-form names alone are incomplete."
+    },
+    {
+      "question_id": "retrieval_009",
+      "reference_answer": "Durability means that a committed transaction's effects persist even after a crash.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "name",
+          "text": "Name durability.",
+          "evidence_group_ids": [
+            "durability"
+          ]
+        },
+        {
+          "point_id": "persistence",
+          "text": "Committed effects persist after a crash.",
+          "evidence_group_ids": [
+            "durability"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "Claims that uncommitted changes necessarily survive a crash."
+      ],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Interpret accepted change as committed, not merely submitted."
+    },
+    {
+      "question_id": "retrieval_010",
+      "reference_answer": "This is a non-repeatable read: the same query returns different results within one transaction because another transaction changed the data.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "name",
+          "text": "Name non-repeatable read.",
+          "evidence_group_ids": [
+            "non_repeatable_read"
+          ]
+        },
+        {
+          "point_id": "mechanism",
+          "text": "Repeated reads differ within a transaction because another transaction modified the data.",
+          "evidence_group_ids": [
+            "non_repeatable_read"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Treat one database operation as the transaction described by the benchmark. Naming a dirty read or lost update is incorrect."
+    },
+    {
+      "question_id": "retrieval_011",
+      "reference_answer": "They use different supervised-learning tasks. Predicting whether a message is junk is classification, which predicts discrete categories. Predicting a property's sale price is regression, which predicts continuous numerical values.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "classification",
+          "text": "Map junk-message prediction to classification and discrete categories.",
+          "evidence_group_ids": [
+            "classification"
+          ]
+        },
+        {
+          "point_id": "regression",
+          "text": "Map sale-price prediction to regression and continuous values.",
+          "evidence_group_ids": [
+            "regression"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Both parts require support; their shared supervised-learning category does not make them the same task."
+    },
+    {
+      "question_id": "retrieval_012",
+      "reference_answer": "This suggests overfitting: the model performs well on training examples but poorly on unseen examples.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "name",
+          "text": "Name overfitting.",
+          "evidence_group_ids": [
+            "overfitting"
+          ]
+        },
+        {
+          "point_id": "pattern",
+          "text": "Connect overfitting to strong training performance and poor unseen-data performance.",
+          "evidence_group_ids": [
+            "overfitting"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Accept suggests or indicates. Remedies and further causal explanations are optional only when supported."
+    },
+    {
+      "question_id": "retrieval_013",
+      "reference_answer": "K-fold cross-validation divides the data into k subsets, with each subset serving as the validation set once across repeated training runs. This reduces the risk of relying on a single train-test split.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "subsets",
+          "text": "Divide data into k subsets.",
+          "evidence_group_ids": [
+            "fold_rotation"
+          ]
+        },
+        {
+          "point_id": "rotation",
+          "text": "Rotate validation so each subset is held out once.",
+          "evidence_group_ids": [
+            "fold_rotation"
+          ]
+        },
+        {
+          "point_id": "single_split",
+          "text": "Reduce reliance on one train-test split.",
+          "evidence_group_ids": [
+            "single_split_risk"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "Guarantees of unbiased estimates or eliminating overfitting."
+      ],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Rotation-only evidence does not support the single-split rationale."
+    },
+    {
+      "question_id": "retrieval_014",
+      "reference_answer": "An update anomaly occurs when a repeated fact is changed in some places but other copies are missed. The department example illustrates transitive dependency because department_office depends on department_name rather than student_id.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "update",
+          "text": "Explain inconsistent updating of repeated facts.",
+          "evidence_group_ids": [
+            "update_anomaly"
+          ]
+        },
+        {
+          "point_id": "dependency",
+          "text": "Identify and explain the department example as transitive dependency.",
+          "evidence_group_ids": [
+            "department_dependency"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "Claiming update anomalies and transitive dependencies are mutually exclusive."
+      ],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Distinguish an inconsistent-update problem from a dependency structure; both can relate to the same table."
+    },
+    {
+      "question_id": "retrieval_015",
+      "reference_answer": "Atomicity guarantees that all operations in a transaction happen or none happen. Precision measures the proportion of predicted positive instances that are actually positive.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "atomicity",
+          "text": "Transaction operations are all-or-none.",
+          "evidence_group_ids": [
+            "atomicity"
+          ]
+        },
+        {
+          "point_id": "precision",
+          "text": "Precision concerns actually positive instances among predicted positives.",
+          "evidence_group_ids": [
+            "precision"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Require support for both topics. One source covering one topic cannot support the whole answer."
+    },
+    {
+      "question_id": "retrieval_016",
+      "reference_answer": "Each thread has its own stack and program counter, even though threads within the process share memory and resources.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "stack",
+          "text": "Each thread has its own stack.",
+          "evidence_group_ids": [
+            "private_thread_state"
+          ]
+        },
+        {
+          "point_id": "program_counter",
+          "text": "Each thread has its own program counter.",
+          "evidence_group_ids": [
+            "private_thread_state"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "Additional private execution-state items not named in the supplied notes."
+      ],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "A bare list of both items is complete; the shared-memory qualification is optional."
+    },
+    {
+      "question_id": "retrieval_017",
+      "reference_answer": "First-come first-served is simple but can produce poor average waiting time. Round robin assigns a fixed time quantum and cycles through ready tasks, improving responsiveness.",
+      "expected_behavior": "answer",
+      "required_points": [
+        {
+          "point_id": "fcfs",
+          "text": "FCFS can produce poor average waiting time.",
+          "evidence_group_ids": [
+            "scheduling_comparison"
+          ]
+        },
+        {
+          "point_id": "quantum",
+          "text": "Round robin uses a fixed time quantum and cycles through ready tasks.",
+          "evidence_group_ids": [
+            "scheduling_comparison"
+          ]
+        },
+        {
+          "point_id": "responsiveness",
+          "text": "Round robin improves responsiveness.",
+          "evidence_group_ids": [
+            "scheduling_comparison"
+          ]
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "Claims that round robin always minimizes waiting time or guarantees an optimal quantum."
+      ],
+      "citation_expectation": {
+        "source_support_required": true,
+        "citation_required_for_factual_claims": true
+      },
+      "review_notes": "Prefer poor average waiting time; accept long waiting times."
+    },
+    {
+      "question_id": "retrieval_019",
+      "reference_answer": "I don't know.",
+      "expected_behavior": "refuse",
+      "required_points": [
+        {
+          "point_id": "abstain",
+          "text": "Abstain from giving the requested exact formula.",
+          "evidence_group_ids": []
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "The F1 formula in symbolic, verbal, equivalent, or derived form."
+      ],
+      "citation_expectation": {
+        "source_support_required": false,
+        "citation_required_for_factual_claims": false
+      },
+      "review_notes": "The corpus says F1 combines precision and recall but supplies no formula. Any optional description must be cited and retain the refusal."
+    },
+    {
+      "question_id": "retrieval_020",
+      "reference_answer": "I don't know.",
+      "expected_behavior": "refuse",
+      "required_points": [
+        {
+          "point_id": "abstain",
+          "text": "Abstain from explaining Banker's algorithm or its deadlock handling.",
+          "evidence_group_ids": []
+        }
+      ],
+      "forbidden_or_unsupported_points": [
+        "Algorithm steps, safety tests, allocation procedures, or deadlock explanations supplied from model memory."
+      ],
+      "citation_expectation": {
+        "source_support_required": false,
+        "citation_required_for_factual_claims": false
+      },
+      "review_notes": "General process, scheduling, and starvation notes do not support this request."
+    }
+  ]
+}
