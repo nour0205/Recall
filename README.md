@@ -13,7 +13,7 @@ Recall is an AI study assistant grounded in personal course material. It ingests
 - **Provide a React interface:** add notes, ask questions, inspect source references, and browse/search document previews.
 - **Measure retrieval quality:** versioned benchmarks, deterministic metrics, shared-pool reranker ablations, and saved experiment reports.
 
-Prompts request grounded answers and ?I don't know? when evidence is insufficient; generation and refusal quality remain untested.
+Prompts request grounded answers and “I don't know.” when evidence is insufficient. Milestone 2 evaluates generation and refusal quality in a controlled benchmark; prompt variants remain evaluation-only.
 
 ## Architecture
 
@@ -62,6 +62,46 @@ Among the evaluated hybrid orderings, plain Vector + BM25 + RRF remains the pref
 - **Heuristic reranking degraded ranking quality:** canonical-rank ablation found 0 improved, 10 unchanged, and 6 worsened answerable cases.
 - **MiniLM performed better than the heuristic**, but did not clearly outperform plain RRF and added about **0.65 s CPU reranking latency** per query in the experiment. It remains evaluation-only.
 - **Evidence groups corrected exact-UUID scoring artifacts:** overlapping chunks can contain equivalent evidence, so requiring one arbitrary UUID can misrepresent retrieval quality.
+
+## Milestone 2 — Generation Quality & Groundedness
+
+**19 frozen questions: 16 answerable and 3 deliberate refusal cases.** Four prompt variants used the same retrieved contexts, source mappings, GPT-4o-mini, temperature 0, and generation settings. Human reviewers used a fixed rubric for correctness, groundedness, completeness, refusal correctness, and citation correctness. No LLM judge or RAGAS was used for the final labels.
+
+### Prompt comparison
+
+| Prompt | Groundedness | Mean completeness | Citation correctness | Unsupported elaboration |
+| --- | ---: | ---: | ---: | ---: |
+| Baseline | 5/19 · 26.32% | 16/16 · 100% | 3/17 · 17.65% | 14/19 |
+| Strict v1 | 19/19 · 100% | 13.5/16 · 84.375% | 15/15 · 100% | 0/19 |
+| Balanced v2 | 15/19 · 78.95% | 15.5/16 · 96.875% | 12/16 · 75% | 4/19 |
+| Strict v2 | 18/19 · 94.74% | 14.5/16 · 90.625% | 15/16 · 93.75% | 1/19 |
+
+Mean completeness averages required-point coverage over the 16 answerable cases. Citation correctness excludes each prompt's human-labeled N/A cases; full denominators and failures are in the report.
+
+The baseline covered every required point but frequently continued beyond the supplied evidence. Strict v1 eliminated unsupported elaboration and raised groundedness from 26.3% to 100%, while reducing completeness. Later controlled ablations exposed a measurable grounding–completeness trade-off: Strict v2 fixed the false refusal and improved completeness, but retained one unsupported-elaboration case and three incomplete answers. These findings apply to this 19-case evaluation set; no statistical significance or universally best prompt is claimed.
+
+### Before / after: grounded generation
+
+**Question:** What happens if the learning rate is too large during gradient descent?
+
+**Baseline excerpt:**
+> A **learning rate** that is too large results in overshooting the optimal parameter values, leading to instability in the training process [S1].
+
+**Strict v1 answer:**
+> A learning rate that is too large may cause divergence [S1].
+
+**Why the baseline failed:** The supplied notes support possible divergence, but not the added overshooting, erratic-update, or tuning claims. A citation alone does not establish source support.
+
+### Evaluation methodology
+
+```text
+Frozen question → Frozen top-5 retrieved chunks → Prompt variant
+              → GPT-4o-mini → Human review against fixed rubric
+```
+
+**Only the prompt changed between ablations.** Hybrid Vector + BM25 + RRF contexts were frozen from the baseline; retrieval was not rerun. References and required-point metadata never entered the generation prompt. Production prompts remain unchanged.
+
+[Milestone 2 report](evaluation/MILESTONE_2_GENERATION_EVALUATION.md) · [Final four-way comparison](evaluation/results/generation_prompt_ablation_comparison_final.md) · [Frozen benchmark and references](evaluation/benchmarks/generation_reference_v1.json) · [Human-review artifacts](evaluation/MILESTONE_2_GENERATION_EVALUATION.md#finalized-human-reviews)
 
 ## Screenshots / demo
 
@@ -138,4 +178,4 @@ Saved scores reproduce offline; identical live reruns require historical local i
 ## Roadmap
 
 - **Milestone 1 ? Retrieval evaluation:** complete.
-- **Milestone 2 ? Generation quality, groundedness, hallucination, and refusal evaluation:** planned.
+- **Milestone 2 — Generation quality & groundedness evaluation:** complete; four controlled prompt experiments with finalized human review. Production prompt adoption remains separate.

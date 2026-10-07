@@ -1,0 +1,480 @@
+{
+  "summary_schema_version": 1,
+  "human_review_status": "finalized",
+  "finalized_validation": "passed",
+  "scoring_source": "Supplied human-review labels only; no automated answer judging or inferred labels.",
+  "human_review_artifact": {
+    "path": "evaluation/results/generation_baseline_v1_human_review.json",
+    "sha256": "2cc6cfb192b1ae8dd05e2288c1c466a5a4adbe7d6de593c695d6c8b82a0adc81",
+    "canonical_content_sha256": "96f9e7ecb54f0e7a80eb27e8c98c3b2424d91cb692a16f7f2667e110fd36b125"
+  },
+  "frozen_source_artifacts": {
+    "baseline": {
+      "path": "evaluation/results/generation_baseline_v1.json",
+      "sha256": "50744ab86282e4873157b98e15300f1899dad047890ee2b474c823b88edce789"
+    },
+    "references": {
+      "path": "evaluation/benchmarks/generation_reference_v1.json",
+      "sha256": "3be89849b9cdcbe80137249194657bb330b8d4405afa86cd45c2ded05701ee76"
+    },
+    "retrieval": {
+      "path": "evaluation/benchmarks/retrieval_v2.json",
+      "sha256": "ebd93035b4738adff5f86885d569da67c6c5334a240eb86a734a399f77d32dc6"
+    }
+  },
+  "aggregation_policy": {
+    "binary_dimensions": "Pass count / eligible count, excluding N/A separately for each dimension.",
+    "mean_completeness": "Unweighted mean of human completeness_score across answerable cases only.",
+    "full_completeness_rate": "Answerable cases with completeness_score=1 / all answerable cases.",
+    "zero_eligible_cases": "Metric value is null; denominator and counts remain zero.",
+    "overall_score": "Not computed; dimensions remain separate."
+  },
+  "case_counts": {
+    "total": 19,
+    "answerable": 16,
+    "refusal": 3,
+    "answerable_with_sufficient_context": 16,
+    "completed_generations": 19
+  },
+  "metrics": {
+    "correctness": {
+      "value": 0.17647058823529413,
+      "passed_count": 3,
+      "failed_count": 14,
+      "eligible_count": 17,
+      "excluded_na_count": 2,
+      "eligible_question_ids": [
+        "retrieval_001",
+        "retrieval_002",
+        "retrieval_003",
+        "retrieval_004",
+        "retrieval_006",
+        "retrieval_007",
+        "retrieval_008",
+        "retrieval_009",
+        "retrieval_010",
+        "retrieval_011",
+        "retrieval_012",
+        "retrieval_013",
+        "retrieval_014",
+        "retrieval_015",
+        "retrieval_016",
+        "retrieval_017",
+        "retrieval_019"
+      ],
+      "failed_question_ids": [
+        "retrieval_001",
+        "retrieval_002",
+        "retrieval_004",
+        "retrieval_006",
+        "retrieval_007",
+        "retrieval_008",
+        "retrieval_009",
+        "retrieval_010",
+        "retrieval_012",
+        "retrieval_013",
+        "retrieval_014",
+        "retrieval_015",
+        "retrieval_016",
+        "retrieval_017"
+      ]
+    },
+    "groundedness": {
+      "value": 0.2631578947368421,
+      "passed_count": 5,
+      "failed_count": 14,
+      "eligible_count": 19,
+      "excluded_na_count": 0,
+      "eligible_question_ids": [
+        "retrieval_001",
+        "retrieval_002",
+        "retrieval_003",
+        "retrieval_004",
+        "retrieval_005",
+        "retrieval_006",
+        "retrieval_007",
+        "retrieval_008",
+        "retrieval_009",
+        "retrieval_010",
+        "retrieval_011",
+        "retrieval_012",
+        "retrieval_013",
+        "retrieval_014",
+        "retrieval_015",
+        "retrieval_016",
+        "retrieval_017",
+        "retrieval_019",
+        "retrieval_020"
+      ],
+      "failed_question_ids": [
+        "retrieval_001",
+        "retrieval_002",
+        "retrieval_004",
+        "retrieval_006",
+        "retrieval_007",
+        "retrieval_008",
+        "retrieval_009",
+        "retrieval_010",
+        "retrieval_012",
+        "retrieval_013",
+        "retrieval_014",
+        "retrieval_015",
+        "retrieval_016",
+        "retrieval_017"
+      ]
+    },
+    "refusal_correctness": {
+      "value": 1.0,
+      "passed_count": 3,
+      "failed_count": 0,
+      "eligible_count": 3,
+      "excluded_na_count": 16,
+      "eligible_question_ids": [
+        "retrieval_005",
+        "retrieval_019",
+        "retrieval_020"
+      ],
+      "failed_question_ids": []
+    },
+    "citation_correctness": {
+      "value": 0.17647058823529413,
+      "passed_count": 3,
+      "failed_count": 14,
+      "eligible_count": 17,
+      "excluded_na_count": 2,
+      "eligible_question_ids": [
+        "retrieval_001",
+        "retrieval_002",
+        "retrieval_003",
+        "retrieval_004",
+        "retrieval_006",
+        "retrieval_007",
+        "retrieval_008",
+        "retrieval_009",
+        "retrieval_010",
+        "retrieval_011",
+        "retrieval_012",
+        "retrieval_013",
+        "retrieval_014",
+        "retrieval_015",
+        "retrieval_016",
+        "retrieval_017",
+        "retrieval_019"
+      ],
+      "failed_question_ids": [
+        "retrieval_001",
+        "retrieval_002",
+        "retrieval_004",
+        "retrieval_006",
+        "retrieval_007",
+        "retrieval_008",
+        "retrieval_009",
+        "retrieval_010",
+        "retrieval_012",
+        "retrieval_013",
+        "retrieval_014",
+        "retrieval_015",
+        "retrieval_016",
+        "retrieval_017"
+      ]
+    },
+    "prompt_compliance": {
+      "value": 0.6666666666666666,
+      "passed_count": 2,
+      "failed_count": 1,
+      "eligible_count": 3,
+      "excluded_na_count": 16,
+      "eligible_question_ids": [
+        "retrieval_005",
+        "retrieval_019",
+        "retrieval_020"
+      ],
+      "failed_question_ids": [
+        "retrieval_019"
+      ]
+    },
+    "mean_completeness": {
+      "value": 1.0,
+      "score_sum": 16.0,
+      "eligible_count": 16,
+      "excluded_na_count": 3,
+      "eligible_question_ids": [
+        "retrieval_001",
+        "retrieval_002",
+        "retrieval_003",
+        "retrieval_004",
+        "retrieval_006",
+        "retrieval_007",
+        "retrieval_008",
+        "retrieval_009",
+        "retrieval_010",
+        "retrieval_011",
+        "retrieval_012",
+        "retrieval_013",
+        "retrieval_014",
+        "retrieval_015",
+        "retrieval_016",
+        "retrieval_017"
+      ]
+    },
+    "full_completeness_rate": {
+      "value": 1.0,
+      "passed_count": 16,
+      "failed_count": 0,
+      "eligible_count": 16,
+      "excluded_na_count": 3,
+      "eligible_question_ids": [
+        "retrieval_001",
+        "retrieval_002",
+        "retrieval_003",
+        "retrieval_004",
+        "retrieval_006",
+        "retrieval_007",
+        "retrieval_008",
+        "retrieval_009",
+        "retrieval_010",
+        "retrieval_011",
+        "retrieval_012",
+        "retrieval_013",
+        "retrieval_014",
+        "retrieval_015",
+        "retrieval_016",
+        "retrieval_017"
+      ],
+      "failed_question_ids": []
+    }
+  },
+  "failures": {
+    "dimension_failed_counts": {
+      "correctness": 14,
+      "groundedness": 14,
+      "refusal_correctness": 0,
+      "citation_correctness": 14,
+      "prompt_compliance": 1,
+      "incomplete_answers": 0
+    },
+    "unique_failed_case_count": 15,
+    "failed_question_ids": [
+      "retrieval_001",
+      "retrieval_002",
+      "retrieval_004",
+      "retrieval_006",
+      "retrieval_007",
+      "retrieval_008",
+      "retrieval_009",
+      "retrieval_010",
+      "retrieval_012",
+      "retrieval_013",
+      "retrieval_014",
+      "retrieval_015",
+      "retrieval_016",
+      "retrieval_017",
+      "retrieval_019"
+    ],
+    "categories": [
+      {
+        "category": "unsupported elaboration / over-generation",
+        "case_count": 14,
+        "question_ids": [
+          "retrieval_001",
+          "retrieval_002",
+          "retrieval_004",
+          "retrieval_006",
+          "retrieval_007",
+          "retrieval_008",
+          "retrieval_009",
+          "retrieval_010",
+          "retrieval_012",
+          "retrieval_013",
+          "retrieval_014",
+          "retrieval_015",
+          "retrieval_016",
+          "retrieval_017"
+        ],
+        "source": "Human-entered unsupported_claims; no automatic claim inspection."
+      },
+      {
+        "category": "refusal output-format noncompliance",
+        "case_count": 1,
+        "question_ids": [
+          "retrieval_019"
+        ],
+        "source": "Human prompt_compliance=0 on a refusal case; see reviewer_notes for the stated reason."
+      }
+    ],
+    "category_count_policy": "Case counts within each category; categories can overlap and are not summed into a quality score.",
+    "reviewer_issue_details": [
+      {
+        "question_id": "retrieval_001",
+        "unsupported_claims": [
+          "adds overshooting, erratic updates and tuning claims not supported by supplied context"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_002",
+        "unsupported_claims": [
+          "adds majority/minority-class explanation and additional metric claims beyond supplied evidence"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_004",
+        "unsupported_claims": [
+          "strengthens \"reduce starvation\" into eventual-execution/fairness guarantees not supplied by context"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_006",
+        "unsupported_claims": [
+          "supplies precision formula and other claims not present in supplied notes"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_007",
+        "unsupported_claims": [
+          "adds decomposition/data-integrity wording beyond supplied evidence"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_008",
+        "unsupported_claims": [
+          "adds unsupported anomaly relationship"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_009",
+        "unsupported_claims": [
+          "claims concurrency control is essential to maintain durability"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_010",
+        "unsupported_claims": [
+          "overstates prevention/concurrency-control claims"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_012",
+        "unsupported_claims": [
+          "adds outliers and unsupported explanatory/remedy claims"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_013",
+        "unsupported_claims": [
+          "adds bias/robustness/overfitting claims beyond supplied context"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_014",
+        "unsupported_claims": [
+          "adds unsupported claim relating 1NF to preventing anomalies"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_015",
+        "unsupported_claims": [
+          "adds unsupported inconsistency and false-positive significance claims"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_016",
+        "unsupported_claims": [
+          "adds function-call, local-variable and execution-flow explanations absent from notes"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_017",
+        "unsupported_claims": [
+          "adds convoy effect, starvation mitigation and general performance claims absent from supplied context"
+        ],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": ""
+      },
+      {
+        "question_id": "retrieval_019",
+        "unsupported_claims": [],
+        "missing_required_points": [],
+        "citation_issues": [],
+        "reviewer_notes": "correctly refuses the unsupported F1 formula, but continues after \"I don't know.\", violating exact refusal-output behavior"
+      }
+    ]
+  },
+  "generation_configuration": {
+    "model": "gpt-4o-mini",
+    "temperature": 0.0,
+    "max_tokens": 800,
+    "retrieval_mode": "hybrid",
+    "retrieval_algorithm": "Vector + BM25 + RRF",
+    "top_k": 5,
+    "candidate_k": 10,
+    "rrf_k": 60,
+    "fixed_route": "unknown",
+    "prompt_version": "build_answer_prompt:generic:sha256:c4672467ea6b18f33f80e8c69eeacab1477553d2c91bd54551fd3c79f3cd9e8c",
+    "automatic_retries": 0,
+    "timeout_seconds": 60,
+    "embedding_model": "text-embedding-3-small",
+    "document_deduplication": false,
+    "planner": false,
+    "reranker": null,
+    "application_fallbacks": false
+  },
+  "generation_latency_seconds": {
+    "count": 19,
+    "total": 45.5167765005026,
+    "mean": 2.3956198158159263,
+    "median": 2.3621822998393327,
+    "min": 0.6013311001006514,
+    "max": 3.9163168999366462
+  },
+  "token_usage": {
+    "available_case_count": 19,
+    "prompt_tokens": 22393,
+    "completion_tokens": 3354,
+    "total_tokens": 25747
+  },
+  "api_runtime_failures": [],
+  "corpus_validation_issues": [
+    "Corpus mismatch: chunk e3380555-fb30-454c-9a43-f8e3d66c05b9 present in whoosh, missing from chroma"
+  ],
+  "measurement_policy": "Generation latency and token usage copied from the frozen baseline; no generation rerun. Token usage covers generation, not embedding calls."
+}
