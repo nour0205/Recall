@@ -137,10 +137,7 @@ def retrieve_bm25_candidates(
         for item in bm25_results:
             meta = item.get("metadata", {}) or {}
             ok = True
-            for key, value in where.items():
-                if meta.get(key) != value:
-                    ok = False
-                    break
+            ok = matches_scope(meta, where)
             if ok:
                 filtered_bm25.append(item)
         bm25_results = filtered_bm25
@@ -148,14 +145,30 @@ def retrieve_bm25_candidates(
     return bm25_results
 
 
+def matches_scope(metadata: dict, where: dict) -> bool:
+    """Match the equality/AND/IN scope also passed to Chroma; fail closed."""
+    for key, value in where.items():
+        if key == "$and":
+            if not all(matches_scope(metadata, clause) for clause in value):
+                return False
+        elif isinstance(value, dict):
+            if set(value) != {"$in"} or metadata.get(key) not in value["$in"]:
+                return False
+        elif metadata.get(key) != value:
+            return False
+    return True
+
+
 def hybrid_retrieve(
     store,
     question: str,
     k: int = 5,
-    where: dict | None = None
+    where: dict | None = None,
+    candidate_k: int | None = None,
 ) -> list[RetrievedChunk]:
-    vector_results = retrieve_vector_candidates(store, question, k=k, where=where)
-    bm25_results = retrieve_bm25_candidates(question, k=k, where=where)
+    depth = k if candidate_k is None else candidate_k
+    vector_results = retrieve_vector_candidates(store, question, k=depth, where=where)
+    bm25_results = retrieve_bm25_candidates(question, k=depth, where=where)
     fused = reciprocal_rank_fusion(vector_results, bm25_results)
 
     return fused[:k]
