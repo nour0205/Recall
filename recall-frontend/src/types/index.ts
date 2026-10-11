@@ -1,43 +1,43 @@
+// Mirrors app/schemas/api.py.
 export type Source = {
-  document_id?: string;
-  chunk_index?: number | string;
-  retrieval_type?: string;
-  hybrid_score?: number | string | null;
-  text?: string;
+  document_id: string;
+  chunk_index?: number | null;
+  text: string;
+  retrieval_type?: string | null;
+  hybrid_score?: number | null;
+  rerank_score?: number | null;
 };
 
-export type StudyPathItem = {
-  topic?: string;
-  title?: string;
-  priority?: string;
-  detail?: string;
+export type AskRequest = {
+  question: string;
+  document_ids?: string[];
 };
 
 export type AskResponse = {
-  answer?: string;
-  route?: string;
-  sources?: Source[];
-  study_hint?: string;
-  concepts?: string[];
-  key_concepts?: string[];
-  study_path?: StudyPathItem[];
+  answer: string;
+  sources: Source[];
+  route?: string | null;
+  study_hint?: string | null;
+};
+
+export type IngestRequest = {
+  document_id: string;
+  text: string;
+  document_type: 'lecture_note';
+  source?: string;
+  course?: string;
+  topic_tags?: string[];
 };
 
 export type IngestResponse = {
-  status?: string;
+  status: 'ingested' | 'duplicate' | 'conflict' | 'no content' | string;
   chunks_added?: number;
-  [key: string]: unknown;
 };
 
-export type KnowledgeDoc = {
-  document_id?: string;
-  chunks?: number;
-  preview?: string;
+export type LibraryDocument = {
+  document_id: string;
+  chunks: number;
+  preview: string | null;
 };
 
-export type DocumentsResponse = {
-  documents?: KnowledgeDoc[];
-};
-
-export type StatusTone = 'success' | 'warning' | 'info';
-export type Page = 'home' | 'ask' | 'ingest' | 'knowledge';
+export type View = 'ask' | 'library';

@@ -1,410 +1,364 @@
-import { useState, type ReactNode } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Quote, Sparkles } from 'lucide-react';
-import type { AskResponse, Source } from '../types';
-import { motionProps } from '../lib/constants';
-import { postJson } from '../lib/api';
-import { sourceReason, sourceTitle } from '../lib/studyInsights';
-import GlassCard from '../components/ui/GlassCard';
-import GradientButton from '../components/ui/GradientButton';
-import StatusBanner from '../components/ui/StatusBanner';
-import { Field, PremiumInput, PremiumTextarea } from '../components/ui/FormControls';
+import { useMemo, useState, type FormEvent } from 'react';
+import { ArrowUp, CircleHelp, Lightbulb, Loader2, Plus, SlidersHorizontal, TriangleAlert, X } from 'lucide-react';
+import type { AskResponse, LibraryDocument } from '@/types';
+import { ask } from '@/lib/api';
+import { citedSourceIndexes } from '@/lib/citations';
+import { cn, documentTitle, routeLabel } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import GroundedAnswer from '@/components/GroundedAnswer';
+import SourcePanel from '@/components/SourcePanel';
 
-export default function AskPage({ backendUrl }: { backendUrl: string }) {
+const REFUSAL = "I don't know.";
+
+// Questions from the evaluation benchmark, answerable from the demo notes.
+const EXAMPLE_QUESTIONS = [
+  'What happens if the learning rate is too large during gradient descent?',
+  'How do processes and threads differ in memory sharing and communication?',
+  'How does partial dependency differ from transitive dependency, and which normal form removes each?',
+];
+
+type Answered = {
+  question: string;
+  scope: string[];
+  response: AskResponse;
+  elapsedMs: number;
+};
+
+export default function AskPage({
+  documents,
+  libraryLoaded,
+  scope,
+  onScopeChange,
+  onAddNotes,
+}: {
+  documents: LibraryDocument[];
+  // True once /documents has loaded, so an empty list really means an empty library.
+  libraryLoaded: boolean;
+  scope: string[];
+  onScopeChange: (scope: string[]) => void;
+  onAddNotes: () => void;
+}) {
   const [question, setQuestion] = useState('');
-  const [owner, setOwner] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<AskResponse | null>(null);
-  const [activeSourceIndex, setActiveSourceIndex] = useState<number | null>(null);
-  const [generatedMs, setGeneratedMs] = useState<number | null>(null);
+  const [answered, setAnswered] = useState<Answered | null>(null);
+  const [activeSource, setActiveSource] = useState<number | null>(null);
+  const [flashKey, setFlashKey] = useState(0);
 
-  async function handleAsk() {
-    if (!question.trim()) {
-      setError('Please enter a question.');
-      return;
-    }
+  async function submit(text = question) {
+    const trimmed = text.trim();
+    if (!trimmed || loading) return;
 
+    setQuestion(trimmed);
     setLoading(true);
     setError(null);
-    setGeneratedMs(null);
-
     try {
       const startedAt = performance.now();
-      const payload: Record<string, unknown> = { question: question.trim() };
-      if (owner.trim()) payload.owner = owner.trim();
-
-      const data = await postJson<AskResponse>(`${backendUrl}/ask`, payload);
-      setGeneratedMs(Math.round(performance.now() - startedAt));
-      setResult(data);
-    } catch (err: any) {
-      setError(err?.message || 'Request failed.');
+      const response = await ask({ question: trimmed, ...(scope.length && { document_ids: scope }) });
+      setAnswered({ question: trimmed, scope, response, elapsedMs: performance.now() - startedAt });
+      setActiveSource(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Request failed.');
     } finally {
       setLoading(false);
     }
   }
 
-  const sourceCount = result?.sources?.length || 0;
-  const documentCount = new Set((result?.sources || []).map((source) => source.document_id).filter(Boolean)).size;
+  function showSource(index: number) {
+    setActiveSource(index);
+    setFlashKey((key) => key + 1);
+  }
 
   return (
-    <motion.div {...motionProps} className="px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1080px] space-y-6">
-        {!result ? (
-          <GlassCard className="overflow-hidden px-6 py-8 sm:px-8 lg:px-10">
-            <div className="grid gap-8 lg:grid-cols-[0.8fr_1fr] lg:items-center">
-              <div>
-                <p className="section-kicker">Study brief</p>
-                <h1 className="mt-4 max-w-xl text-4xl font-semibold tracking-[-0.055em] text-[#0b0a12] sm:text-5xl">
-                  Ask your notes. Get a grounded answer.
-                </h1>
-                <p className="mt-5 max-w-lg text-base leading-8 text-[#6f6878]">
-                  Recall turns your study material into a clear answer with clickable evidence.
-                </p>
-              </div>
+    <div className="container max-w-6xl space-y-6 py-6 sm:py-8">
+      {!answered && !loading ? (
+        <div className="mx-auto max-w-2xl pt-6 text-center sm:pt-12">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Ask your notes.</h1>
+          <p className="mt-3 text-muted-foreground">
+            Every answer comes from your own notes and cites them, or Recall says it doesn't know.
+          </p>
+        </div>
+      ) : null}
 
-              <QuestionForm
-                question={question}
-                owner={owner}
-                loading={loading}
-                error={error}
-                setQuestion={setQuestion}
-                setOwner={setOwner}
-                handleAsk={handleAsk}
-              />
-            </div>
-          </GlassCard>
-        ) : (
-          <GlassCard className="p-5 sm:p-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex items-start gap-4">
-                <div className="mt-1 rounded-2xl bg-[#fbf3f7] p-2 text-[#b85f8b]">
-                  <Quote className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-[#8a8090]">Question</p>
-                  <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#0b0a12]">
-                    {question}
-                  </h1>
-                </div>
-              </div>
+      <Composer
+        question={question}
+        onQuestionChange={setQuestion}
+        onSubmit={() => void submit()}
+        loading={loading}
+        documents={documents}
+        scope={scope}
+        onScopeChange={onScopeChange}
+        compact={Boolean(answered) || loading}
+      />
 
+      {error ? (
+        <p className="mx-auto flex max-w-3xl items-start gap-2 rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+          {error}
+        </p>
+      ) : null}
+
+      {loading ? <LoadingState /> : null}
+
+      {/* The examples target the demo notes, so they only make sense when searching everything. */}
+      {!answered && !loading && documents.length > 0 && !scope.length ? (
+        <div className="mx-auto max-w-3xl">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Try asking</p>
+          <div className="grid gap-2">
+            {EXAMPLE_QUESTIONS.map((example) => (
               <button
-                onClick={() => setResult(null)}
-                className="w-fit rounded-full border border-[#eee7ef] bg-white px-4 py-2 text-sm font-medium text-[#514858] transition hover:bg-[#fbf7fb]"
+                key={example}
+                type="button"
+                onClick={() => void submit(example)}
+                className="rounded-lg border bg-card px-4 py-3 text-left text-sm transition-colors hover:bg-accent"
               >
-                Ask another
+                {example}
               </button>
-            </div>
-          </GlassCard>
-        )}
+            ))}
+          </div>
+        </div>
+      ) : null}
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={result ? 'result' : 'empty'}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.28 }}
-          >
-            {result ? (
-              <div className="space-y-6">
-                <GlassCard className="p-5 sm:p-8">
-                  <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#fbf3f7] px-3 py-1.5 text-xs font-semibold text-[#9b4f76]">
-                        <Sparkles className="h-3.5 w-3.5" />
-                        Grounded in {sourceCount} source{sourceCount === 1 ? '' : 's'}
-                      </div>
-                      <h2 className="text-3xl font-semibold tracking-tight text-[#0b0a12]">
-                        Study Brief
-                      </h2>
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-xs text-[#7b7280]">
-                      <span className="rounded-full border border-[#eee7ef] bg-white px-3 py-1.5">
-                        {documentCount || sourceCount} note{(documentCount || sourceCount) === 1 ? '' : 's'} used
-                      </span>
-                      <span className="rounded-full border border-[#eee7ef] bg-white px-3 py-1.5">
-                        {sourceCount} chunk{sourceCount === 1 ? '' : 's'} read
-                      </span>
-                      {generatedMs ? (
-                        <span className="rounded-full border border-[#eee7ef] bg-white px-3 py-1.5">
-                          {(generatedMs / 1000).toFixed(1)}s
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
+      {!answered && !loading && libraryLoaded && !documents.length ? (
+        <Card className="mx-auto max-w-3xl">
+          <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
+            <p className="font-medium">Your library is empty.</p>
+            <p className="text-sm text-muted-foreground">Add some notes first; Recall can only answer from them.</p>
+            <Button onClick={onAddNotes}>
+              <Plus />
+              Add notes
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
 
-                  <FormattedAnswer
-                    text={result.answer || 'No answer returned.'}
-                    sources={result.sources || []}
-                    onCitationClick={setActiveSourceIndex}
-                  />
-                </GlassCard>
-
-                <GlassCard className="p-5 sm:p-7">
-                  <div className="mb-5 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                      <h2 className="text-2xl font-semibold tracking-tight text-[#0b0a12]">
-                        Sources
-                      </h2>
-                      <p className="mt-1 text-sm text-[#6f6878]">
-                        Open any source to verify the passages behind the brief.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-3 md:grid-cols-2">
-                    {result.sources?.length ? (
-                      result.sources.map((source, index) => (
-                        <SourceCard
-                          key={`${source.document_id}-${index}`}
-                          source={source}
-                          index={index}
-                          onOpen={() => setActiveSourceIndex(index)}
-                        />
-                      ))
-                    ) : (
-                      <p className="rounded-3xl border border-[#eee7ef] bg-white p-4 text-sm text-[#6f6878]">
-                        No sources returned.
-                      </p>
-                    )}
-                  </div>
-                </GlassCard>
-              </div>
-            ) : null}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {result && activeSourceIndex !== null ? (
-        <SourceModal
-          source={result.sources?.[activeSourceIndex]}
-          index={activeSourceIndex}
-          onClose={() => setActiveSourceIndex(null)}
+      {answered && !loading ? (
+        <Result
+          answered={answered}
+          activeSource={activeSource}
+          flashKey={flashKey}
+          onShowSource={showSource}
+          onSelectSource={(i) => setActiveSource((current) => (current === i ? null : i))}
+          onAddNotes={onAddNotes}
+          onClearScope={() => onScopeChange([])}
         />
       ) : null}
-    </motion.div>
-  );
-}
-
-function QuestionForm({
-  question,
-  owner,
-  loading,
-  error,
-  setQuestion,
-  setOwner,
-  handleAsk,
-}: {
-  question: string;
-  owner: string;
-  loading: boolean;
-  error: string | null;
-  setQuestion: (value: string) => void;
-  setOwner: (value: string) => void;
-  handleAsk: () => void;
-}) {
-  return (
-    <div className="rounded-[32px] border border-[#eee7ef] bg-white p-5 shadow-[0_20px_60px_rgba(55,38,62,0.045)] sm:p-6">
-      <div className="mb-5">
-        <h2 className="text-2xl font-semibold tracking-tight text-[#0b0a12]">
-          What do you want to understand?
-        </h2>
-      </div>
-
-      <div className="space-y-4">
-        <Field label="Question">
-          <PremiumTextarea
-            rows={6}
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Example: What should I revise before my machine learning exam?"
-          />
-        </Field>
-
-       
-
-        {error ? <StatusBanner tone="warning" title="Request issue" message={error} /> : null}
-
-        <div className="flex flex-wrap gap-3 pt-1">
-          <GradientButton onClick={handleAsk} disabled={loading}>
-            {loading ? 'Reading your notes...' : 'Create Study Brief'}
-            {!loading && <ArrowRight className="h-4 w-4" />}
-          </GradientButton>
-          <GradientButton
-            variant="secondary"
-            onClick={() => setQuestion('What should I revise before my machine learning exam?')}
-          >
-            Demo question
-          </GradientButton>
-        </div>
-      </div>
     </div>
   );
 }
 
-function FormattedAnswer({
-  text,
-  sources,
-  onCitationClick,
+function Composer({
+  question,
+  onQuestionChange,
+  onSubmit,
+  loading,
+  documents,
+  scope,
+  onScopeChange,
+  compact,
 }: {
-  text: string;
-  sources: Source[];
-  onCitationClick: (index: number) => void;
+  question: string;
+  onQuestionChange: (value: string) => void;
+  onSubmit: () => void;
+  loading: boolean;
+  documents: LibraryDocument[];
+  scope: string[];
+  onScopeChange: (scope: string[]) => void;
+  compact: boolean;
 }) {
-  const normalized = text.replace(/\r/g, '');
+  const [choosing, setChoosing] = useState(false);
 
-  const citationLabel = (sourceIndex: number) => {
-    const title = sourceTitle(sources[sourceIndex] || {}, sourceIndex);
-    return title.length > 24 ? `${title.slice(0, 24)}…` : title;
-  };
-
-  const renderInline = (value: string) => {
-    const parts = value.split(/(\*\*[^*]+\*\*|\[S\d+\])/g);
-
-    return parts.map((part, index) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return (
-          <strong key={index} className="font-semibold text-[#0b0a12]">
-            {part.slice(2, -2)}
-          </strong>
-        );
-      }
-
-      const citationMatch = part.match(/^\[S(\d+)\]$/);
-      if (citationMatch) {
-        const sourceIndex = Number(citationMatch[1]) - 1;
-        return (
-          <button
-            key={index}
-            type="button"
-            onClick={() => onCitationClick(sourceIndex)}
-            className="mx-1 inline-flex translate-y-[-1px] items-center rounded-full bg-[#fbf3f7] px-2.5 py-1 text-[11px] font-semibold leading-none text-[#9b4f76] ring-1 ring-[#ead6e2] transition hover:bg-[#f4e3ed] hover:text-[#7f3f61]"
-            aria-label={`Open ${citationLabel(sourceIndex)}`}
-          >
-            {citationLabel(sourceIndex)}
-          </button>
-        );
-      }
-
-      return <span key={index}>{part}</span>;
-    });
-  };
-
-  const lines = normalized.split('\n').map((line) => line.trim()).filter(Boolean);
-  const elements: ReactNode[] = [];
-  let listItems: string[] = [];
-
-  const flushList = () => {
-    if (!listItems.length) return;
-    elements.push(
-      <ul key={`list-${elements.length}`} className="my-5 space-y-3">
-        {listItems.map((item, index) => (
-          <li key={index} className="flex gap-3 text-[16px] leading-8 text-[#433a49]">
-            <span className="mt-[13px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#b85f8b]" />
-            <span>{renderInline(item)}</span>
-          </li>
-        ))}
-      </ul>,
-    );
-    listItems = [];
-  };
-
-  lines.forEach((line) => {
-    if (line.startsWith('## ')) {
-      flushList();
-      elements.push(
-        <h2 key={`h2-${elements.length}`} className="mt-8 text-2xl font-semibold tracking-tight text-[#0b0a12] first:mt-0">
-          {line.replace(/^##\s+/, '')}
-        </h2>,
-      );
-      return;
-    }
-
-    if (line.startsWith('### ')) {
-      flushList();
-      elements.push(
-        <h3 key={`h3-${elements.length}`} className="mt-6 text-lg font-semibold tracking-tight text-[#0b0a12]">
-          {line.replace(/^###\s+/, '')}
-        </h3>,
-      );
-      return;
-    }
-
-    if (/^(-|•|\d+[.)])\s+/.test(line)) {
-      listItems.push(line.replace(/^(-|•|\d+[.)])\s+/, ''));
-      return;
-    }
-
-    flushList();
-    elements.push(
-      <p key={`p-${elements.length}`} className="my-4 text-[16px] leading-8 text-[#433a49]">
-        {renderInline(line)}
-      </p>,
-    );
-  });
-
-  flushList();
+  function toggle(documentId: string) {
+    onScopeChange(scope.includes(documentId) ? scope.filter((id) => id !== documentId) : [...scope, documentId]);
+  }
 
   return (
-    <article className="rounded-[28px] border border-[#eee7ef] bg-white px-6 py-6 sm:px-8 sm:py-7">
-      <div className="max-w-none">{elements}</div>
-    </article>
-  );
-}
-
-function SourceCard({ source, index, onOpen }: { source: Source; index: number; onOpen: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="group rounded-3xl border border-[#eee7ef] bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#ead6e2] hover:shadow-[0_18px_45px_rgba(55,38,62,0.05)]"
+    <form
+      onSubmit={(event: FormEvent) => {
+        event.preventDefault();
+        onSubmit();
+      }}
+      className="mx-auto max-w-3xl rounded-xl border bg-card shadow-sm focus-within:ring-2 focus-within:ring-ring/30"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-[#0b0a12]">{sourceTitle(source, index)}</p>
-          <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#6f6878]">{sourceReason(source)}</p>
-        </div>
-        <span className="shrink-0 rounded-full bg-[#fbf3f7] px-2.5 py-1 text-xs font-semibold text-[#9b4f76]">
-          Source
-        </span>
+      <Textarea
+        value={question}
+        onChange={(e) => onQuestionChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+            e.preventDefault();
+            onSubmit();
+          }
+        }}
+        rows={compact ? 2 : 3}
+        placeholder="Ask a question about your notes..."
+        aria-label="Question"
+        className="resize-none border-0 bg-transparent px-4 pt-4 text-base shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+      />
+
+      <div className="flex flex-wrap items-center gap-2 px-3 pb-3">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setChoosing((value) => !value)}
+          aria-expanded={choosing}
+          className="text-muted-foreground"
+        >
+          <SlidersHorizontal />
+          {scope.length ? `${scope.length} note${scope.length === 1 ? '' : 's'}` : `All notes${documents.length ? ` (${documents.length})` : ''}`}
+        </Button>
+
+        {scope.map((documentId) => (
+          <Badge key={documentId} variant="secondary" className="gap-1 font-medium">
+            {documentTitle(documentId)}
+            <button type="button" onClick={() => toggle(documentId)} aria-label={`Remove ${documentId} from scope`}>
+              <X className="h-3 w-3" />
+            </button>
+          </Badge>
+        ))}
+
+        <Button type="submit" size="icon" className="ml-auto h-9 w-9 rounded-full" disabled={loading || !question.trim()} aria-label="Send question">
+          {loading ? <Loader2 className="animate-spin" /> : <ArrowUp />}
+        </Button>
       </div>
-    </button>
+
+      {choosing ? (
+        <div className="border-t px-4 py-3">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Search only the selected notes, or leave all unselected to search everything.</p>
+            {scope.length ? (
+              <Button type="button" variant="link" size="sm" className="h-auto p-0 text-xs" onClick={() => onScopeChange([])}>
+                Clear
+              </Button>
+            ) : null}
+          </div>
+          <div className="flex max-h-40 flex-wrap gap-1.5 overflow-y-auto">
+            {documents.map((doc) => {
+              const selected = scope.includes(doc.document_id);
+              return (
+                <button
+                  key={doc.document_id}
+                  type="button"
+                  onClick={() => toggle(doc.document_id)}
+                  aria-pressed={selected}
+                  className={cn(
+                    'rounded-full border px-3 py-1 text-xs transition-colors',
+                    selected ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent',
+                  )}
+                >
+                  {documentTitle(doc.document_id)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+    </form>
   );
 }
 
-function SourceModal({
-  source,
-  index,
-  onClose,
+function Result({
+  answered,
+  activeSource,
+  flashKey,
+  onShowSource,
+  onSelectSource,
+  onAddNotes,
+  onClearScope,
 }: {
-  source: Source | undefined;
-  index: number;
-  onClose: () => void;
+  answered: Answered;
+  activeSource: number | null;
+  flashKey: number;
+  onShowSource: (index: number) => void;
+  onSelectSource: (index: number) => void;
+  onAddNotes: () => void;
+  onClearScope: () => void;
 }) {
-  if (!source) return null;
+  const { question, response, elapsedMs, scope } = answered;
+  const sources = response.sources ?? [];
+  const cited = useMemo(() => citedSourceIndexes(response.answer, sources.length), [response.answer, sources.length]);
+  const intent = routeLabel(response.route);
+
+  if (response.answer.trim() === REFUSAL) {
+    return (
+      <Card className="mx-auto max-w-3xl">
+        <CardContent className="space-y-4 p-6">
+          <p className="text-sm text-muted-foreground">{question}</p>
+          <div className="flex items-start gap-3">
+            <CircleHelp className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+            <div>
+              <p className="text-lg font-semibold">I don't know.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {scope.length ? 'The selected notes' : 'Your notes'} don't contain enough to answer this. Recall
+                only answers from your notes, so it doesn't guess.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {scope.length ? (
+              <Button variant="outline" size="sm" onClick={onClearScope}>
+                Search all notes
+              </Button>
+            ) : null}
+            <Button variant="outline" size="sm" onClick={onAddNotes}>
+              <Plus />
+              Add notes on this topic
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-2xl rounded-[32px] border border-[#eee7ef] bg-white p-6 shadow-[0_30px_90px_rgba(20,10,30,0.22)]">
-        <div className="mb-5 flex items-start justify-between gap-4">
-          <div>
-            <p className="text-sm font-medium text-[#9b6680]">Source</p>
-            <h3 className="mt-1 text-2xl font-semibold tracking-tight text-[#0b0a12]">
-              {sourceTitle(source, index)}
-            </h3>
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="space-y-4">
+        <Card>
+          <CardContent className="space-y-4 p-6">
+            <p className="text-sm font-medium text-muted-foreground">{question}</p>
+            <GroundedAnswer text={response.answer} sourceCount={sources.length} activeSource={activeSource} onCite={onShowSource} />
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t pt-3 text-xs text-muted-foreground">
+              <span>
+                Cites {cited.size} of {sources.length} retrieved passage{sources.length === 1 ? '' : 's'}
+              </span>
+              {intent ? <span>Intent: {intent}</span> : null}
+              <span>{(elapsedMs / 1000).toFixed(1)}s</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {response.study_hint ? (
+          <div className="flex items-start gap-3 rounded-lg border border-dashed px-4 py-3 text-sm">
+            <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+            <p>
+              <span className="font-medium">Study tip: </span>
+              <span className="text-muted-foreground">{response.study_hint}</span>
+            </p>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-full border border-[#eee7ef] px-3 py-1.5 text-sm font-medium text-[#514858] transition hover:bg-[#fbf7fb]"
-          >
-            Close
-          </button>
-        </div>
-        <div className="max-h-[62vh] overflow-auto rounded-3xl bg-[#fbf7fb] p-5 text-[15px] leading-8 text-[#433a49]">
-          {source.text || 'No source text available.'}
-        </div>
+        ) : null}
+      </div>
+
+      <aside className="lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100vh-6rem)] lg:flex-col">
+        <SourcePanel sources={sources} cited={cited} active={activeSource} flashKey={flashKey} onSelect={onSelectSource} />
+      </aside>
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div className="mx-auto max-w-3xl space-y-3" aria-live="polite">
+      <p className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Searching your notes and writing a grounded answer...
+      </p>
+      <div className="space-y-2 rounded-lg border p-6">
+        {[100, 92, 70].map((width) => (
+          <div key={width} className="h-3 animate-pulse rounded bg-muted" style={{ width: `${width}%` }} />
+        ))}
       </div>
     </div>
   );
