@@ -118,6 +118,18 @@ Frozen question → Frozen top-5 retrieved chunks → Prompt variant
 
 ## Run locally
 
+### With Docker
+
+Copy `.env.example` to `.env`, add your OpenAI key, then:
+
+```sh
+docker compose up --build
+```
+
+Frontend: `http://127.0.0.1:5173`, API docs: `http://127.0.0.1:8000/docs`. Chroma, the BM25 index and the catalog persist in Docker volumes.
+
+### Without Docker
+
 Python 3.12 / Node.js 22. Run backend commands from the repository root. Ingestion and questions require an OpenAI API key and incur usage costs.
 
 ```sh

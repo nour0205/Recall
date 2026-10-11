@@ -1,0 +1,6 @@
+.git
+.venv*
+.chroma
+**/__pycache__
+recall-frontend
+.env

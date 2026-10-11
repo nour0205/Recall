@@ -1,0 +1,26 @@
+# Start everything with: docker compose up --build
+# Backend: http://127.0.0.1:8000/docs   Frontend: http://127.0.0.1:5173
+services:
+  backend:
+    build: .
+    env_file:
+      # Copy .env.example to .env and add your OpenAI key first.
+      - path: .env
+        required: false
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist the vector store, BM25 index and catalog between restarts.
+      - recall-chroma:/app/.chroma
+      - recall-data:/app/data
+
+  frontend:
+    build: ./recall-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  recall-chroma:
+  recall-data:
