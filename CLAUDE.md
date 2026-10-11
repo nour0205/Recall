@@ -26,7 +26,7 @@ CI (`.github/workflows/ci.yml`) runs the three Python checks, the frontend `tsc`
   4. gpt-4o-mini, temperature 0, max_tokens 800 (`llm/client.py`, `config.py`).
   5. `normalize_answer()` turns a leading refusal into exactly `I don't know.`. Refusals return no sources and never trigger the fallback; only a generation error falls back to `rag/pipeline.py`.
   6. `orchestration/utils.py` adds a rule-based study hint.
-- `recall-frontend/`: React + Vite + Tailwind; pages Landing, Ingest, Knowledge, Ask; backend URL `http://127.0.0.1:8000`.
+- `recall-frontend/`: React + Vite + Tailwind + shadcn/ui (`@/` alias). Two views: Ask (clickable `[S#]` citations, source panel, refusal state, note scoping via `document_ids`) and Library; an Add notes dialog (paste or .txt/.md upload). Citation parsing lives in `src/lib/citations.ts`. Backend URL `VITE_BACKEND_URL`, default `http://127.0.0.1:8000`.
 - MiniLM cross-encoder and the lexical heuristic reranker exist for experiments only; neither is on the production path.
 
 ## Evaluation (in `evaluation/`; see the milestone reports there)
@@ -50,13 +50,13 @@ CI (`.github/workflows/ci.yml`) runs the three Python checks, the frontend `tsc`
 3. Strict v2 answers are very short (~22 words), which clashes with a study-assistant product. Idea: a cited strict answer first, plus a grounded "explain more".
 4. Chroma and Whoosh are written separately with no rollback, and have already drifted (27 vs 28 chunks).
 5. Not yet evaluated: chunking, planner intent accuracy, the full `/ask` path end to end. Hybrid vs vector-only was never compared on the evidence-group labels.
-6. Ingestion is paste-text only (no PDF); no auth or deployment; OpenAI-only.
+6. Ingestion is plain text only (paste or .txt/.md upload; no PDF); no auth or deployment; OpenAI-only. A fresh clone has no demo corpus, so the library starts empty.
 
 ## Roadmap (agreed order)
 
 1. Done: CI, Docker, portable tests, Strict v2 in production.
-2. Frontend redesign: one main Ask screen with clickable `[S#]` citations and a source panel that highlights the chunk; a document library with upload; remove the fake landing-page charts (`lib/constants.ts`); shadcn/ui on the existing React/Vite/Tailwind stack.
-3. README rewritten as a case study: pitch + GIF, problem, architecture diagram, key results, what was learned, quickstart, limitations.
+2. Done: frontend redesign (Ask screen with clickable citations and source panel, Library, Add notes dialog, shadcn/ui).
+3. Done: README rewritten as a case study (demo GIF and screenshots in `docs/images/`). Keep its numbers in sync with the evaluation reports and its limitations section honest as work lands.
 4. End-to-end evaluation of `/ask` with an LLM judge calibrated against the existing human labels (report agreement per dimension); a larger benchmark.
 5. PDF ingestion with page-level citations, structure-aware chunking, French-language support.
 6. A tool-using agent (search notes, read document, quiz/flashcards, multi-part question decomposition), evaluated against plain RAG; optionally an MCP server.
