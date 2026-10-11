@@ -1,5 +1,4 @@
 from app.rag.hybrid_retriever import hybrid_retrieve
-from app.rag.reranker import rerank_items
 from app.orchestration.registry import normalize_document_id
 
 
@@ -17,11 +16,12 @@ def retrieve_for_document(
     candidates = hybrid_retrieve(
         store=store,
         question=question,
-        k=retrieve_k,
-        where=where
+        k=k,
+        where=where,
+        candidate_k=retrieve_k,
     )
 
-    items = rerank_items(question, candidates, k=k)
+    items = candidates
 
     normalized = []
     for item in items:

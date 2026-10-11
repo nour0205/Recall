@@ -9,11 +9,11 @@ Recall is an AI study assistant grounded in personal course material. It ingests
 - **Build a study library:** ingest pasted course notes, split them into overlapping chunks, and index them with document IDs, chunk IDs, and course metadata.
 - **Search meaning and terminology:** combine Chroma vector retrieval with Whoosh BM25 using Reciprocal Rank Fusion (RRF).
 - **Adapt to learning intent:** a planner selects concept explanation, source recall, exam preparation, or a general answer route.
-- **Generate source-backed study answers:** route-specific prompts request explanations, revision priorities, and citations; responses include source passages and study hints.
+- **Generate source-backed study answers:** a shared strict prompt answers the requested question with citations; responses include source passages and route-aware study hints.
 - **Provide a React interface:** add notes, ask questions, inspect source references, and browse/search document previews.
 - **Measure retrieval quality:** versioned benchmarks, deterministic metrics, shared-pool reranker ablations, and saved experiment reports.
 
-Prompts request grounded answers and “I don't know.” when evidence is insufficient. Milestone 2 evaluates generation and refusal quality in a controlled benchmark; prompt variants remain evaluation-only.
+Prompts request grounded answers and “I don't know.” when evidence is insufficient. Milestone 2 evaluates generation and refusal quality in a controlled benchmark; the validated Strict v2 behavior is now used by production generation.
 
 ## Architecture
 
@@ -30,17 +30,17 @@ flowchart TD
     Vector --> RRF["Reciprocal Rank Fusion"]
     BM25 --> RRF
     RRF --> Context["Grounded context"]
-    Context --> Prompt["Route-specific prompt"]
+    Context --> Prompt["Strict v2 grounded prompt"]
     Planner --> Prompt
     Prompt --> LLM["GPT-4o-mini"]
     LLM --> Answer["Answer + sources + study guidance"]
 ```
 
-Routes select prompt style, not different retrievers. Routed `/ask` uses the first three hybrid retrieval results; fallback generation retains the lexical heuristic reranker. MiniLM remains evaluation-only.
+The planner selects intent and document targets; explicit request scope takes precedence. `/ask` uses up to five chunks from plain Vector + BM25 + RRF, with ten candidates per backend. Every route and generation fallback uses the same Strict v2 grounding rules; neither uses a reranker. MiniLM remains evaluation-only.
 
 ## Why Recall is more than a basic RAG chatbot
 
-Dense + sparse retrieval finds evidence; intent-aware orchestration adapts answer structure to the study task. Grounded generation connects answers to passages, and empirical evaluation tests whether retrieval complexity helps.
+Dense + sparse retrieval finds evidence; intent-aware orchestration retains document scope and study hints. Grounded generation connects answers to passages, and empirical evaluation tests whether retrieval complexity helps.
 
 ## Retrieval Evaluation ? Milestone 1
 
@@ -99,9 +99,15 @@ Frozen question → Frozen top-5 retrieved chunks → Prompt variant
               → GPT-4o-mini → Human review against fixed rubric
 ```
 
-**Only the prompt changed between ablations.** Hybrid Vector + BM25 + RRF contexts were frozen from the baseline; retrieval was not rerun. References and required-point metadata never entered the generation prompt. Production prompts remain unchanged.
+**Only the prompt changed between ablations.** Hybrid Vector + BM25 + RRF contexts were frozen from the baseline; retrieval was not rerun. References and required-point metadata never entered the generation prompt. Production prompts remained unchanged during those experiments.
 
 [Milestone 2 report](evaluation/MILESTONE_2_GENERATION_EVALUATION.md) · [Final four-way comparison](evaluation/results/generation_prompt_ablation_comparison_final.md) · [Frozen benchmark and references](evaluation/benchmarks/generation_reference_v1.json) · [Human-review artifacts](evaluation/MILESTONE_2_GENERATION_EVALUATION.md#finalized-human-reviews)
+
+## Milestone 2.5 — Evaluated configuration promoted to production
+
+Production hybrid retrieval uses **Vector + BM25 + RRF**, without heuristic reranking; MiniLM remains experimental and evaluation-only. Generation now uses **grounded_strict_v2** behavior from a production-owned prompt module, including supported multi-part answers, per-claim citations, and exact refusal output. The planner remains in place; validated document targets now scope retrieval, while explicit request scope takes precedence.
+
+Strict v2 is the preferred practical trade-off on this controlled benchmark, not a universally best prompt. Milestone 1 and 2 artifacts remain frozen. Production uses live retrieval and the planner, so its end-to-end scores have not been established by the isolated benchmark. [Integration details and remaining differences](docs/milestone2/production_promotion.md).
 
 ## Screenshots / demo
 
@@ -178,4 +184,5 @@ Saved scores reproduce offline; identical live reruns require historical local i
 ## Roadmap
 
 - **Milestone 1 ? Retrieval evaluation:** complete.
-- **Milestone 2 — Generation quality & groundedness evaluation:** complete; four controlled prompt experiments with finalized human review. Production prompt adoption remains separate.
+- **Milestone 2 — Generation quality & groundedness evaluation:** complete; four controlled prompt experiments with finalized human review.
+- **Milestone 2.5 — Production integration:** complete; plain hybrid/RRF retrieval and Strict v2 generation behavior promoted with offline regression tests.
