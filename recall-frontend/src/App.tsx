@@ -1,27 +1,68 @@
-import { AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
-import type { Page } from './types';
-import { getDefaultBackendUrl } from './lib/api';
-import AppShell from './components/layout/AppShell';
-import TopBar from './components/layout/TopBar';
-import LandingPage from './pages/LandingPage';
-import AskPage from './pages/AskPage';
-import IngestPage from './pages/IngestPage';
-import KnowledgePage from './pages/KnowledgePage';
+import { useCallback, useEffect, useState } from 'react';
+import type { LibraryDocument, View } from '@/types';
+import { listDocuments } from '@/lib/api';
+import AppHeader from '@/components/AppHeader';
+import AddNotesDialog from '@/components/AddNotesDialog';
+import AskPage from '@/pages/AskPage';
+import LibraryPage from '@/pages/LibraryPage';
 
 export default function App() {
-  const [page, setPage] = useState<Page>('home');
-  const backendUrl = getDefaultBackendUrl();
+  const [view, setView] = useState<View>('ask');
+  const [addingNotes, setAddingNotes] = useState(false);
+  const [scope, setScope] = useState<string[]>([]);
+
+  const [documents, setDocuments] = useState<LibraryDocument[]>([]);
+  const [libraryLoading, setLibraryLoading] = useState(false);
+  const [libraryError, setLibraryError] = useState<string | null>(null);
+  const [libraryLoaded, setLibraryLoaded] = useState(false);
+
+  const refreshLibrary = useCallback(async () => {
+    setLibraryLoading(true);
+    setLibraryError(null);
+    try {
+      const docs = await listDocuments();
+      setDocuments(docs.sort((a, b) => a.document_id.localeCompare(b.document_id)));
+      setLibraryLoaded(true);
+    } catch (err) {
+      setLibraryError(err instanceof Error ? err.message : 'Could not load the library.');
+    } finally {
+      setLibraryLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshLibrary();
+  }, [refreshLibrary]);
 
   return (
-    <AppShell page={page} setPage={setPage}>
-      <TopBar page={page} />
-      <AnimatePresence mode="wait">
-        {page === 'home' && <LandingPage key="home" setPage={setPage} />}
-        {page === 'ask' && <AskPage key="ask" backendUrl={backendUrl} />}
-        {page === 'ingest' && <IngestPage key="ingest" backendUrl={backendUrl} />}
-        {page === 'knowledge' && <KnowledgePage key="knowledge" backendUrl={backendUrl} />}
-      </AnimatePresence>
-    </AppShell>
+    <div className="min-h-screen">
+      <AppHeader view={view} onNavigate={setView} onAddNotes={() => setAddingNotes(true)} />
+
+      <main>
+        {view === 'ask' ? (
+          <AskPage
+            documents={documents}
+            libraryLoaded={libraryLoaded}
+            scope={scope}
+            onScopeChange={setScope}
+            onAddNotes={() => setAddingNotes(true)}
+          />
+        ) : (
+          <LibraryPage
+            documents={documents}
+            loading={libraryLoading}
+            error={libraryError}
+            onRefresh={() => void refreshLibrary()}
+            onAddNotes={() => setAddingNotes(true)}
+            onAskAbout={(documentId) => {
+              setScope([documentId]);
+              setView('ask');
+            }}
+          />
+        )}
+      </main>
+
+      <AddNotesDialog open={addingNotes} onOpenChange={setAddingNotes} onIngested={() => void refreshLibrary()} />
+    </div>
   );
 }

@@ -2,88 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
-  --recall-ink: #0b0a12;
-  --recall-muted: #6f6878;
-  --recall-paper: #ffffff;
-  --recall-fog: #fbf7fb;
-  --recall-line: #eee7ef;
-  --recall-lilac: #8f7cf6;
-  --recall-rose: #d96f9f;
-  --recall-plum: #6f3d7b;
+@layer base {
+  :root {
+    --background: 300 20% 99%;
+    --foreground: 260 25% 6%;
+    --card: 0 0% 100%;
+    --card-foreground: 260 25% 6%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 260 25% 6%;
+    --primary: 287 33% 36%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 300 25% 96%;
+    --secondary-foreground: 260 25% 10%;
+    --muted: 300 20% 96%;
+    --muted-foreground: 280 6% 44%;
+    --accent: 300 25% 95%;
+    --accent-foreground: 260 25% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 300 18% 91%;
+    --input: 300 18% 89%;
+    --ring: 287 33% 36%;
+    --cite: 331 58% 64%;
+    --cite-foreground: 331 45% 32%;
+    --radius: 0.75rem;
+  }
 }
 
-html,
-body,
-#root { min-height: 100%; }
-
-body {
-  @apply antialiased;
-  color: var(--recall-ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background:
-    radial-gradient(circle at 8% -10%, rgba(217, 111, 159, 0.13), transparent 28rem),
-    radial-gradient(circle at 92% 4%, rgba(143, 124, 246, 0.12), transparent 26rem),
-    linear-gradient(180deg, #fff 0%, #fbf7fb 54%, #f7f2f8 100%);
-}
-
-body::before,
-body::after { content: none; }
-
-::selection { background: rgba(217, 111, 159, 0.18); }
-
-* { scrollbar-width: thin; scrollbar-color: rgba(111, 104, 120, 0.25) transparent; }
-*::-webkit-scrollbar { width: 10px; height: 10px; }
-*::-webkit-scrollbar-thumb { background: rgba(111, 104, 120, 0.22); border-radius: 999px; }
-*::-webkit-scrollbar-track { background: transparent; }
-
-@layer components {
-  .recall-card {
-    position: relative;
-    overflow: hidden;
-    border-radius: 2rem;
-    border: 1px solid rgba(238, 231, 239, 0.95);
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 28px 80px rgba(55, 38, 62, 0.075);
+@layer base {
+  * {
+    @apply border-border;
   }
 
-  .recall-card::before,
-  .paper-grain::after { content: none; }
-
-  .ink-title { color: var(--recall-ink); letter-spacing: -0.06em; }
-
-  .section-kicker {
-    color: var(--recall-plum);
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    font-size: 0.68rem;
-    font-weight: 800;
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
   }
 
-  .signature-badge {
-    border: 1px solid rgba(229, 211, 231, 0.95);
-    background: #fff;
-    box-shadow: 0 1px 0 rgba(55, 38, 62, 0.04);
-  }
-
-  .brief-surface {
-    border: 1px solid rgba(238, 231, 239, 0.95);
-    background: #fff;
-    box-shadow: 0 20px 55px rgba(55, 38, 62, 0.065);
-  }
-
-  .recall-gradient-text {
-    background: linear-gradient(90deg, #0b0a12 0%, #0b0a12 54%, #d96f9f 73%, #8f7cf6 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .soft-rose-panel {
-    background:
-      radial-gradient(circle at 0% 0%, rgba(217, 111, 159, 0.11), transparent 22rem),
-      radial-gradient(circle at 100% 8%, rgba(143, 124, 246, 0.10), transparent 22rem),
-      rgba(255, 255, 255, 0.94);
+  ::selection {
+    background: hsl(var(--cite) / 0.2);
   }
 }
