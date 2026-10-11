@@ -1,200 +1,178 @@
 # Recall
 
-Recall is an AI study assistant grounded in personal course material. It ingests study notes, retrieves relevant evidence using hybrid search, routes questions by learning intent, and generates grounded answers with source references.
+**A study assistant that answers only from your own course notes: every claim cites the passage it came from, and when the notes don't support an answer, Recall says "I don't know."**
 
-**FastAPI ? React / TypeScript / Vite ? OpenAI ? ChromaDB ? Whoosh BM25 ? RRF**
+[![CI](https://github.com/nour0205/Recall/actions/workflows/ci.yml/badge.svg)](https://github.com/nour0205/Recall/actions/workflows/ci.yml)
+![Python 3.12](https://img.shields.io/badge/python-3.12-3776AB)
+![React + TypeScript](https://img.shields.io/badge/React-TypeScript-3178C6)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+![Asking Recall a question and clicking its citations to see the source passages](docs/images/recall-demo.gif)
+
+General-purpose chatbots answer course questions from their own training data. The answer may differ from what your lecturer taught, and you can't tell which parts came from your material. Recall does the opposite. Your notes are its only source of truth, and every answer shows its evidence so you can check it yourself.
+
+I built Recall as a hybrid-search RAG system and treated it as an engineering problem: each design choice was tested on a hand-labelled benchmark before it reached production.
 
 ## What Recall does
 
-- **Build a study library:** ingest pasted course notes, split them into overlapping chunks, and index them with document IDs, chunk IDs, and course metadata.
-- **Search meaning and terminology:** combine Chroma vector retrieval with Whoosh BM25 using Reciprocal Rank Fusion (RRF).
-- **Adapt to learning intent:** a planner selects concept explanation, source recall, exam preparation, or a general answer route.
-- **Generate source-backed study answers:** a shared strict prompt answers the requested question with citations; responses include source passages and route-aware study hints.
-- **Provide a React interface:** add notes, ask questions, inspect source references, and browse/search document previews.
-- **Measure retrieval quality:** versioned benchmarks, deterministic metrics, shared-pool reranker ablations, and saved experiment reports.
+- **Answers with clickable citations.** Ask in plain language and get a short answer with `[S1]`, `[S2]`… markers. Clicking one opens the exact passage in the source panel.
+- **Refuses instead of guessing.** If your notes don't contain the answer, the response is exactly `I don't know.`, with no invented extras. All three out-of-scope test questions were refused.
+- **Searches by meaning *and* by exact terms.** Semantic search (OpenAI embeddings in ChromaDB) and keyword search (BM25 in Whoosh) run side by side and are merged with Reciprocal Rank Fusion. Paraphrased questions and exact technical terms are both covered.
+- **Shows what it used.** The source panel marks which retrieved passages the answer cites and which it didn't, so weak retrieval is visible rather than hidden.
+- **Scopes questions to specific notes.** Ask about one lecture or a chosen set, or search the whole library.
+- **Manages a personal library.** Add notes by pasting text or uploading `.txt`/`.md` files. Duplicates are detected by content hash.
 
-Prompts request grounded answers and “I don't know.” when evidence is insufficient. Milestone 2 evaluates generation and refusal quality in a controlled benchmark; the validated Strict v2 behavior is now used by production generation.
+| Every answer is checkable | No support, no answer | Your library |
+|---|---|---|
+| ![Answer with a highlighted source passage](docs/images/citation.png) | ![Recall replying "I don't know." to an out-of-scope question](docs/images/refusal.png) | ![The notes library](docs/images/library.png) |
 
-## Architecture
+## Results
+
+I compared four answer-generation prompts on the same 19 questions and the same retrieved passages, so only the prompt changed between runs. Every answer was reviewed by hand, claim by claim, against a fixed rubric. The baseline is a conventional "answer from the context and cite your sources" prompt. Strict v2 is the prompt Recall uses in production.
+
+| Measured on 19 benchmark questions | Baseline prompt | **Recall (Strict v2)** |
+|---|---:|---:|
+| Answers fully supported by the notes | 5 / 19 (26%) | **18 / 19 (95%)** |
+| Answers adding claims the notes don't support | 14 / 19 | **1 / 19** |
+| Citations that actually support their claim | 3 / 17 (18%) | **15 / 16 (94%)** |
+| Out-of-scope questions correctly refused | 3 / 3 | **3 / 3** |
+| Required points covered (16 answerable questions) | **16 / 16** | 14.5 / 16 |
+| Mean generation latency | 2.4 s | **1.1 s** |
+
+The baseline covered every required point but padded most answers with plausible material that wasn't in the notes, often with a citation attached. Strict v2 removed almost all of that at a small cost in completeness. That trade-off is measured, not assumed. Strict v2 is the best balance on this benchmark, not a universally best prompt.
+
+**Retrieval decisions came from measurement too:**
+- **Rejected a heuristic reranker.** It made rankings worse on 6 of 16 questions and better on none (MRR 0.802 → 0.693).
+- **Kept a neural cross-encoder (MiniLM) out of production.** It was close to plain fusion in quality but added about 0.65 s of CPU latency per query.
+- **Production uses plain Vector + BM25 + RRF fusion.** It scored the highest evidence MRR (0.969) of the hybrid orderings tested.
+
+> **Scope:** a small, hand-built benchmark of 19 questions (16 answerable, 3 deliberate refusals) over 12 short notes on machine learning, operating systems and databases. The numbers describe this set; I make no statistical-significance claims. Full methodology: [retrieval report](evaluation/MILESTONE_1_RETRIEVAL_EVALUATION.md) · [generation report](evaluation/MILESTONE_2_GENERATION_EVALUATION.md).
+
+## How it works
 
 ```mermaid
-flowchart TD
-    Material["Course material: pasted text"] --> Chunks["Chunking + metadata"]
-    Chunks --> Dense["Chroma vector index"]
-    Chunks --> Sparse["Whoosh BM25 index"]
-    Question["User question"] --> Planner["Intent planner"]
-    Planner --> Vector["Vector retrieval: OpenAI embeddings"]
-    Planner --> BM25["BM25 retrieval"]
-    Dense --> Vector
-    Sparse --> BM25
-    Vector --> RRF["Reciprocal Rank Fusion"]
-    BM25 --> RRF
-    RRF --> Context["Grounded context"]
-    Context --> Prompt["Strict v2 grounded prompt"]
-    Planner --> Prompt
-    Prompt --> LLM["GPT-4o-mini"]
-    LLM --> Answer["Answer + sources + study guidance"]
+flowchart LR
+    subgraph Ingest
+        N["Notes<br/>(paste / .txt / .md)"] --> C["Sentence-packed chunks<br/>+ metadata"]
+        C --> V[("ChromaDB<br/>embeddings")]
+        C --> K[("Whoosh<br/>BM25 index")]
+    end
+    subgraph Ask
+        Q["Question"] --> P["Intent planner<br/>+ note scope"]
+        P --> D["Semantic search<br/>top 10"]
+        P --> B["Keyword search<br/>top 10"]
+        V -.-> D
+        K -.-> B
+        D --> F["Reciprocal Rank Fusion<br/>top 5 passages"]
+        B --> F
+        F --> G["Strict grounded prompt<br/>GPT-4o-mini, temperature 0"]
+        G --> A["Answer with [S#] citations<br/>or exactly 'I don't know.'"]
+    end
 ```
 
-The planner selects intent and document targets; explicit request scope takes precedence. `/ask` uses up to five chunks from plain Vector + BM25 + RRF, with ten candidates per backend. Every route and generation fallback uses the same Strict v2 grounding rules; neither uses a reranker. MiniLM remains evaluation-only.
+1. **Ingest.** Notes are split into sentence-packed chunks of up to 500 characters, each prefixed with the previous chunk for context. Chunks are embedded with `text-embedding-3-small` and written to both a vector index (ChromaDB) and a keyword index (Whoosh BM25). Both indexes share one chunk ID.
+2. **Plan.** A lightweight planner classifies the question's intent and can narrow the search to relevant notes. A scope chosen in the UI always wins.
+3. **Retrieve.** Semantic and keyword search each return 10 candidates. Reciprocal Rank Fusion (k = 60) merges them, and the top 5 passages go to the model in ranked order.
+4. **Generate.** The Strict v2 prompt allows only facts stated in the passages, requires a `[S#]` citation for each claim, and requires the exact sentence `I don't know.` when support is missing. The backend normalizes any refusal to that sentence and returns no sources with it.
+5. **Show.** The React interface turns every `[S#]` into a button that opens and highlights that passage in the source panel.
 
-## Why Recall is more than a basic RAG chatbot
+## What I learned building it
 
-Dense + sparse retrieval finds evidence; intent-aware orchestration retains document scope and study hints. Grounded generation connects answers to passages, and empirical evaluation tests whether retrieval complexity helps.
+- **A citation is not evidence.** The baseline prompt cited sources in almost every answer, yet 14 of 19 answers contained claims the cited passage didn't support. I learned this only by checking each claim by hand, which is why the evaluation scores groundedness and citation correctness separately.
 
-## Retrieval Evaluation ? Milestone 1
+  > **Q:** What happens if the learning rate is too large during gradient descent?
+  > **Baseline:** "…results in overshooting the optimal parameter values, leading to instability in the training process [S1]." *(The notes don't mention overshooting or instability.)*
+  > **Recall:** "A learning rate that is too large may cause divergence [S1]." *(Exactly what the notes say, including "may".)*
 
-**19 manually curated questions: 16 answerable, 3 unanswerable.** Experiments compare vector, BM25, hybrid/RRF, heuristic, and MiniLM CrossEncoder reranking. Evidence groups accept equivalent chunks; complete coverage requires all answer components.
+- **Grounding and completeness pull against each other.** My first strict prompt reached 100% groundedness but under-answered and once refused a question it could answer. I fixed the false refusal and recovered completeness in Strict v2, accepting one remaining unsupported claim. I chose that trade-off deliberately, with the numbers in front of me.
+- **More complexity isn't automatically better.** Two rerankers sounded like upgrades. One made results worse; the other cost latency for no clear gain. Both stay out of production.
+- **Labels have to match the data.** Overlapping chunks meant the same evidence existed under several chunk IDs, so "find chunk X" scoring under-credited correct retrievals. I moved to *evidence groups* (any equivalent chunk counts, and every required part must be covered).
+- **Evaluation finds bugs that tests miss.** Running the benchmark showed that BM25 was parsing natural-language questions as query syntax. It now searches the literal terms.
+- **Make results reproducible.** Retrieved contexts were frozen so that only the prompt varied between runs. Benchmark and prompt files are pinned by SHA-256 hashes. Saved scores are recomputed offline in CI on every pull request.
 
-Evidence scores compare orderings of the **same hybrid pool**, averaged over 16 answerable cases:
+## Limitations and next steps
 
-| Ordering | Evidence MRR | Complete coverage@3 |
-|---|---:|---:|
-| Hybrid / RRF | **0.96875** | 0.93750 |
-| MiniLM CrossEncoder | 0.95833 | **1.00000** |
-| Heuristic reranker | 0.93750 | 0.93750 |
+These are what I'd want a reviewer to know:
 
-Among the evaluated hybrid orderings, plain Vector + BM25 + RRF remains the preferred evaluation baseline because it offers the best current quality / simplicity / latency trade-off on this benchmark. The earlier canonical four-mode benchmark favored vector-only, so no universal superiority claim is made.
+- **The full `/ask` path hasn't been scored end to end.** The benchmark froze retrieval to isolate the prompt; production adds the live planner and live retrieval. **Next:** an end-to-end evaluation with an LLM judge, calibrated against my existing human labels, on a larger benchmark.
+- **Vector-only search wasn't beaten.** On the original exact-chunk labels, vector-only search had the best MRR (0.854 vs 0.802 for hybrid). The evidence-group rescoring only compared hybrid orderings. Hybrid stays for keyword robustness, but I don't claim it's better.
+- **Retrieved context contains near-duplicates.** Each chunk includes the previous chunk for context, so the top 5 passages can repeat text. In the demo above, the answer cites 3 of 5 passages. **Next:** sentence-level overlap plus de-duplication, measured against the benchmark.
+- **Answers are short (about 22 words on average).** That's good for grounding but thin for studying. **Next:** a cited short answer first, with a grounded "explain more" option.
+- **The planner adds a model call with little effect.** All intents share one prompt. I'll either make the routes matter or remove the planner.
+- **It's a local prototype.** It ingests plain text only (no PDF yet), has no accounts or deployment, and uses OpenAI only. A fresh clone starts with an empty library, and the vector and keyword indexes are written separately with no rollback.
 
-## Key engineering findings
+## Run it locally
 
-- **Evaluation exposed a BM25 natural-language parsing bug:** free-text questions were interpreted as query syntax. The fix analyzes input and searches literal terms.
-- **Heuristic reranking degraded ranking quality:** canonical-rank ablation found 0 improved, 10 unchanged, and 6 worsened answerable cases.
-- **MiniLM performed better than the heuristic**, but did not clearly outperform plain RRF and added about **0.65 s CPU reranking latency** per query in the experiment. It remains evaluation-only.
-- **Evidence groups corrected exact-UUID scoring artifacts:** overlapping chunks can contain equivalent evidence, so requiring one arbitrary UUID can misrepresent retrieval quality.
+You need an OpenAI API key; asking questions and adding notes make small paid API calls.
 
-## Milestone 2 — Generation Quality & Groundedness
-
-**19 frozen questions: 16 answerable and 3 deliberate refusal cases.** Four prompt variants used the same retrieved contexts, source mappings, GPT-4o-mini, temperature 0, and generation settings. Human reviewers used a fixed rubric for correctness, groundedness, completeness, refusal correctness, and citation correctness. No LLM judge or RAGAS was used for the final labels.
-
-### Prompt comparison
-
-| Prompt | Groundedness | Mean completeness | Citation correctness | Unsupported elaboration |
-| --- | ---: | ---: | ---: | ---: |
-| Baseline | 5/19 · 26.32% | 16/16 · 100% | 3/17 · 17.65% | 14/19 |
-| Strict v1 | 19/19 · 100% | 13.5/16 · 84.375% | 15/15 · 100% | 0/19 |
-| Balanced v2 | 15/19 · 78.95% | 15.5/16 · 96.875% | 12/16 · 75% | 4/19 |
-| Strict v2 | 18/19 · 94.74% | 14.5/16 · 90.625% | 15/16 · 93.75% | 1/19 |
-
-Mean completeness averages required-point coverage over the 16 answerable cases. Citation correctness excludes each prompt's human-labeled N/A cases; full denominators and failures are in the report.
-
-The baseline covered every required point but frequently continued beyond the supplied evidence. Strict v1 eliminated unsupported elaboration and raised groundedness from 26.3% to 100%, while reducing completeness. Later controlled ablations exposed a measurable grounding–completeness trade-off: Strict v2 fixed the false refusal and improved completeness, but retained one unsupported-elaboration case and three incomplete answers. These findings apply to this 19-case evaluation set; no statistical significance or universally best prompt is claimed.
-
-### Before / after: grounded generation
-
-**Question:** What happens if the learning rate is too large during gradient descent?
-
-**Baseline excerpt:**
-> A **learning rate** that is too large results in overshooting the optimal parameter values, leading to instability in the training process [S1].
-
-**Strict v1 answer:**
-> A learning rate that is too large may cause divergence [S1].
-
-**Why the baseline failed:** The supplied notes support possible divergence, but not the added overshooting, erratic-update, or tuning claims. A citation alone does not establish source support.
-
-### Evaluation methodology
-
-```text
-Frozen question → Frozen top-5 retrieved chunks → Prompt variant
-              → GPT-4o-mini → Human review against fixed rubric
-```
-
-**Only the prompt changed between ablations.** Hybrid Vector + BM25 + RRF contexts were frozen from the baseline; retrieval was not rerun. References and required-point metadata never entered the generation prompt. Production prompts remained unchanged during those experiments.
-
-[Milestone 2 report](evaluation/MILESTONE_2_GENERATION_EVALUATION.md) · [Final four-way comparison](evaluation/results/generation_prompt_ablation_comparison_final.md) · [Frozen benchmark and references](evaluation/benchmarks/generation_reference_v1.json) · [Human-review artifacts](evaluation/MILESTONE_2_GENERATION_EVALUATION.md#finalized-human-reviews)
-
-## Milestone 2.5 — Evaluated configuration promoted to production
-
-Production hybrid retrieval uses **Vector + BM25 + RRF**, without heuristic reranking; MiniLM remains experimental and evaluation-only. Generation now uses **grounded_strict_v2** behavior from a production-owned prompt module, including supported multi-part answers, per-claim citations, and exact refusal output. The planner remains in place; validated document targets now scope retrieval, while explicit request scope takes precedence.
-
-Strict v2 is the preferred practical trade-off on this controlled benchmark, not a universally best prompt. Milestone 1 and 2 artifacts remain frozen. Production uses live retrieval and the planner, so its end-to-end scores have not been established by the isolated benchmark. [Integration details and remaining differences](docs/milestone2/production_promotion.md).
-
-## Screenshots / demo
-
-*Product screenshots and a short demo will be added here.* The current interface includes note ingestion, question answering with source inspection, and a searchable library.
-
-## Tech stack
-
-| Area | Technologies |
-|---|---|
-| Backend | Python, FastAPI, Pydantic |
-| Retrieval / AI | OpenAI `text-embedding-3-small`, ChromaDB, Whoosh BM25, RRF, GPT-4o-mini |
-| Frontend | React, TypeScript, Vite, Tailwind CSS, Framer Motion |
-| Evaluation | Standard-library unittest, JSON benchmarks, deterministic metrics; optional sentence-transformers / Transformers / PyTorch |
-
-## Run locally
-
-### With Docker
-
-Copy `.env.example` to `.env`, add your OpenAI key, then:
+**With Docker**
 
 ```sh
+cp .env.example .env        # then put your OPENAI_API_KEY in .env
 docker compose up --build
 ```
 
-Frontend: `http://127.0.0.1:5173`, API docs: `http://127.0.0.1:8000/docs`. Chroma, the BM25 index and the catalog persist in Docker volumes.
+Open the app at <http://127.0.0.1:5173> and the API docs at <http://127.0.0.1:8000/docs>. Notes and indexes persist in Docker volumes.
 
-### Without Docker
-
-Python 3.12 / Node.js 22. Run backend commands from the repository root. Ingestion and questions require an OpenAI API key and incur usage costs.
+**Without Docker** (Python 3.12, Node.js 20+)
 
 ```sh
 python -m venv .venv
-```
+.venv\Scripts\Activate.ps1           # macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env                 # add your OPENAI_API_KEY
+uvicorn app.api.main:app --reload    # API on :8000
 
-Activate with `.venv\Scripts\Activate.ps1` on PowerShell, or `source .venv/bin/activate` on macOS/Linux. Then:
-
-```sh
-python -m pip install -r requirements.txt
-```
-
-Copy `.env.example` to `.env` and replace the placeholder locally. Start the API:
-
-```sh
-python -m uvicorn app.api.main:app --reload
-```
-
-API: `http://127.0.0.1:8000` ? interactive docs: `http://127.0.0.1:8000/docs`
-
-In a second terminal:
-
-```sh
+# in a second terminal
 cd recall-frontend
 npm ci
-npm run dev
+npm run dev                          # app on :5173
 ```
 
-Open Vite's URL (normally `http://localhost:5173`). Ingest **text**, not PDFs. Endpoints: `POST /ask`, `POST /ingest`, `GET /documents`. This is a local development project without authentication or deployment configuration.
+The library starts empty: click **Add notes** and paste or upload some course notes. The "Try asking" examples on the Ask screen refer to the benchmark notes, so with your own notes, ask about their contents instead.
 
-## Evaluation / reproducibility
-
-Tests and saved-result verification require no API calls or model downloads:
+**Tests and evaluation checks** (offline, no API key needed):
 
 ```sh
-python -m unittest discover -s tests
-python -m evaluation.validate_benchmark
-python -m evaluation.verify_saved_results
+python -m unittest discover -s tests       # 182 tests
+python -m evaluation.validate_benchmark    # benchmark schema checks
+python -m evaluation.verify_saved_results  # recompute saved scores from saved runs
 ```
 
-- [Milestone 1 methodology and results](evaluation/MILESTONE_1_RETRIEVAL_EVALUATION.md)
-- [Evaluation commands, setup, and saved artifacts](evaluation/README.md)
+CI runs these checks, plus the frontend typecheck and build and both Docker image builds, on every pull request and every push to `main`.
 
-Semantic reranking dependencies are optional and separate from core requirements; see [optional semantic setup](evaluation/README.md#optional-semantic-reranking).
+## Tech stack
 
-Saved scores reproduce offline; identical live reruns require historical local indexes, which are not versioned. Re-ingestion changes UUIDs. Scope: 27 Chroma chunks / 12 documents; Whoosh has one extra chunk and the catalog is stale. Latency is experimental, not a production benchmark.
-
-## Repository structure
-
-| Path | Purpose |
+| Layer | Tools |
 |---|---|
-| `app/` | Ingestion, retrieval, intent planning, generation, and API |
-| `recall-frontend/` | React application and frontend lockfile |
-| `evaluation/` | Benchmarks v1/v2, metrics, experiments, and saved results |
-| `tests/` | Unit tests; semantic scorers are mocked |
-| `docs/milestone1/` | Traceable public results and presentation sources |
+| Backend | Python 3.12, FastAPI, Pydantic |
+| Retrieval | OpenAI `text-embedding-3-small`, ChromaDB, Whoosh BM25, Reciprocal Rank Fusion |
+| Generation | GPT-4o-mini (temperature 0), versioned grounded prompt |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui (Radix) |
+| Evaluation | Versioned JSON benchmarks, deterministic metrics, human-review tooling; optional sentence-transformers for reranker experiments |
+| Delivery | Docker Compose, GitHub Actions CI |
+
+## Repository layout
+
+| Path | What's there |
+|---|---|
+| [`app/`](app/) | API, ingestion, hybrid retrieval, planner and grounded generation |
+| [`recall-frontend/`](recall-frontend/) | React interface |
+| [`evaluation/`](evaluation/) | Benchmarks, metrics, experiment runners, human-review tools and saved results |
+| [`tests/`](tests/) | Offline unit and API tests (model and indexes stubbed) |
+| [`docs/`](docs/) | Milestone summaries, production-promotion notes and README images |
 
 ## Roadmap
 
-- **Milestone 1 ? Retrieval evaluation:** complete.
-- **Milestone 2 — Generation quality & groundedness evaluation:** complete; four controlled prompt experiments with finalized human review.
-- **Milestone 2.5 — Production integration:** complete; plain hybrid/RRF retrieval and Strict v2 generation behavior promoted with offline regression tests.
+- [x] **Retrieval evaluation:** vector, BM25, hybrid and two rerankers, compared on hand-labelled evidence
+- [x] **Generation evaluation:** four prompts, human-reviewed for groundedness, completeness, citations and refusals
+- [x] **Production promotion:** the measured retrieval and prompt configuration, with regression tests, CI and Docker
+- [x] **Interface redesign:** clickable citations, source panel, refusal state, note scoping and library
+- [ ] End-to-end evaluation of `/ask` with a calibrated LLM judge and a larger benchmark
+- [ ] PDF ingestion with page-level citations, structure-aware chunking and French-language support
+- [ ] A tool-using study agent (search, read, quiz) evaluated against plain RAG
+- [ ] Tracing, a provider switch and a hosted demo
+
+## License
+
+[MIT](LICENSE) © 2026 Nour Kouider
