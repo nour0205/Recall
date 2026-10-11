@@ -92,10 +92,7 @@ export default function KnowledgePage({ backendUrl }: { backendUrl: string }) {
                         ))}
                       </div>
                     </div>
-                    <div className="shrink-0 rounded-3xl border border-[#eee7ef] bg-white px-4 py-3 text-sm leading-6 text-[#6f6878]">
-                      <p className="font-semibold text-[#0b0a12]">Best use</p>
-                      <p>Ask Recall to explain or revise this note.</p>
-                    </div>
+                   
                   </div>
                   <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#0b0a12]">
                     Ask from this note <ArrowRight className="h-4 w-4" />

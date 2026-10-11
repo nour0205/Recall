@@ -16,7 +16,8 @@ from app.catalog.document_catalog import upsert_document_entry
 
 # ---- Orchestration imports ----
 from app.orchestration.planner import plan_question
-from app.orchestration.prompts import build_answer_prompt
+from app.orchestration.prompts import build_answer_prompt, normalize_answer, REFUSAL
+from app.orchestration.registry import DOC_REGISTRY
 from app.orchestration.utils import build_study_hint
 
 # ---- Schema imports ----
@@ -52,15 +53,19 @@ app.add_middleware(
 # -------------------------------------------------------------------
 # Helpers
 # -------------------------------------------------------------------
-def build_where_clause(req: QuestionRequest):
-    where = {}
-
+def build_where_clause(req: QuestionRequest, targets=None):
+    clauses = []
     if req.document_id:
-        where["document_id"] = req.document_id
+        clauses.append({"document_id": req.document_id})
+    elif req.document_ids:
+        clauses.append({"document_id": {"$in": list(dict.fromkeys(req.document_ids))}})
+    elif targets:
+        documents = [DOC_REGISTRY[key]["document_id"] for key in targets if key in DOC_REGISTRY]
+        if documents:
+            clauses.append({"document_id": {"$in": list(dict.fromkeys(documents))}})
     if req.owner:
-        where["owner"] = req.owner
-
-    return where if where else None
+        clauses.append({"owner": req.owner})
+    return {"$and": clauses} if len(clauses) > 1 else (clauses[0] if clauses else None)
 
 
 def to_source_items(items):
@@ -82,11 +87,10 @@ def to_source_items(items):
 # -------------------------------------------------------------------
 @app.post("/ask", response_model=AnswerResponse)
 def ask(req: QuestionRequest):
-    where = build_where_clause(req)
-
     # 1. Plan the study intent
     plan = plan_question(req.question)
     route = plan.get("route", "unknown")
+    where = build_where_clause(req, plan.get("targets"))
 
     # 2. Try routed retrieval first
     results = hybrid_retrieve(
@@ -94,9 +98,12 @@ def ask(req: QuestionRequest):
         question=req.question,
         k=5,
         where=where,
+        candidate_k=10,
     )
+    # Keep RRF chunk order, including complementary chunks from one document.
+    results = [r for r in results if r.text.strip()]
 
-    routed_sources = to_source_items(results[:3]) if results else []
+    routed_sources = to_source_items(results) if results else []
 
     routed_answer = None
     routed_ok = False
@@ -105,19 +112,20 @@ def ask(req: QuestionRequest):
     if results:
         messages = build_answer_prompt(
             question=req.question,
-            sources=results[:3],
+            sources=results,
             route=route,
         )
 
         try:
-            routed_answer = chat(messages).strip()
-            if routed_answer and routed_answer != "I don't know.":
-                routed_ok = True
+            routed_answer = normalize_answer(chat(messages))
+            routed_ok = True  # A refusal is a valid result, not a fallback trigger.
         except Exception:
             routed_ok = False
 
     # 4. Return routed answer if successful
-    if routed_ok:
+    if routed_ok or not results:
+        if not results or routed_answer == REFUSAL:
+            return AnswerResponse(answer=REFUSAL, route=route, sources=[], study_hint=None)
         study_hint = build_study_hint(route, routed_sources)
         return AnswerResponse(
             answer=routed_answer,
@@ -202,6 +210,8 @@ def ingest(req: IngestRequest):
             "document_id": req.document_id,
             "chunk_index": i,
             "text": chunks[i],
+            "source": req.source or "",
+            "owner": req.owner or "",
         }
         for i in range(len(chunks))
     ]
@@ -283,3 +293,14 @@ def list_documents():
             entry["preview"] = doc[:200]
 
     return {"documents": list(grouped.values())}
+
+@app.delete("/documents/{document_id}")
+def delete_document(document_id: str):
+    store.collection.delete(
+        where={"document_id": document_id}
+    )
+
+    return {
+        "status": "deleted",
+        "document_id": document_id,
+    }

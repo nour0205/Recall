@@ -223,20 +223,7 @@ function QuestionForm({
           />
         </Field>
 
-        <details className="rounded-2xl border border-[#eee7ef] bg-white px-4 py-3">
-          <summary className="cursor-pointer list-none text-sm font-medium text-[#514858]">
-            Optional filter
-          </summary>
-          <div className="mt-3 max-w-sm">
-            <Field label="Owner">
-              <PremiumInput
-                value={owner}
-                onChange={(e) => setOwner(e.target.value)}
-                placeholder="nour"
-              />
-            </Field>
-          </div>
-        </details>
+       
 
         {error ? <StatusBanner tone="warning" title="Request issue" message={error} /> : null}
 
