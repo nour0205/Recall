@@ -1,28 +1,12 @@
 from app.llm.client import chat
 from app.rag.hybrid_retriever import hybrid_retrieve
-from app.rag.reranker import rerank_items
+from app.orchestration.prompts import build_answer_prompt, normalize_answer
+from types import SimpleNamespace
 from app.schemas.api import SourceItem, RagAnswerResult
 
 
 def build_rag_prompt(question: str, contexts: list[str]) -> list[dict]:
-    context_block = "\n\n".join(
-        [f"[{i+1}] {ctx}" for i, ctx in enumerate(contexts)]
-    )
-
-    system = (
-        "You are a strict assistant that answers ONLY using the provided context.\n"
-        "Rules:\n"
-        "- If the answer is not in the context, say: \"I don't know.\"\n"
-        "- Do NOT use outside knowledge.\n"
-        "- Cite sources using bracket numbers like [1], [2].\n"
-    )
-
-    user = f"Context:\n{context_block}\n\nQuestion: {question}\nAnswer:"
-
-    return [
-        {"role": "system", "content": system},
-        {"role": "user", "content": user},
-    ]
+    return build_answer_prompt(question, [SimpleNamespace(document_id="context", text=t) for t in contexts], "unknown")
 
 
 def rag_answer_with_store(
@@ -35,19 +19,20 @@ def rag_answer_with_store(
     candidates = hybrid_retrieve(
         store=store,
         question=question,
-        k=retrieve_k,
-        where=where
+        k=k,
+        where=where,
+        candidate_k=retrieve_k,
     )
 
-    items = rerank_items(question, candidates, k=k)
+    items = [item for item in candidates if item.text.strip()]
 
     contexts = [item.text for item in items if item.text.strip()]
 
     if not contexts:
         return "I don't know."
 
-    messages = build_rag_prompt(question, contexts)
-    return chat(messages)
+    messages = build_answer_prompt(question, items, "unknown")
+    return normalize_answer(chat(messages))
 
 
 def rag_answer_with_sources(
@@ -60,11 +45,12 @@ def rag_answer_with_sources(
     candidates = hybrid_retrieve(
         store=store,
         question=question,
-        k=retrieve_k,
-        where=where
+        k=k,
+        where=where,
+        candidate_k=retrieve_k,
     )
 
-    items = rerank_items(question, candidates, k=k)
+    items = [item for item in candidates if item.text.strip()]
 
     contexts = [item.text for item in items if item.text.strip()]
 
@@ -74,8 +60,8 @@ def rag_answer_with_sources(
             sources=[]
         )
 
-    messages = build_rag_prompt(question, contexts)
-    answer = chat(messages)
+    messages = build_answer_prompt(question, items, "unknown")
+    answer = normalize_answer(chat(messages))
 
     if answer.strip() == "I don't know.":
         return RagAnswerResult(
@@ -90,7 +76,7 @@ def rag_answer_with_sources(
             text=item.text,
             retrieval_type=item.retrieval_type,
             hybrid_score=item.hybrid_score,
-            rerank_score=item.rerank_score,
+            rerank_score=getattr(item, "rerank_score", None),
         )
         for item in items
     ]
