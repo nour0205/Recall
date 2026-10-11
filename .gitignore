@@ -57,3 +57,6 @@ recall-frontend/dist/
 htmlcov/
 *.log
 *.tmp
+
+# Claude Code personal settings
+.claude/settings.local.json
