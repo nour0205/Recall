@@ -2,3 +2,4 @@
 evaluation/benchmarks/*.json -text
 evaluation/results/*.json -text
 evaluation/results/*.md -text
+evaluation/prompts/*.json -text

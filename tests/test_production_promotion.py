@@ -2,11 +2,15 @@
 import ast
 import importlib.util
 import json
+import os
 from pathlib import Path
 import sys
 from types import ModuleType
 import unittest
 from unittest.mock import Mock, patch
+
+# app.config requires a key at import; nothing here calls OpenAI.
+os.environ.setdefault("OPENAI_API_KEY", "test-placeholder")
 
 from app.orchestration import prompts
 from app.rag import hybrid_retriever as hybrid
