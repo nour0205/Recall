@@ -41,6 +41,20 @@ I compared four answer-generation prompts on the same 19 questions and the same 
 
 The baseline covered every required point but padded most answers with plausible material that wasn't in the notes, often with a citation attached. Strict v2 removed almost all of that at a small cost in completeness. That trade-off is measured, not assumed. Strict v2 is the best balance on this benchmark, not a universally best prompt.
 
+<details>
+<summary>All four prompts compared</summary>
+
+| Prompt | Groundedness | Mean completeness | Citation correctness | Unsupported elaboration |
+|---|---:|---:|---:|---:|
+| Baseline | 5/19 (26%) | 16/16 (100%) | 3/17 (18%) | 14/19 |
+| Strict v1 | 19/19 (100%) | 13.5/16 (84%) | 15/15 (100%) | 0/19 |
+| Balanced v2 | 15/19 (79%) | 15.5/16 (97%) | 12/16 (75%) | 4/19 |
+| Strict v2 | 18/19 (95%) | 14.5/16 (91%) | 15/16 (94%) | 1/19 |
+
+Strict v2 is the production prompt. Strict v1 was the most grounded, but it under-answered and once refused a question it could answer. Balanced v2 recovered completeness but reintroduced unsupported claims. Citation correctness excludes cases labelled not applicable, so its denominators differ. Per-case details are in the [final comparison](evaluation/results/generation_prompt_ablation_comparison_final.md).
+
+</details>
+
 **Retrieval decisions came from measurement too:**
 - **Rejected a heuristic reranker.** It made rankings worse on 6 of 16 questions and better on none (MRR 0.802 → 0.693).
 - **Kept a neural cross-encoder (MiniLM) out of production.** It was close to plain fusion in quality but added about 0.65 s of CPU latency per query.
@@ -81,7 +95,7 @@ flowchart LR
 - **A citation is not evidence.** The baseline prompt cited sources in almost every answer, yet 14 of 19 answers contained claims the cited passage didn't support. I learned this only by checking each claim by hand, which is why the evaluation scores groundedness and citation correctness separately.
 
   > **Q:** What happens if the learning rate is too large during gradient descent?
-  > **Baseline:** "…results in overshooting the optimal parameter values, leading to instability in the training process [S1]." *(The notes don't mention overshooting or instability.)*
+  > **Baseline:** "A **learning rate** that is too large results in overshooting the optimal parameter values, leading to instability in the training process [S1]." *(The notes don't mention overshooting or instability.)*
   > **Recall:** "A learning rate that is too large may cause divergence [S1]." *(Exactly what the notes say, including "may".)*
 
 - **Grounding and completeness pull against each other.** My first strict prompt reached 100% groundedness but under-answered and once refused a question it could answer. I fixed the false refusal and recovered completeness in Strict v2, accepting one remaining unsupported claim. I chose that trade-off deliberately, with the numbers in front of me.
