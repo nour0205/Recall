@@ -1,0 +1,171 @@
+{
+  "description": "The 12 lecture notes behind the Recall evaluation benchmark. Load them with: python -m app.seed_demo. benchmark_chunk_ids lists, in chunk order, the chunk IDs the benchmark labels refer to; a fresh install creates new IDs, so map labels by document_id and position instead.",
+  "notes": [
+    {
+      "document_id": "db_normalization_intro",
+      "file": "db_normalization_intro.txt",
+      "course": "Database Systems",
+      "topic_tags": [
+        "normalization",
+        "relational design",
+        "database"
+      ],
+      "source": "recall test set",
+      "benchmark_chunk_ids": [
+        "a1cbb9b1-26d3-4a25-a6db-73d26dc8eb68",
+        "f47f5e9c-59a3-4859-8580-c16ffb34ed60",
+        "73c987b6-90bc-41e1-bbb7-12bc713de952"
+      ]
+    },
+    {
+      "document_id": "db_transactions_concurrency",
+      "file": "db_transactions_concurrency.txt",
+      "course": "Database Systems",
+      "topic_tags": [
+        "transactions",
+        "acid",
+        "concurrency"
+      ],
+      "source": "recall test set",
+      "benchmark_chunk_ids": [
+        "0dd5a5bf-5dab-4d48-b5f3-566ff4b80281",
+        "ece01229-7d42-455a-a3e2-cf789c5dae2c",
+        "b2b2b736-dbec-45ae-b811-77d5a03d785e"
+      ]
+    },
+    {
+      "document_id": "ml_bias_variance_generalization",
+      "file": "ml_bias_variance_generalization.txt",
+      "course": "Introduction to Machine Learning",
+      "topic_tags": [
+        "bias variance",
+        "generalization",
+        "model evaluation"
+      ],
+      "source": "recall test set",
+      "benchmark_chunk_ids": [
+        "c79ae468-500a-4b28-a0c9-7fc0a499e8c7",
+        "7e65c5f9-f3f4-472e-9ed7-d90595144002",
+        "238ddbf4-a7b9-4647-b485-79a96e6a48d5"
+      ]
+    },
+    {
+      "document_id": "ml_classification_regression",
+      "file": "ml_classification_regression.txt",
+      "course": "Machine Learning",
+      "topic_tags": [
+        "Classification and Regression"
+      ],
+      "benchmark_chunk_ids": [
+        "a991caeb-71fd-45b3-8fb8-aa3b541b8f91"
+      ]
+    },
+    {
+      "document_id": "ml_cross_validation",
+      "file": "ml_cross_validation.txt",
+      "course": "Machine Learning",
+      "topic_tags": [],
+      "benchmark_chunk_ids": [
+        "f8ba6a9b-4e38-45d9-93ce-a3d8c9d1a595"
+      ]
+    },
+    {
+      "document_id": "ml_feature_engineering",
+      "file": "ml_feature_engineering.txt",
+      "course": "Machine Learning",
+      "topic_tags": [
+        "Feature Engineering"
+      ],
+      "benchmark_chunk_ids": [
+        "e61b17d4-d11b-47f9-9674-db13ccfdd7e8"
+      ]
+    },
+    {
+      "document_id": "ml_gradient_descent",
+      "file": "ml_gradient_descent.txt",
+      "course": "Optimization",
+      "topic_tags": [
+        "Gradient Descent"
+      ],
+      "benchmark_chunk_ids": [
+        "4a373a64-f445-4926-964c-e32d4bef44e2"
+      ]
+    },
+    {
+      "document_id": "ml_model_evaluation",
+      "file": "ml_model_evaluation.txt",
+      "course": "Machine Learning",
+      "topic_tags": [
+        "Evaluation"
+      ],
+      "benchmark_chunk_ids": [
+        "6d045457-927e-4d91-a801-80fb6b49a451",
+        "bd664c0a-5bcb-457d-b326-bddcb215638f"
+      ]
+    },
+    {
+      "document_id": "ml_overfitting_underfitting",
+      "file": "ml_overfitting_underfitting.txt",
+      "course": "Machine Learning",
+      "topic_tags": [
+        "Overfitting",
+        "Underfitting"
+      ],
+      "benchmark_chunk_ids": [
+        "d7755e05-d3c6-4865-9453-7d9464895375",
+        "1a8573db-c271-4cd4-9bc8-097466513548"
+      ]
+    },
+    {
+      "document_id": "ml_supervised_learning_basics",
+      "file": "ml_supervised_learning_basics.txt",
+      "course": "Introduction to Machine Learning",
+      "topic_tags": [
+        "machine learning",
+        "supervised learning",
+        "classification"
+      ],
+      "source": "recall test set",
+      "benchmark_chunk_ids": [
+        "3ccba452-0e10-40ef-ade4-06a09c80b66c",
+        "66277f9c-97b1-4aa9-885f-1a7cde13ffbe",
+        "8e3c8941-518e-401e-961b-091b2c14a7cc"
+      ]
+    },
+    {
+      "document_id": "os_process_vs_thread",
+      "file": "os_process_vs_thread.txt",
+      "course": "Operating Systems",
+      "topic_tags": [
+        "operating systems",
+        "process",
+        "thread",
+        "concurrency",
+        "scheduling"
+      ],
+      "source": "class notes",
+      "benchmark_chunk_ids": [
+        "dbd54f08-345e-4f7f-aa82-2ab6bde2c3c3",
+        "a4d8fe4d-300d-49b7-b7a9-c573f06af200",
+        "28a7c7fa-ee37-43be-a91c-7243ed15b0ac",
+        "fddc7e74-63c8-4d3b-b343-a3aa1d8d7987"
+      ]
+    },
+    {
+      "document_id": "os_processes_threads_scheduling",
+      "file": "os_processes_threads_scheduling.txt",
+      "course": "Operating Systems",
+      "topic_tags": [
+        "processes",
+        "threads",
+        "cpu scheduling"
+      ],
+      "source": "recall test set",
+      "benchmark_chunk_ids": [
+        "0c277ad4-37e2-4378-ae31-64e52a11d86a",
+        "035326e9-1a04-4aed-9dc8-221befcf1945",
+        "5c0117ef-6ce2-4d21-b39b-adc2586cdaa6"
+      ]
+    }
+  ]
+}
