@@ -15,7 +15,15 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(text || `Request failed with ${response.status}`);
+    let message = text;
+    try {
+      // FastAPI errors look like {"detail": "..."}.
+      const detail = JSON.parse(text).detail;
+      if (typeof detail === 'string') message = detail;
+    } catch {
+      // Not JSON; keep the raw text.
+    }
+    throw new Error(message || `Request failed with ${response.status}`);
   }
 
   return response.json() as Promise<T>;
@@ -27,6 +35,13 @@ export function ask(payload: AskRequest) {
 
 export function ingest(payload: IngestRequest) {
   return request<IngestResponse>('/ingest', { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export function deleteDocument(documentId: string) {
+  return request<{ status: string; vector_chunks_deleted: number; bm25_chunks_deleted: number }>(
+    `/documents/${encodeURIComponent(documentId)}`,
+    { method: 'DELETE' },
+  );
 }
 
 export async function listDocuments() {

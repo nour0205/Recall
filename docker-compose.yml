@@ -10,7 +10,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Persist the vector store, BM25 index and catalog between restarts.
+      # Persist the vector store and BM25 index between restarts.
       - recall-chroma:/app/.chroma
       - recall-data:/app/data
 

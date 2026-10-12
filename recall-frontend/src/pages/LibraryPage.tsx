@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, MessageSquareText, Plus, RefreshCw, Search, TriangleAlert } from 'lucide-react';
+import { BookOpen, MessageSquareText, Plus, RefreshCw, Search, Trash2, TriangleAlert } from 'lucide-react';
 import type { LibraryDocument } from '@/types';
 import { cn, documentTitle } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ export default function LibraryPage({
   onRefresh,
   onAddNotes,
   onAskAbout,
+  onDelete,
 }: {
   documents: LibraryDocument[];
   loading: boolean;
@@ -21,6 +22,7 @@ export default function LibraryPage({
   onRefresh: () => void;
   onAddNotes: () => void;
   onAskAbout: (documentId: string) => void;
+  onDelete: (documentId: string) => void;
 }) {
   const [query, setQuery] = useState('');
 
@@ -88,10 +90,19 @@ export default function LibraryPage({
               <CardContent className="flex-1 pb-4">
                 <p className="line-clamp-4 text-sm leading-6 text-muted-foreground">{doc.preview || 'No preview available.'}</p>
               </CardContent>
-              <CardFooter>
-                <Button variant="outline" size="sm" className="w-full" onClick={() => onAskAbout(doc.document_id)}>
+              <CardFooter className="gap-2">
+                <Button variant="outline" size="sm" className="flex-1" onClick={() => onAskAbout(doc.document_id)}>
                   <MessageSquareText />
                   Ask about this note
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                  onClick={() => onDelete(doc.document_id)}
+                  aria-label={`Delete ${documentTitle(doc.document_id)}`}
+                >
+                  <Trash2 />
                 </Button>
               </CardFooter>
             </Card>

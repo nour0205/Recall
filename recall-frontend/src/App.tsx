@@ -3,6 +3,7 @@ import type { LibraryDocument, View } from '@/types';
 import { listDocuments } from '@/lib/api';
 import AppHeader from '@/components/AppHeader';
 import AddNotesDialog from '@/components/AddNotesDialog';
+import DeleteNoteDialog from '@/components/DeleteNoteDialog';
 import AskPage from '@/pages/AskPage';
 import LibraryPage from '@/pages/LibraryPage';
 
@@ -10,6 +11,7 @@ export default function App() {
   const [view, setView] = useState<View>('ask');
   const [addingNotes, setAddingNotes] = useState(false);
   const [scope, setScope] = useState<string[]>([]);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const [documents, setDocuments] = useState<LibraryDocument[]>([]);
   const [libraryLoading, setLibraryLoading] = useState(false);
@@ -58,11 +60,20 @@ export default function App() {
               setScope([documentId]);
               setView('ask');
             }}
+            onDelete={setDeleting}
           />
         )}
       </main>
 
       <AddNotesDialog open={addingNotes} onOpenChange={setAddingNotes} onIngested={() => void refreshLibrary()} />
+      <DeleteNoteDialog
+        documentId={deleting}
+        onClose={() => setDeleting(null)}
+        onDeleted={(documentId) => {
+          setScope((current) => current.filter((id) => id !== documentId));
+          void refreshLibrary();
+        }}
+      />
     </div>
   );
 }

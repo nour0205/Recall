@@ -1,10 +1,11 @@
 """End-to-end run of the production /ask path. Unscored.
 
 Seeds a fresh, isolated workspace from demo_notes/, then sends every benchmark
-question through the real FastAPI /ask endpoint: live planner, live hybrid
-retrieval and the production prompt, with production settings and fallbacks.
-Thin wrappers observe the planner output, the retrieved context and token
-usage without changing behaviour.
+question through the real FastAPI /ask endpoint: live hybrid retrieval and the
+production prompt, with production settings and fallbacks. Thin wrappers
+observe the retrieved context, prompt fingerprints and token usage without
+changing behaviour. On commits that still have the intent planner, its output
+is recorded too, and --no-planner skips it.
 
 Answer quality is not judged here. Rows record only facts that need no
 judgement: refusal behaviour, cited labels, and whether the retrieved context
@@ -14,11 +15,11 @@ contained the benchmark's required evidence. Run from the repository root:
 
 Each run writes a new timestamped file under evaluation/results/ and never
 overwrites an existing one. It calls the OpenAI API (embeddings for seeding and
-queries, then the planner and answer models for each question).
+queries, then the answer model for each question).
 """
 
 import argparse
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from datetime import datetime, timezone
 from importlib.metadata import version
 import json
@@ -42,6 +43,7 @@ from evaluation.generation_benchmark import (
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 RESULTS_DIR = REPO_ROOT / "evaluation" / "results"
+PLANNER_BYPASS = {"route": "unknown", "targets": [], "reason": "planner disabled for this run"}
 CITATION = re.compile(r"\[(S\d+(?:\s*,\s*S\d+)*)\]")
 
 
@@ -97,7 +99,7 @@ def build_row(case, reference, *, status_code, response, plan, retrieved, calls,
     evidence = point_evidence(reference, case, to_benchmark_chunks(retrieved or [], chunk_map))
     factual = [p["sufficient_retrieved_evidence"] for p in evidence if p["sufficient_retrieved_evidence"] is not None]
     labels = cited_labels(answer)
-    chat_calls = [c for c in calls if c["kind"] == "chat"]
+    answer_calls = [c for c in calls if c["kind"] == "chat" and c["stage"] == "answer"]
     return {
         "question_id": case.question_id,
         "question": case.question,
@@ -116,8 +118,8 @@ def build_row(case, reference, *, status_code, response, plan, retrieved, calls,
         "context_sufficient_for_full_answer": all(factual) if factual else None,
         "latency_seconds": latency,
         "model_calls": calls,
-        # The planner and the answer each make one chat call; more means the fallback ran.
-        "fallback_suspected": len(chat_calls) > 2,
+        # One answer call per request; a second one means the fallback ran.
+        "fallback_suspected": len(answer_calls) > 1,
         "completed_at_utc": utc_now(),
     }
 
@@ -187,6 +189,7 @@ class CallRecorder:
             usage = getattr(response, "usage", None)
             self.calls.append({"kind": kind, "stage": self.stage if kind == "chat" else "query",
                                "model": getattr(response, "model", None),
+                               "messages_sha256": canonical_hash(kwargs["messages"]) if "messages" in kwargs else None,
                                "latency_seconds": time.perf_counter() - started,
                                "usage": usage.model_dump(mode="json") if usage else None})
             return response
@@ -224,9 +227,10 @@ def save(path: Path, report: dict):
     temporary.replace(path)
 
 
-def main(output_path: Path | None = None, keep_workspace: bool = False):
+def main(output_path: Path | None = None, keep_workspace: bool = False, planner: bool = True):
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    output_path = Path(output_path or RESULTS_DIR / f"end_to_end_v1_{stamp}.json").resolve()
+    name = f"end_to_end_v1_{stamp}.json" if planner else f"end_to_end_v1_no_planner_{stamp}.json"
+    output_path = Path(output_path or RESULTS_DIR / name).resolve()
     if output_path.exists():
         raise FileExistsError(f"Refusing to overwrite an existing run: {output_path}")
 
@@ -242,7 +246,7 @@ def main(output_path: Path | None = None, keep_workspace: bool = False):
         "completed_at_utc": None,
         "description": "Production /ask on a fresh install seeded from demo_notes/. Unscored.",
         "configuration": {"endpoint": "POST /ask", "prompt_version": PROMPT_VERSION,
-                          "planner": True, "fallbacks": "production", "sdk_retries": "production defaults"},
+                          "planner": planner, "fallbacks": "production", "sdk_retries": "production defaults"},
         "provenance": {
             "git_commit": git_commit(),
             "retrieval_benchmark_sha256": file_hash(REPO_ROOT / RETRIEVAL_PATH),
@@ -269,7 +273,10 @@ def main(output_path: Path | None = None, keep_workspace: bool = False):
             from app.llm import client as llm
             from app.seed_demo import seed
 
-            report["configuration"].update({"model": MODEL_NAME, "temperature": TEMPERATURE, "max_tokens": MAX_TOKENS})
+            # /ask has no planner since the planner ablation; older commits still do.
+            has_planner = hasattr(api, "plan_question")
+            report["configuration"].update({"model": MODEL_NAME, "temperature": TEMPERATURE, "max_tokens": MAX_TOKENS,
+                                            "planner": planner and has_planner, "app_has_planner": has_planner})
             llm.client.chat.completions.create = recorder.wrap("chat", llm.client.chat.completions.create)
             embedder.client.embeddings.create = recorder.wrap("embedding", embedder.client.embeddings.create)
 
@@ -294,7 +301,8 @@ def main(output_path: Path | None = None, keep_workspace: bool = False):
 
             def observe_plan(question):
                 recorder.stage = "planner"
-                observed["plan"] = api_plan(question)
+                # Bypass: the route the planner returned for most questions, with no model call.
+                observed["plan"] = api_plan(question) if planner else dict(PLANNER_BYPASS)
                 recorder.stage = "answer"
                 return observed["plan"]
 
@@ -305,13 +313,16 @@ def main(output_path: Path | None = None, keep_workspace: bool = False):
                      "hybrid_score": r.hybrid_score, "text": r.text} for r in results])
                 return results
 
-            api_plan, api_retrieve = api.plan_question, api.hybrid_retrieve
-            with patch.object(api, "plan_question", observe_plan), \
-                 patch.object(api, "hybrid_retrieve", observe_retrieval), \
-                 TestClient(api.app) as http:
+            api_plan, api_retrieve = getattr(api, "plan_question", None), api.hybrid_retrieve
+            with ExitStack() as stack:
+                if has_planner:
+                    stack.enter_context(patch.object(api, "plan_question", observe_plan))
+                stack.enter_context(patch.object(api, "hybrid_retrieve", observe_retrieval))
+                http = stack.enter_context(TestClient(api.app))
                 for case, reference in zip(benchmark.cases, references.cases):
                     observed.clear()
                     recorder.take()
+                    recorder.stage = "answer"
                     started = time.perf_counter()
                     response = http.post("/ask", json={"question": case.question})
                     latency = time.perf_counter() - started
@@ -343,5 +354,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--output", type=Path, help="Result path (default: a new timestamped file)")
     parser.add_argument("--keep-workspace", action="store_true", help="Keep the temporary seeded install")
+    parser.add_argument("--no-planner", action="store_true", help="Skip the planner call (route 'unknown', no targets)")
     args = parser.parse_args()
-    main(args.output, args.keep_workspace)
+    main(args.output, args.keep_workspace, planner=not args.no_planner)

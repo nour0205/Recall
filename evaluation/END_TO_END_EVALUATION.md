@@ -1,6 +1,6 @@
 # End-to-end evaluation of `/ask`
 
-Milestones 1 and 2 evaluated retrieval and the prompt in isolation, with retrieval frozen for generation. This evaluation sends the 19 benchmark questions through the production `/ask` endpoint instead: live planner, live hybrid retrieval, the production Strict v2 prompt, production settings and fallbacks.
+Milestones 1 and 2 evaluated retrieval and the prompt in isolation, with retrieval frozen for generation. This evaluation sends the 19 benchmark questions through the production `/ask` endpoint instead: live hybrid retrieval, the production Strict v2 prompt, production settings and fallbacks. Run 1 below predates the planner's removal, so it includes the live intent planner.
 
 ```sh
 python -m evaluation.run_end_to_end
@@ -41,7 +41,7 @@ The runner seeds a fresh, temporary install from [`demo_notes/`](../demo_notes/)
 | Share of chat tokens | 28% (9,130 of 32,134) |
 | Mean latency of its call | 0.86 s of 2.17 s per request |
 
-Every route uses the same prompt, so the planner's output did not change any answer in this run, while it accounted for roughly 40% of request latency. It is a candidate for removal; that will be decided with a planner-on/off comparison once the judge exists.
+Every route uses the same prompt, so the planner's output did not change any answer in this run, while it accounted for roughly 40% of request latency. The [planner ablation](PLANNER_ABLATION.md) confirms it: with and without the planner, the answering model received byte-identical prompts for all 19 questions, while removing it cut mean latency from about 2.1 s to 1.2 s.
 
 ### Quality scores
 

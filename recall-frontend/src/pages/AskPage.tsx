@@ -3,7 +3,7 @@ import { ArrowUp, CircleHelp, Lightbulb, Loader2, Plus, SlidersHorizontal, Trian
 import type { AskResponse, LibraryDocument } from '@/types';
 import { ask } from '@/lib/api';
 import { citedSourceIndexes } from '@/lib/citations';
-import { cn, documentTitle, routeLabel } from '@/lib/utils';
+import { cn, documentTitle } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -280,7 +280,6 @@ function Result({
   const { question, response, elapsedMs, scope } = answered;
   const sources = response.sources ?? [];
   const cited = useMemo(() => citedSourceIndexes(response.answer, sources.length), [response.answer, sources.length]);
-  const intent = routeLabel(response.route);
 
   if (response.answer.trim() === REFUSAL) {
     return (
@@ -324,7 +323,6 @@ function Result({
               <span>
                 Cites {cited.size} of {sources.length} retrieved passage{sources.length === 1 ? '' : 's'}
               </span>
-              {intent ? <span>Intent: {intent}</span> : null}
               <span>{(elapsedMs / 1000).toFixed(1)}s</span>
             </div>
           </CardContent>

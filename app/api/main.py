@@ -1,23 +1,18 @@
 from collections import defaultdict
-import uuid
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 # ---- Core RAG imports ----
-from app.ingestion.chunker import base_chunks, apply_overlap
 from app.embeddings.embedder import embed_texts
 from app.vectordb.chroma_store import ChromaStore
 from app.rag.pipeline import rag_answer_with_sources
 from app.rag.hybrid_retriever import hybrid_retrieve
-from app.utils.hash import hash_text
 from app.llm.client import chat
-from app.catalog.document_catalog import upsert_document_entry
+from app.library import IngestionError, add_document, delete_document as remove_document
 
 # ---- Orchestration imports ----
-from app.orchestration.planner import plan_question
 from app.orchestration.prompts import build_answer_prompt, normalize_answer, REFUSAL
-from app.orchestration.registry import DOC_REGISTRY
 from app.orchestration.utils import build_study_hint
 
 # ---- Schema imports ----
@@ -27,9 +22,6 @@ from app.schemas.api import (
     QuestionRequest,
     SourceItem,
 )
-
-# ---- Whoosh imports ----
-from app.vectordb.whoosh_index import add_chunks_to_whoosh
 
 
 # -------------------------------------------------------------------
@@ -53,16 +45,12 @@ app.add_middleware(
 # -------------------------------------------------------------------
 # Helpers
 # -------------------------------------------------------------------
-def build_where_clause(req: QuestionRequest, targets=None):
+def build_where_clause(req: QuestionRequest):
     clauses = []
     if req.document_id:
         clauses.append({"document_id": req.document_id})
     elif req.document_ids:
         clauses.append({"document_id": {"$in": list(dict.fromkeys(req.document_ids))}})
-    elif targets:
-        documents = [DOC_REGISTRY[key]["document_id"] for key in targets if key in DOC_REGISTRY]
-        if documents:
-            clauses.append({"document_id": {"$in": list(dict.fromkeys(documents))}})
     if req.owner:
         clauses.append({"owner": req.owner})
     return {"$and": clauses} if len(clauses) > 1 else (clauses[0] if clauses else None)
@@ -83,16 +71,17 @@ def to_source_items(items):
 
 
 # -------------------------------------------------------------------
-# ASK (merged Recall v3)
+# ASK
 # -------------------------------------------------------------------
+# No intent planner: an ablation showed it never changed the answer prompt
+# while adding ~40% latency (evaluation/PLANNER_ABLATION.md). `route` stays
+# in the response schema for compatibility and is always None.
 @app.post("/ask", response_model=AnswerResponse)
 def ask(req: QuestionRequest):
-    # 1. Plan the study intent
-    plan = plan_question(req.question)
-    route = plan.get("route", "unknown")
-    where = build_where_clause(req, plan.get("targets"))
+    where = build_where_clause(req)
 
-    # 2. Try routed retrieval first
+    # 1. Hybrid retrieval. Keep RRF chunk order, including complementary
+    #    chunks from one document.
     results = hybrid_retrieve(
         store=store,
         question=req.question,
@@ -100,58 +89,35 @@ def ask(req: QuestionRequest):
         where=where,
         candidate_k=10,
     )
-    # Keep RRF chunk order, including complementary chunks from one document.
     results = [r for r in results if r.text.strip()]
+    if not results:
+        return AnswerResponse(answer=REFUSAL, route=None, sources=[], study_hint=None)
 
-    routed_sources = to_source_items(results) if results else []
+    # 2. Grounded generation. A refusal is a valid result, not a fallback trigger.
+    try:
+        answer = normalize_answer(chat(build_answer_prompt(question=req.question, sources=results, route=None)))
+    except Exception:
+        answer = None
 
-    routed_answer = None
-    routed_ok = False
+    if answer == REFUSAL:
+        return AnswerResponse(answer=REFUSAL, route=None, sources=[], study_hint=None)
+    if answer is not None:
+        sources = to_source_items(results)
+        return AnswerResponse(answer=answer, route=None, sources=sources, study_hint=build_study_hint(None, sources))
 
-    # 3. Try routed generation if retrieval returned something
-    if results:
-        messages = build_answer_prompt(
-            question=req.question,
-            sources=results,
-            route=route,
-        )
-
-        try:
-            routed_answer = normalize_answer(chat(messages))
-            routed_ok = True  # A refusal is a valid result, not a fallback trigger.
-        except Exception:
-            routed_ok = False
-
-    # 4. Return routed answer if successful
-    if routed_ok or not results:
-        if not results or routed_answer == REFUSAL:
-            return AnswerResponse(answer=REFUSAL, route=route, sources=[], study_hint=None)
-        study_hint = build_study_hint(route, routed_sources)
-        return AnswerResponse(
-            answer=routed_answer,
-            route=route,
-            sources=routed_sources,
-            study_hint=study_hint,
-        )
-
-    # 5. Fallback to reliable generic RAG
+    # 3. Generation failed: fall back to the generic RAG pipeline.
     fallback = rag_answer_with_sources(
         question=req.question,
         store=store,
         k=5,
         where=where,
     )
-
-    fallback_sources = fallback.sources if fallback.sources else []
-    source_items = to_source_items(fallback_sources)
-
-    study_hint = build_study_hint(route, source_items)
-
+    source_items = to_source_items(fallback.sources or [])
     return AnswerResponse(
         answer=fallback.answer,
-        route=route,
+        route=None,
         sources=source_items,
-        study_hint=study_hint,
+        study_hint=build_study_hint(None, source_items),
     )
 
 
@@ -160,81 +126,10 @@ def ask(req: QuestionRequest):
 # -------------------------------------------------------------------
 @app.post("/ingest")
 def ingest(req: IngestRequest):
-    doc_hash = hash_text(req.text)
-
-    existing = store.collection.get(
-        where={"doc_hash": doc_hash},
-        limit=1,
-    )
-    if existing["ids"]:
-        return {"status": "duplicate"}
-
-    existing_id = store.collection.get(
-        where={"document_id": req.document_id},
-        limit=1,
-    )
-    if existing_id["ids"]:
-        return {"status": "conflict"}
-
-    chunks = base_chunks(req.text)
-    chunks = apply_overlap(chunks, overlap=1)
-
-    if not chunks:
-        return {"status": "no content"}
-
-    embeddings = embed_texts(chunks)
-    ids = [str(uuid.uuid4()) for _ in chunks]
-    metadatas = []
-
-    for i in range(len(chunks)):
-        meta = {
-            "chunk_id": ids[i],
-            "document_id": req.document_id,
-            "doc_hash": doc_hash,
-            "chunk_index": i,
-            "document_type": req.document_type,
-            "course": req.course,
-            "topic_tags": ", ".join(req.topic_tags) if req.topic_tags else "",
-        }
-
-        if req.source:
-            meta["source"] = req.source
-        if req.owner:
-            meta["owner"] = req.owner
-
-        metadatas.append(meta)
-
-    whoosh_chunks = [
-        {
-            "chunk_id": ids[i],
-            "document_id": req.document_id,
-            "chunk_index": i,
-            "text": chunks[i],
-            "source": req.source or "",
-            "owner": req.owner or "",
-        }
-        for i in range(len(chunks))
-    ]
-
-    store.add_texts(
-        ids=ids,
-        texts=chunks,
-        embeddings=embeddings,
-        metadatas=metadatas,
-    )
-
-    add_chunks_to_whoosh(whoosh_chunks)
-
-    upsert_document_entry(
-        {
-            "document_id": req.document_id,
-            "title": req.document_id,
-            "preview": chunks[0][:300],
-            "chunk_count": len(chunks),
-        }
-    )
-
-    return {"status": "ingested", "chunks_added": len(chunks)}
+    try:
+        return add_document(store, req, embed=embed_texts)
+    except IngestionError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 # -------------------------------------------------------------------
@@ -252,11 +147,6 @@ def debug_retrieve(req: QuestionRequest):
     )
 
     return {"results": [r.model_dump() for r in results]}
-
-
-@app.post("/debug/plan")
-def debug_plan(req: QuestionRequest):
-    return {"plan": plan_question(req.question)}
 
 
 # -------------------------------------------------------------------
@@ -296,11 +186,7 @@ def list_documents():
 
 @app.delete("/documents/{document_id}")
 def delete_document(document_id: str):
-    store.collection.delete(
-        where={"document_id": document_id}
-    )
-
-    return {
-        "status": "deleted",
-        "document_id": document_id,
-    }
+    deleted = remove_document(store, document_id)
+    if not any(deleted.values()):
+        raise HTTPException(status_code=404, detail=f"No note named '{document_id}'.")
+    return {"status": "deleted", "document_id": document_id, **deleted}

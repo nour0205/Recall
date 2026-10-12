@@ -60,6 +60,15 @@ class EndToEndRunnerTests(unittest.TestCase):
         self.assertEqual(row['invalid_cited_labels'], [4])
         self.assertTrue(row['fallback_suspected'])
 
+    def test_fallback_detection_does_not_depend_on_the_planner(self):
+        answer = {'kind': 'chat', 'stage': 'answer', 'usage': None}
+        self.assertFalse(self.row('retrieval_001', 'x [S1].', [], calls=[answer])['fallback_suspected'])
+        self.assertTrue(self.row('retrieval_001', 'x [S1].', [], calls=[answer, answer])['fallback_suspected'])
+
+    def test_planner_bypass_matches_the_planner_contract(self):
+        self.assertEqual(set(e2e.PLANNER_BYPASS), {'route', 'targets', 'reason'})
+        self.assertEqual((e2e.PLANNER_BYPASS['route'], e2e.PLANNER_BYPASS['targets']), ('unknown', []))
+
     def test_summary_counts_behaviour_evidence_and_tokens(self):
         usage = {'prompt_tokens': 10, 'completion_tokens': 2, 'total_tokens': 12}
         calls = [{'kind': 'chat', 'stage': 'planner', 'usage': usage}, {'kind': 'chat', 'stage': 'answer', 'usage': usage},
