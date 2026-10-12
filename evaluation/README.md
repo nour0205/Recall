@@ -19,6 +19,7 @@ Milestone 1 evaluates retrieval, not generated answers. Start with the
 | [rescore_evidence.py](rescore_evidence.py) | Evidence rescoring of saved MiniLM experiment outputs |
 | [validate_benchmark.py](validate_benchmark.py) | Schema validation, optionally persisted Chroma reference checks |
 | [verify_saved_results.py](verify_saved_results.py) | Offline reproduction of historical per-query and aggregate evidence scores |
+| [run_end_to_end.py](run_end_to_end.py) / [END_TO_END_EVALUATION.md](END_TO_END_EVALUATION.md) | Production `/ask` on a fresh install seeded from `demo_notes/`; unscored run and findings |
 
 ## No-key verification
 
