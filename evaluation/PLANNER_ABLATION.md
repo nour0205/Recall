@@ -34,6 +34,6 @@ Raw results: [on, run 1](results/end_to_end_v1_20261012T071846Z.json) · [on, ru
 
 ## Decision
 
-Remove the planner from the production `/ask` path. If intent-specific behavior is wanted later (for example, a study-plan format for exam questions), it should be added together with a prompt that actually uses the intent, and evaluated against this baseline.
+**Done:** the planner and its document registry were removed from the production `/ask` path. The `route` field stays in the API response for compatibility and is always `null`. The end-to-end runner still records planner output, and still supports `--no-planner`, when run on a commit that has the planner. If intent-specific behavior is wanted later (for example, a study-plan format for exam questions), it should be added together with a prompt that actually uses the intent, and evaluated against this baseline.
 
 Future comparisons should use several runs per configuration: on 19 questions, a single run can move a score by about one case from chance alone.

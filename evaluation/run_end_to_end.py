@@ -1,10 +1,11 @@
 """End-to-end run of the production /ask path. Unscored.
 
 Seeds a fresh, isolated workspace from demo_notes/, then sends every benchmark
-question through the real FastAPI /ask endpoint: live planner, live hybrid
-retrieval and the production prompt, with production settings and fallbacks.
-Thin wrappers observe the planner output, the retrieved context and token
-usage without changing behaviour.
+question through the real FastAPI /ask endpoint: live hybrid retrieval and the
+production prompt, with production settings and fallbacks. Thin wrappers
+observe the retrieved context, prompt fingerprints and token usage without
+changing behaviour. On commits that still have the intent planner, its output
+is recorded too, and --no-planner skips it.
 
 Answer quality is not judged here. Rows record only facts that need no
 judgement: refusal behaviour, cited labels, and whether the retrieved context
@@ -14,11 +15,11 @@ contained the benchmark's required evidence. Run from the repository root:
 
 Each run writes a new timestamped file under evaluation/results/ and never
 overwrites an existing one. It calls the OpenAI API (embeddings for seeding and
-queries, then the planner and answer models for each question).
+queries, then the answer model for each question).
 """
 
 import argparse
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from datetime import datetime, timezone
 from importlib.metadata import version
 import json
@@ -272,7 +273,10 @@ def main(output_path: Path | None = None, keep_workspace: bool = False, planner:
             from app.llm import client as llm
             from app.seed_demo import seed
 
-            report["configuration"].update({"model": MODEL_NAME, "temperature": TEMPERATURE, "max_tokens": MAX_TOKENS})
+            # /ask has no planner since the planner ablation; older commits still do.
+            has_planner = hasattr(api, "plan_question")
+            report["configuration"].update({"model": MODEL_NAME, "temperature": TEMPERATURE, "max_tokens": MAX_TOKENS,
+                                            "planner": planner and has_planner, "app_has_planner": has_planner})
             llm.client.chat.completions.create = recorder.wrap("chat", llm.client.chat.completions.create)
             embedder.client.embeddings.create = recorder.wrap("embedding", embedder.client.embeddings.create)
 
@@ -309,13 +313,16 @@ def main(output_path: Path | None = None, keep_workspace: bool = False, planner:
                      "hybrid_score": r.hybrid_score, "text": r.text} for r in results])
                 return results
 
-            api_plan, api_retrieve = api.plan_question, api.hybrid_retrieve
-            with patch.object(api, "plan_question", observe_plan), \
-                 patch.object(api, "hybrid_retrieve", observe_retrieval), \
-                 TestClient(api.app) as http:
+            api_plan, api_retrieve = getattr(api, "plan_question", None), api.hybrid_retrieve
+            with ExitStack() as stack:
+                if has_planner:
+                    stack.enter_context(patch.object(api, "plan_question", observe_plan))
+                stack.enter_context(patch.object(api, "hybrid_retrieve", observe_retrieval))
+                http = stack.enter_context(TestClient(api.app))
                 for case, reference in zip(benchmark.cases, references.cases):
                     observed.clear()
                     recorder.take()
+                    recorder.stage = "answer"
                     started = time.perf_counter()
                     response = http.post("/ask", json={"question": case.question})
                     latency = time.perf_counter() - started

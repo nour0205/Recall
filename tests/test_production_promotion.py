@@ -46,7 +46,6 @@ class ProductionPromotionTests(unittest.TestCase):
 
     def setUp(self):
         self.rows = chunks()
-        self.plan = patch.object(self.api, 'plan_question', return_value={'route':'concept_explanation','targets':[]}).start()
         self.retrieve = patch.object(self.api, 'hybrid_retrieve', return_value=self.rows).start()
         self.chat = patch.object(self.api, 'chat', return_value='Supplied point 0 [S1] and point 1 [S2].').start()
         self.fallback = patch.object(self.api, 'rag_answer_with_sources', side_effect=AssertionError('Unexpected fallback')).start()
@@ -67,15 +66,19 @@ class ProductionPromotionTests(unittest.TestCase):
         for i, row in enumerate(self.rows, 1):
             self.assertIn(f'[S{i}] DOCUMENT: {row.document_id}\nCONTENT:\n{row.text}', message)
 
-    def test_planner_targets_scope_before_hybrid_and_owner_is_preserved(self):
-        self.plan.return_value = {'route':'source_recall','targets':['postgres','sqlserver']}
-        result = self.api.ask(QuestionRequest(question='Where?',owner='student'))
-        self.assertEqual(result.route,'source_recall')
-        self.assertEqual(self.retrieve.call_args.kwargs['where'], {'$and':[
-            {'document_id':{'$in':['db_postgres','db_sqlserver']}}, {'owner':'student'}]})
+    def test_ask_makes_a_single_model_call_and_has_no_planner(self):
+        result = self.api.ask(QuestionRequest(question='Explain both supplied points'))
+        self.chat.assert_called_once()
+        self.assertIsNone(result.route)
+        self.assertFalse(hasattr(self.api, 'plan_question'))
+        self.assertFalse(Path('app/orchestration/planner.py').exists())
 
-    def test_explicit_document_scope_overrides_planner_and_multiple_ids_work(self):
-        self.plan.return_value = {'route':'exam_preparation','targets':['postgres']}
+    def test_owner_scope_combines_with_document_scope(self):
+        self.api.ask(QuestionRequest(question='Where?',document_ids=['a','b'],owner='student'))
+        self.assertEqual(self.retrieve.call_args.kwargs['where'], {'$and':[
+            {'document_id':{'$in':['a','b']}}, {'owner':'student'}]})
+
+    def test_explicit_document_scope_wins_and_multiple_ids_work(self):
         self.api.ask(QuestionRequest(question='Review',document_id='chosen',document_ids=['other']))
         self.assertEqual(self.retrieve.call_args.kwargs['where'], {'document_id':'chosen'})
         self.api.ask(QuestionRequest(question='Review',document_ids=['a','b','a']))
@@ -98,16 +101,14 @@ class ProductionPromotionTests(unittest.TestCase):
         self.chat.assert_not_called()
         self.fallback.assert_not_called()
 
-    def test_supported_multi_part_response_is_preserved_for_every_route(self):
-        for route in ('concept_explanation','source_recall','exam_preparation','unknown'):
-            self.plan.return_value = {'route':route,'targets':[]}
-            result = self.api.ask(QuestionRequest(question='Identify the problem and its mechanism'))
-            self.assertEqual(result.answer,self.chat.return_value)
-            self.assertEqual(result.route,route)
-            messages = self.chat.call_args.args[0]
-            self.assertIn('answer each requested part',messages[0]['content'])
-            self.assertIn('identification and a supported explanation/mechanism',messages[0]['content'])
-            self.assertIn('Do not refuse when',messages[0]['content'])
+    def test_supported_multi_part_response_is_preserved(self):
+        result = self.api.ask(QuestionRequest(question='Identify the problem and its mechanism'))
+        self.assertEqual(result.answer,self.chat.return_value)
+        self.assertIsNotNone(result.study_hint)
+        messages = self.chat.call_args.args[0]
+        self.assertIn('answer each requested part',messages[0]['content'])
+        self.assertIn('identification and a supported explanation/mechanism',messages[0]['content'])
+        self.assertIn('Do not refuse when',messages[0]['content'])
 
     def test_generation_exception_uses_same_scoped_nonreranked_fallback(self):
         from app.schemas.api import RagAnswerResult
@@ -175,15 +176,9 @@ class ProductionPromotionTests(unittest.TestCase):
             chat.return_value="I don't know. More text"
             self.assertEqual(pipeline.rag_answer_with_store('Q',Mock()),"I don't know.")
         with patch.object(retrieval,'hybrid_retrieve',return_value=self.rows) as retrieve:
-            result = retrieval.retrieve_for_document(Mock(),'Q','postgres',k=5)
-            self.assertEqual(retrieve.call_args.kwargs['where'],{'document_id':'db_postgres'})
+            result = retrieval.retrieve_for_document(Mock(),'Q','notes',k=5)
+            self.assertEqual(retrieve.call_args.kwargs['where'],{'document_id':'notes'})
             self.assertEqual(len(result),5)
-
-    def test_real_planner_validation_retains_routes_and_known_targets(self):
-        from app.orchestration.planner import parse_and_validate_plan
-        plan = parse_and_validate_plan('{"route":"source_recall","targets":["postgres","invented"],"reason":"lookup"}')
-        self.assertEqual(plan['route'],'source_recall')
-        self.assertEqual(plan['targets'],['postgres'])
 
     def test_new_ingestion_preserves_owner_and_source_in_both_indexes(self):
         from app.schemas.api import IngestRequest

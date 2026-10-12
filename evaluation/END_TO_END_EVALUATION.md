@@ -1,6 +1,6 @@
 # End-to-end evaluation of `/ask`
 
-Milestones 1 and 2 evaluated retrieval and the prompt in isolation, with retrieval frozen for generation. This evaluation sends the 19 benchmark questions through the production `/ask` endpoint instead: live planner, live hybrid retrieval, the production Strict v2 prompt, production settings and fallbacks.
+Milestones 1 and 2 evaluated retrieval and the prompt in isolation, with retrieval frozen for generation. This evaluation sends the 19 benchmark questions through the production `/ask` endpoint instead: live hybrid retrieval, the production Strict v2 prompt, production settings and fallbacks. Run 1 below predates the planner's removal, so it includes the live intent planner.
 
 ```sh
 python -m evaluation.run_end_to_end

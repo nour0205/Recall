@@ -55,10 +55,11 @@ Strict v2 is the production prompt. Strict v1 was the most grounded, but it unde
 
 </details>
 
-**Retrieval decisions came from measurement too:**
+**Design decisions came from measurement too:**
 - **Rejected a heuristic reranker.** It made rankings worse on 6 of 16 questions and better on none (MRR 0.802 → 0.693).
 - **Kept a neural cross-encoder (MiniLM) out of production.** It was close to plain fusion in quality but added about 0.65 s of CPU latency per query.
 - **Production uses plain Vector + BM25 + RRF fusion.** It scored the highest evidence MRR (0.969) of the hybrid orderings tested.
+- **Removed an LLM intent planner.** With and without it, the answering model received byte-identical prompts for all 19 questions, while it took about 40% of response time. Removing it cut mean latency from about 2.1 s to 1.2 s ([ablation](evaluation/PLANNER_ABLATION.md)).
 
 > **Scope:** a small, hand-built benchmark of 19 questions (16 answerable, 3 deliberate refusals) over 12 short notes on machine learning, operating systems and databases. The numbers describe this set; I make no statistical-significance claims. Full methodology: [retrieval report](evaluation/MILESTONE_1_RETRIEVAL_EVALUATION.md) · [generation report](evaluation/MILESTONE_2_GENERATION_EVALUATION.md).
 
@@ -72,7 +73,7 @@ flowchart LR
         C --> K[("Whoosh<br/>BM25 index")]
     end
     subgraph Ask
-        Q["Question"] --> P["Intent planner<br/>+ note scope"]
+        Q["Question"] --> P["Optional note scope"]
         P --> D["Semantic search<br/>top 10"]
         P --> B["Keyword search<br/>top 10"]
         V -.-> D
@@ -85,7 +86,7 @@ flowchart LR
 ```
 
 1. **Ingest.** Notes are split into sentence-packed chunks of up to 500 characters, each prefixed with the previous chunk for context. Chunks are embedded with `text-embedding-3-small` and written to both a vector index (ChromaDB) and a keyword index (Whoosh BM25). Both indexes share one chunk ID.
-2. **Plan.** A lightweight planner classifies the question's intent and can narrow the search to relevant notes. A scope chosen in the UI always wins.
+2. **Scope.** Every note is searched by default; the UI can limit a question to chosen notes.
 3. **Retrieve.** Semantic and keyword search each return 10 candidates. Reciprocal Rank Fusion (k = 60) merges them, and the top 5 passages go to the model in ranked order.
 4. **Generate.** The Strict v2 prompt allows only facts stated in the passages, requires a `[S#]` citation for each claim, and requires the exact sentence `I don't know.` when support is missing. The backend normalizes any refusal to that sentence and returns no sources with it.
 5. **Show.** The React interface turns every `[S#]` into a button that opens and highlights that passage in the source panel.
@@ -99,7 +100,8 @@ flowchart LR
   > **Recall:** "A learning rate that is too large may cause divergence [S1]." *(Exactly what the notes say, including "may".)*
 
 - **Grounding and completeness pull against each other.** My first strict prompt reached 100% groundedness but under-answered and once refused a question it could answer. I fixed the false refusal and recovered completeness in Strict v2, accepting one remaining unsupported claim. I chose that trade-off deliberately, with the numbers in front of me.
-- **More complexity isn't automatically better.** Two rerankers sounded like upgrades. One made results worse; the other cost latency for no clear gain. Both stay out of production.
+- **More complexity isn't automatically better.** Two rerankers sounded like upgrades. One made results worse; the other cost latency for no clear gain. Both stay out of production. An LLM intent planner looked like a step toward an agent, but fingerprinting the prompts showed it never changed what the answering model saw, so I removed it.
+- **Temperature 0 is not deterministic.** From byte-identical prompts, one run defined two database concepts wrongly and the next run correctly. On 19 questions, a single run can move a score by a case from chance alone, so comparisons need several runs.
 - **Labels have to match the data.** Overlapping chunks meant the same evidence existed under several chunk IDs, so "find chunk X" scoring under-credited correct retrievals. I moved to *evidence groups* (any equivalent chunk counts, and every required part must be covered).
 - **Evaluation finds bugs that tests miss.** Running the benchmark showed that BM25 was parsing natural-language questions as query syntax. It now searches the literal terms.
 - **Make results reproducible.** Retrieved contexts were frozen so that only the prompt varied between runs. Benchmark and prompt files are pinned by SHA-256 hashes. Saved scores are recomputed offline in CI on every pull request.
@@ -112,7 +114,6 @@ These are what I'd want a reviewer to know:
 - **Vector-only search wasn't beaten.** On the original exact-chunk labels, vector-only search had the best MRR (0.854 vs 0.802 for hybrid). The evidence-group rescoring only compared hybrid orderings. Hybrid stays for keyword robustness, but I don't claim it's better.
 - **Retrieved context contains near-duplicates.** Each chunk includes the previous chunk for context, so the top 5 passages can repeat text. In the demo above, two of the five passages are neighbouring chunks of the same note and share text. **Next:** sentence-level overlap plus de-duplication, measured against the benchmark.
 - **Answers are short (about 22 words on average).** That's good for grounding but thin for studying. **Next:** a cited short answer first, with a grounded "explain more" option.
-- **The planner adds a model call with little effect.** All intents share one prompt. I'll either make the routes matter or remove the planner.
 - **It's a local prototype.** It ingests plain text only (no PDF yet), has no accounts or deployment, and uses OpenAI only. The vector and keyword indexes are written separately with no rollback.
 
 ## Run it locally
@@ -172,7 +173,7 @@ CI runs these checks, plus the frontend typecheck and build and both Docker imag
 
 | Path | What's there |
 |---|---|
-| [`app/`](app/) | API, ingestion, hybrid retrieval, planner and grounded generation |
+| [`app/`](app/) | API, ingestion, hybrid retrieval and grounded generation |
 | [`recall-frontend/`](recall-frontend/) | React interface |
 | [`evaluation/`](evaluation/) | Benchmarks, metrics, experiment runners, human-review tools and saved results |
 | [`tests/`](tests/) | Offline unit and API tests (model and indexes stubbed) |

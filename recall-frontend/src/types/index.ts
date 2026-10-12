@@ -16,7 +16,7 @@ export type AskRequest = {
 export type AskResponse = {
   answer: string;
   sources: Source[];
-  route?: string | null;
+  route?: null; // Kept by the API for compatibility; always null.
   study_hint?: string | null;
 };
 

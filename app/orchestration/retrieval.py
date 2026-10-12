@@ -1,5 +1,4 @@
 from app.rag.hybrid_retriever import hybrid_retrieve
-from app.orchestration.registry import normalize_document_id
 
 
 def retrieve_for_document(
@@ -9,9 +8,7 @@ def retrieve_for_document(
     k: int = 4,
     retrieve_k: int = 10
 ):
-    resolved_id = normalize_document_id(document_id)
-    where = {"document_id": resolved_id}
-
+    where = {"document_id": document_id}
 
     candidates = hybrid_retrieve(
         store=store,
