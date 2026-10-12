@@ -31,15 +31,7 @@ def add_chunks_to_whoosh(chunks: list[dict]):
     writer = ix.writer()
 
     try:
-       
         for chunk in chunks:
-            print({
-                "chunk_id": chunk["chunk_id"],
-                "document_id": chunk["document_id"],
-                "chunk_index": chunk["chunk_index"],
-                "text": chunk["text"]
-            })
-
             writer.update_document(
                 chunk_id=chunk["chunk_id"],
                 document_id=chunk["document_id"],

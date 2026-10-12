@@ -1,0 +1,1 @@
+Cross-validation evaluates model performance by repeatedly splitting data into training and validation sets. K-fold cross-validation divides data into k subsets. Each subset serves as the validation set once. Cross-validation reduces the risk of relying on a single train-test split. It is commonly used to estimate model generalization performance.

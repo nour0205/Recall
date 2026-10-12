@@ -110,10 +110,10 @@ These are what I'd want a reviewer to know:
 
 - **The full `/ask` path hasn't been scored end to end.** The benchmark froze retrieval to isolate the prompt; production adds the live planner and live retrieval. **Next:** an end-to-end evaluation with an LLM judge, calibrated against my existing human labels, on a larger benchmark.
 - **Vector-only search wasn't beaten.** On the original exact-chunk labels, vector-only search had the best MRR (0.854 vs 0.802 for hybrid). The evidence-group rescoring only compared hybrid orderings. Hybrid stays for keyword robustness, but I don't claim it's better.
-- **Retrieved context contains near-duplicates.** Each chunk includes the previous chunk for context, so the top 5 passages can repeat text. In the demo above, the answer cites 3 of 5 passages. **Next:** sentence-level overlap plus de-duplication, measured against the benchmark.
+- **Retrieved context contains near-duplicates.** Each chunk includes the previous chunk for context, so the top 5 passages can repeat text. In the demo above, two of the five passages are neighbouring chunks of the same note and share text. **Next:** sentence-level overlap plus de-duplication, measured against the benchmark.
 - **Answers are short (about 22 words on average).** That's good for grounding but thin for studying. **Next:** a cited short answer first, with a grounded "explain more" option.
 - **The planner adds a model call with little effect.** All intents share one prompt. I'll either make the routes matter or remove the planner.
-- **It's a local prototype.** It ingests plain text only (no PDF yet), has no accounts or deployment, and uses OpenAI only. A fresh clone starts with an empty library, and the vector and keyword indexes are written separately with no rollback.
+- **It's a local prototype.** It ingests plain text only (no PDF yet), has no accounts or deployment, and uses OpenAI only. The vector and keyword indexes are written separately with no rollback.
 
 ## Run it locally
 
@@ -123,7 +123,8 @@ You need an OpenAI API key; asking questions and adding notes make small paid AP
 
 ```sh
 cp .env.example .env        # then put your OPENAI_API_KEY in .env
-docker compose up --build
+docker compose up --build -d
+docker compose exec backend python -m app.seed_demo   # optional: load the demo notes
 ```
 
 Open the app at <http://127.0.0.1:5173> and the API docs at <http://127.0.0.1:8000/docs>. Notes and indexes persist in Docker volumes.
@@ -135,6 +136,7 @@ python -m venv .venv
 .venv\Scripts\Activate.ps1           # macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env                 # add your OPENAI_API_KEY
+python -m app.seed_demo              # optional: load the 12 demo notes
 uvicorn app.api.main:app --reload    # API on :8000
 
 # in a second terminal
@@ -143,12 +145,12 @@ npm ci
 npm run dev                          # app on :5173
 ```
 
-The library starts empty: click **Add notes** and paste or upload some course notes. The "Try asking" examples on the Ask screen refer to the benchmark notes, so with your own notes, ask about their contents instead.
+`app.seed_demo` loads the [12 demo notes](demo_notes/) the benchmark was built on, so the "Try asking" examples work straight away. To use your own material instead, skip it and click **Add notes** in the app.
 
 **Tests and evaluation checks** (offline, no API key needed):
 
 ```sh
-python -m unittest discover -s tests       # 182 tests
+python -m unittest discover -s tests       # 187 tests
 python -m evaluation.validate_benchmark    # benchmark schema checks
 python -m evaluation.verify_saved_results  # recompute saved scores from saved runs
 ```
