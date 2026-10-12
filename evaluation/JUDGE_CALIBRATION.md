@@ -3,7 +3,8 @@
 An LLM judge grades Recall answers so evaluation no longer depends on manual review of every run. Before trusting it, I measured how often it agrees with my own labels on the 76 answers I reviewed by hand in Milestone 2 (4 prompts × 19 questions).
 
 ```sh
-python -m evaluation.run_judge calibrate
+python -m evaluation.run_judge calibrate                       # judge_v2 by default
+python -m evaluation.run_judge --prompt evaluation/prompts/judge_v1.json calibrate
 python -m evaluation.run_judge end-to-end evaluation/results/end_to_end_v1_<timestamp>.json
 ```
 
@@ -12,51 +13,62 @@ python -m evaluation.run_judge end-to-end evaluation/results/end_to_end_v1_<time
 - **Judge:** `gpt-5.5-2026-04-23` (pinned snapshot), reasoning effort medium, strict structured output. Recall itself answers with `gpt-4o-mini`.
 - **Same inputs and rubric as the human review.** The judge sees the question, the five numbered sources exactly as the answering model saw them, the answer, the expected behavior, the required points, the reference answer and the benchmark author's case notes. The rubric is read from [`generation_reference_v1.json`](benchmarks/generation_reference_v1.json), the same file the human review used. Human labels and reviewer notes are excluded by construction ([`judge.py`](judge.py), tested in `tests/test_judge.py`).
 - **Claims before labels.** The judge first lists each factual claim with its supporting sources and citations, then judges each required point, then assigns the labels.
-- **Prompt:** [`prompts/judge_v1.json`](prompts/judge_v1.json). One change was made before calibrating: the human labels use `N/A` for refusal correctness when an answerable question was simply answered, so the judge was given the same convention. No prompt changes were made after seeing calibration results.
+- **Two prompt versions.** [`judge_v1`](prompts/judge_v1.json) uses the rubric as written. One change was made to it before calibrating: the human labels use `N/A` for refusal correctness when an answerable question was simply answered, so the judge got the same convention. [`judge_v2`](prompts/judge_v2.json) adds four labelling conventions written after reading v1's disagreements (below).
 
 ## Agreement with human labels
 
-[Raw results](results/judge_calibration_v1_20261012T081253Z.json): 76/76 answers judged, no invalid outputs. Kappa is Cohen's kappa, which corrects for agreement expected by chance. It is computed on the cases where the human label is 0 or 1, because `N/A` cases (pure refusals) are trivially easy to agree on and would inflate it.
+Kappa is Cohen's kappa, which corrects for agreement expected by chance. It is computed on the cases where the human label is 0 or 1, because `N/A` cases (pure refusals) are trivially easy to agree on and would inflate it. All 76 answers were judged without invalid outputs in both runs.
 
-| Dimension | Agreement | Kappa | Judge vs human | Verdict |
-|---|---:|---:|---|---|
-| Required points (completeness) | 141/144 | 0.86 | 2 lenient, 1 strict | **Trusted** |
-| Correctness | 58/64 | 0.79 | 4 lenient, 2 strict | **Trusted, with spot checks** |
-| Groundedness | 67/76 | 0.69 | 4 lenient, 5 strict | **Screen only; human review of failures and of known-hard cases** |
-| Citation correctness | 51/64 | 0.55 | 4 lenient, 9 strict | **Not trusted yet** |
-| Refusal correctness | 12/13 | 0.63 | 1 strict | Too few refusal cases to judge |
+| Dimension | v1 agreement | v1 kappa | v2 agreement | v2 kappa | Verdict |
+|---|---:|---:|---:|---:|---|
+| Required points (completeness) | 141/144 | 0.86 | 140/144 | 0.82 | **Trusted** |
+| Correctness | 58/64 | 0.79 | 57/64 | 0.75 | **Trusted, with spot checks** |
+| Groundedness | 67/76 | 0.69 | 69/76 | 0.75 | **Screen only** (see blind spot) |
+| Citation correctness | 51/64 | 0.55 | 53/64 | 0.61 | **Not trusted yet** |
+| Refusal correctness | 12/13 | 0.63 | 12/13 | 0.63 | Too few refusal cases to judge |
 
-Completeness scores differ from the human scores by 0.02 on average (mean absolute error over the 64 answerable cases).
+Raw results: [v1](results/judge_calibration_v1_20261012T081253Z.json), [v2](results/judge_calibration_judge_v2_20261012T084333Z.json). Completeness scores differ from the human scores by 0.02 on average.
+
+**v2's numbers are optimistic.** Its conventions were written after reading the disagreements on these same 76 answers, so this is not a held-out test. A clean test needs new human-labelled answers; the larger benchmark will provide them.
+
+### Labelling conventions (judge v2)
+
+v1's disagreements were not random: most came from cases the rubric never settled, which I had resolved one way during review without writing it down. v2 writes them down:
+
+| | Convention | Origin |
+|---|---|---|
+| C1 | A citation at the end of a short paragraph (≤ 3 sentences) covers that paragraph's claims if the cited sources support them. | How the human review was done |
+| C2 | `[S1][S2]` passes when the cited sources *together* support the claim, provided each supports part of it. | How the human review was done |
+| C3 | Wording reused from the sources but attached to the wrong concept is **grounded but incorrect**, and the affected point fails. | How the human review was done (case 008) |
+| C4 | Dropping or weakening a source qualifier (*may, usually, often…*) so the claim becomes stronger fails groundedness and correctness. | Recall's own prompt, rule 10 |
+
+C4 means some original human labels were too lenient. On question 003, the Baseline, Strict v1 and Strict v2 answers turn "communication between processes *usually* requires IPC" into "requires IPC" (Balanced v2 keeps "usually"), and I passed all of them. The Milestone 2 labels are frozen and stay as published; under C4, Strict v2 would score 17/19 grounded rather than 18/19. The other 75 answers were not re-reviewed for C4.
 
 ### What the disagreements show
 
-- **Citations: conventions, not random noise.** The judge's 9 stricter citation verdicts come from three patterns, none of which the written rubric settles:
-  - **Trailing citations (3 cases):** one citation at the end of a short paragraph left an earlier sentence "uncited". When I reviewed, I accepted a trailing citation covering a short paragraph.
-  - **Each cited source checked separately (2 cases):** in `[S1][S2]`, the judge required each source to support the claim on its own; I accepted the cited set together.
-  - **The case 008 definitions (3 cases):** see the next point.
-- **Groundedness, strict side: wording copied from the notes but attached to the wrong concept.** On case 008 (under Strict v1, Balanced v2 and Strict v2), the answer reuses the notes' sentence "non-key attributes must depend on the whole primary key" as the *definition* of partial dependency. I labelled that grounded but incorrect; the judge labelled it ungrounded.
-- **Groundedness, where the judge was arguably right:** on case 003 (Strict v2), the judge flagged that the answer drops the notes' qualifier "usually" ("communication between processes *usually* requires IPC"). I passed it. By the rubric's own rule on preserving qualifiers, the judge's reading is defensible.
-- **Groundedness, lenient side: the failure mode that matters most.** The judge missed 4 unsupported elaborations I had flagged, for example "a more reliable estimate of generalization" on case 013 and calling `student_id` the primary key on case 014. Lenient errors hide exactly what Recall is designed to prevent, so a judge "grounded" verdict is not enough on its own.
-- **Refusal:** the one disagreement is the baseline answer that said "I don't know." and then kept going with supported content. The rubric says a refusal followed by unsupported content fails; I judged the continuation supported and passed it. The judge failed it.
+- **A stable blind spot: subtle unsupported elaborations.** Both judge versions missed the **same 4** unsupported claims I had flagged, for example "a more reliable estimate of generalization" (013, Strict v2) and calling `student_id` the primary key (014, Balanced v2). These lenient errors hide exactly what Recall is designed to prevent, so a judge "grounded" verdict is not enough on its own.
+- **Inconsistency on borderline cases.** On the near-identical 003 answers, v1 applied the "usually" reading to Strict v2 only, while v2 applied it to Baseline and Strict v1 but not Strict v2. Single-run verdicts on borderline cases vary.
+- **What the conventions fixed.** v2 labels the 008 definitions grounded-but-incorrect like the human review (C3), and its stricter citation verdicts fell from 9 to 7 (C1, C2). Those remaining are mostly 008 definitions and 003 qualifiers, where the judge follows the conventions and the original labels do not.
+- **Refusal:** the one disagreement is the baseline answer that said "I don't know." and then kept going. The rubric says a refusal followed by unsupported content fails; I judged the continuation supported and passed it.
 
 ## Scoring the production `/ask` run
 
-[Judge results](results/judge_end_to_end_v1_20261012T081515Z.json) for [end-to-end run 1](results/end_to_end_v1_20261012T071846Z.json). 15 of the 19 production answers are word-for-word identical to Strict v2 answers I reviewed, so those keep their human labels. The judge supplies labels only for the 4 new answers.
+Scores for [end-to-end run 1](results/end_to_end_v1_20261012T071846Z.json). 15 of the 19 production answers are word-for-word identical to Strict v2 answers I reviewed, so they keep their human labels. The 4 new answers were [adjudicated](results/end_to_end_v1_adjudications.json) with the rubric and conventions C1–C4. Judge v2 agreed on 3 of them, and missed the added explanation in 013, its known blind spot.
 
-**Self-consistency check:** on the 15 identical answers, the judge agreed with my labels on every dimension for 13. The other 2 are the same disagreements it showed during calibration (008 groundedness/citation, 012 one required point).
+**Self-consistency check:** on the 15 identical answers, judge v2 matched the human labels except for the cases it also disagreed on in calibration (008 citations, 012 one required point).
 
-| Production `/ask`, 19 questions | Result | Source |
-|---|---:|---|
-| Grounded answers | 19/19 | 15 human + 4 judge |
-| Correct (answerable) | 15/16 | 15 human + 4 judge |
-| Citation correctness (answerable) | 15/16 | 15 human + 4 judge |
-| Required points covered | 14.5/16 | 15 human + 4 judge |
-| Out-of-scope questions refused | 3/3 | human |
+| Production `/ask`, 19 questions | Result |
+|---|---:|
+| Grounded answers | 17/19 |
+| Correct (answerable) | 13/16 |
+| Citation correctness (answerable) | 14/16 |
+| Required points covered | 14.25/16 |
+| Out-of-scope questions refused | 3/3 |
 
-Compared with the isolated Milestone 2 Strict v2 result (grounded 18/19, completeness 14.5/16, citations 15/16), production matches it. The one change is case 013, where the new production answer was judged grounded and complete. **Case 013 needs human confirmation:** it is a case where the judge was lenient during calibration. The failure on 011 is the judge's stricter citation convention described above.
+The new failures are 003 (dropped "usually", C4) and 013 (an added explanation about single splits). Under the same conventions, the isolated Milestone 2 Strict v2 answer to 003 fails as well, so production is in line with Milestone 2, not worse. The Milestone 2 headline (18/19 grounded) used labels made before C4 existed.
 
 ## Next
 
-1. **Judge v2:** decide the conventions the disagreements exposed (trailing citations, a set of cited sources, source wording attached to the wrong concept, dropped qualifiers), write them into the rubric, and give them to the judge. To avoid tuning on the test set, revise using the disagreements from two prompt runs and report agreement only on the other two.
-2. Human review of the production answer to 013.
-3. Use the judge for the planner on/off comparison and the chunk de-duplication experiment.
+1. Use the judge as a **screen**: trust its required-point and correctness verdicts, but review by hand every answer it fails on groundedness or citations, plus a sample of those it passes.
+2. Grow the benchmark with new human-labelled answers. They give a held-out test for judge v2 and more refusal cases.
+3. Use this setup for the planner on/off comparison and the chunk de-duplication experiment.

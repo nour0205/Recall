@@ -45,7 +45,7 @@ Every route uses the same prompt, so the planner's output did not change any ans
 
 ### Quality scores
 
-Scored in [JUDGE_CALIBRATION.md](JUDGE_CALIBRATION.md#scoring-the-production-ask-run): the 15 answers identical to human-reviewed Strict v2 answers keep their human labels, and a calibrated LLM judge scores the 4 new ones. Production: grounded 19/19, correct 15/16, citation correctness 15/16, required points 14.5/16, refusals 3/3, matching the isolated Milestone 2 result. One new answer (013) needs human confirmation.
+Scored in [JUDGE_CALIBRATION.md](JUDGE_CALIBRATION.md#scoring-the-production-ask-run). The 15 answers identical to human-reviewed Strict v2 answers keep their human labels; the 4 new ones were [adjudicated](results/end_to_end_v1_adjudications.json) with the rubric and conventions C1-C4, with the calibrated judge as a second opinion. Production: grounded 17/19, correct 13/16, citation correctness 14/16, required points 14.25/16, refusals 3/3. The two new failures are a dropped "usually" (003), which the Milestone 2 answer also has under the same convention, and an added explanation (013).
 
 ### Limits
 
