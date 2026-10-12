@@ -1,0 +1,99 @@
+{
+  "description": "Adjudicated labels for the 4 answers in end-to-end run 1 that differ from the human-reviewed Milestone 2 Strict v2 answers. Applies the human-review rubric plus labelling conventions C1-C4 (evaluation/prompts/judge_v2.json). The other 15 answers keep their original human labels.",
+  "end_to_end_run": "evaluation/results/end_to_end_v1_20261012T071846Z.json",
+  "judge_reference": "evaluation/results/judge_end_to_end_judge_v2_20261012T084520Z.json",
+  "cases": [
+    {
+      "question_id": "retrieval_003",
+      "correctness": 0,
+      "groundedness": 0,
+      "citation_correctness": 0,
+      "refusal_correctness": "N/A",
+      "completeness_points": [
+        {
+          "point_id": "process_memory",
+          "judgment": "pass"
+        },
+        {
+          "point_id": "thread_memory",
+          "judgment": "pass"
+        },
+        {
+          "point_id": "process_ipc",
+          "judgment": "fail"
+        },
+        {
+          "point_id": "thread_communication",
+          "judgment": "pass"
+        }
+      ],
+      "completeness_score": 0.75,
+      "agrees_with_judge_v2": true,
+      "rationale": "C4: the sources say communication between processes 'usually requires' IPC; the answer says it requires IPC. The cited sources support only the qualified claim."
+    },
+    {
+      "question_id": "retrieval_011",
+      "correctness": 1,
+      "groundedness": 1,
+      "citation_correctness": 1,
+      "refusal_correctness": "N/A",
+      "completeness_points": [
+        {
+          "point_id": "classification",
+          "judgment": "pass"
+        },
+        {
+          "point_id": "regression",
+          "judgment": "pass"
+        }
+      ],
+      "completeness_score": 1.0,
+      "agrees_with_judge_v2": true,
+      "rationale": "Both task types are named with their supported definitions and cited. C1: the short opening conclusion is covered by the citations in the same paragraph."
+    },
+    {
+      "question_id": "retrieval_013",
+      "correctness": 0,
+      "groundedness": 0,
+      "citation_correctness": 0,
+      "refusal_correctness": "N/A",
+      "completeness_points": [
+        {
+          "point_id": "subsets",
+          "judgment": "pass"
+        },
+        {
+          "point_id": "rotation",
+          "judgment": "pass"
+        },
+        {
+          "point_id": "single_split",
+          "judgment": "pass"
+        }
+      ],
+      "completeness_score": 1.0,
+      "agrees_with_judge_v2": false,
+      "rationale": "Adds that a single split 'may not provide a reliable estimate of model performance on unseen data'. The cited sources [S1][S2] do not say this; the closest support (S5, 'a more reliable estimate of model performance') is not cited and does not state that a single split is unreliable. Consistent with the human label on the Milestone 2 answer to the same question, which flagged the same kind of added explanation. The judge missed this kind of elaboration in calibration as well."
+    },
+    {
+      "question_id": "retrieval_016",
+      "correctness": 1,
+      "groundedness": 1,
+      "citation_correctness": 1,
+      "refusal_correctness": "N/A",
+      "completeness_points": [
+        {
+          "point_id": "stack",
+          "judgment": "pass"
+        },
+        {
+          "point_id": "program_counter",
+          "judgment": "pass"
+        }
+      ],
+      "completeness_score": 1.0,
+      "agrees_with_judge_v2": true,
+      "rationale": "States that each thread has its own stack and program counter, restating the question's framing; supported by S1."
+    }
+  ]
+}

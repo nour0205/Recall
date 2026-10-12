@@ -1,6 +1,6 @@
 """Run the LLM judge. Two modes, each writing a new timestamped result file:
 
-    python -m evaluation.run_judge calibrate
+    python -m evaluation.run_judge [--prompt evaluation/prompts/judge_v2.json] calibrate
         Judge the 76 human-reviewed Milestone 2 answers (4 prompts x 19 cases)
         and report agreement with the human labels per dimension.
 
@@ -32,6 +32,7 @@ HUMAN_REVIEWS = {
 HUMAN_FIELDS = ("correctness", "groundedness", "refusal_correctness", "citation_correctness",
                 "completeness_points", "completeness_score")
 WORKERS = 6
+DEFAULT_PROMPT = Path("evaluation/prompts/judge_v2.json")
 
 
 def utc_now():
@@ -123,13 +124,14 @@ def save(path: Path, report: dict):
     temporary.replace(path)
 
 
-def main(mode: str, run_path: Path | None = None):
+def main(mode: str, run_path: Path | None = None, prompt_path: Path = DEFAULT_PROMPT):
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    output_path = RESULTS / f"judge_{'calibration' if mode == 'calibrate' else 'end_to_end'}_v1_{stamp}.json"
+    prompt = judge_lib.load_prompt(prompt_path)
+    kind = "calibration" if mode == "calibrate" else "end_to_end"
+    output_path = RESULTS / f"judge_{kind}_{prompt['prompt_id']}_{stamp}.json"
     if output_path.exists():
         raise FileExistsError(output_path)
     cases = calibration_cases() if mode == "calibrate" else end_to_end_cases(run_path)
-    prompt = judge_lib.load_prompt()
     sources = {name: {"path": p.as_posix(), "sha256": file_hash(p)} for name, p in HUMAN_REVIEWS.items()} \
         if mode == "calibrate" else {"end_to_end_run": {"path": run_path.as_posix(), "sha256": file_hash(run_path)}}
 
@@ -141,7 +143,7 @@ def main(mode: str, run_path: Path | None = None):
         "started_at_utc": utc_now(), "completed_at_utc": None,
         "judge": {"prompt_id": prompt["prompt_id"], "model": prompt["model"],
                   "reasoning_effort": prompt["reasoning_effort"], "instructions_sha256": prompt["instructions_sha256"],
-                  "schema_sha256": prompt["schema_sha256"], "prompt_file_sha256": file_hash(judge_lib.PROMPT_PATH),
+                  "schema_sha256": prompt["schema_sha256"], "prompt_path": Path(prompt_path).as_posix(), "prompt_file_sha256": file_hash(Path(prompt_path)),
                   "reference_sha256": file_hash(REFERENCE_PATH)},
         "inputs": sources, "judgments": [], "summary": None,
     }
@@ -172,9 +174,10 @@ def main(mode: str, run_path: Path | None = None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--prompt", type=Path, default=DEFAULT_PROMPT, help="Judge prompt file (default: judge_v2)")
     sub = parser.add_subparsers(dest="mode", required=True)
     sub.add_parser("calibrate")
     e2e = sub.add_parser("end-to-end")
     e2e.add_argument("run_path", type=Path)
     args = parser.parse_args()
-    main(args.mode, getattr(args, "run_path", None))
+    main(args.mode, getattr(args, "run_path", None), args.prompt)

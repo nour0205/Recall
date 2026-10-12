@@ -108,7 +108,7 @@ flowchart LR
 
 These are what I'd want a reviewer to know:
 
-- **The full `/ask` path hasn't been scored end to end.** The benchmark froze retrieval to isolate the prompt; production adds the live planner and live retrieval. **Next:** an end-to-end evaluation with an LLM judge, calibrated against my existing human labels, on a larger benchmark.
+- **End-to-end scores rest on a small benchmark and a partly trusted judge.** The production `/ask` path is now [evaluated end to end](evaluation/END_TO_END_EVALUATION.md) (17/19 grounded, 3/3 refusals), and an [LLM judge is calibrated](evaluation/JUDGE_CALIBRATION.md) against my labels (kappa 0.82 on required points, 0.75 on groundedness). But the judge consistently misses subtle unsupported elaborations, so its "grounded" verdicts still need human review. **Next:** a larger, freshly labelled benchmark, which also gives the judge a held-out test.
 - **Vector-only search wasn't beaten.** On the original exact-chunk labels, vector-only search had the best MRR (0.854 vs 0.802 for hybrid). The evidence-group rescoring only compared hybrid orderings. Hybrid stays for keyword robustness, but I don't claim it's better.
 - **Retrieved context contains near-duplicates.** Each chunk includes the previous chunk for context, so the top 5 passages can repeat text. In the demo above, two of the five passages are neighbouring chunks of the same note and share text. **Next:** sentence-level overlap plus de-duplication, measured against the benchmark.
 - **Answers are short (about 22 words on average).** That's good for grounding but thin for studying. **Next:** a cited short answer first, with a grounded "explain more" option.
@@ -150,7 +150,7 @@ npm run dev                          # app on :5173
 **Tests and evaluation checks** (offline, no API key needed):
 
 ```sh
-python -m unittest discover -s tests       # 187 tests
+python -m unittest discover -s tests       # 206 tests
 python -m evaluation.validate_benchmark    # benchmark schema checks
 python -m evaluation.verify_saved_results  # recompute saved scores from saved runs
 ```

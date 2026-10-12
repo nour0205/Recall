@@ -36,6 +36,12 @@ class JudgeInputTests(unittest.TestCase):
         self.assertNotIn('{rubric}', prompt['instructions'])
         self.assertIn('Valid citation syntax alone is insufficient', prompt['instructions'])
 
+    def test_v2_adds_conventions_before_the_rubric(self):
+        prompt = judge_lib.load_prompt(run_judge.DEFAULT_PROMPT)
+        self.assertEqual(prompt['prompt_id'], 'judge_v2')
+        conventions = prompt['instructions'].index('C4. Qualifiers')
+        self.assertLess(conventions, prompt['instructions'].index('Rubric:'))
+
     def test_end_to_end_cases_use_the_context_the_answer_saw(self):
         cases = run_judge.end_to_end_cases(run_judge.RESULTS / 'end_to_end_v1_20261012T071846Z.json')
         self.assertEqual(len(cases), 19)
