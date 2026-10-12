@@ -1,18 +1,15 @@
 from collections import defaultdict
-import uuid
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 # ---- Core RAG imports ----
-from app.ingestion.chunker import base_chunks, apply_overlap
 from app.embeddings.embedder import embed_texts
 from app.vectordb.chroma_store import ChromaStore
 from app.rag.pipeline import rag_answer_with_sources
 from app.rag.hybrid_retriever import hybrid_retrieve
-from app.utils.hash import hash_text
 from app.llm.client import chat
-from app.catalog.document_catalog import upsert_document_entry
+from app.library import IngestionError, add_document, delete_document as remove_document
 
 # ---- Orchestration imports ----
 from app.orchestration.prompts import build_answer_prompt, normalize_answer, REFUSAL
@@ -25,9 +22,6 @@ from app.schemas.api import (
     QuestionRequest,
     SourceItem,
 )
-
-# ---- Whoosh imports ----
-from app.vectordb.whoosh_index import add_chunks_to_whoosh
 
 
 # -------------------------------------------------------------------
@@ -132,81 +126,10 @@ def ask(req: QuestionRequest):
 # -------------------------------------------------------------------
 @app.post("/ingest")
 def ingest(req: IngestRequest):
-    doc_hash = hash_text(req.text)
-
-    existing = store.collection.get(
-        where={"doc_hash": doc_hash},
-        limit=1,
-    )
-    if existing["ids"]:
-        return {"status": "duplicate"}
-
-    existing_id = store.collection.get(
-        where={"document_id": req.document_id},
-        limit=1,
-    )
-    if existing_id["ids"]:
-        return {"status": "conflict"}
-
-    chunks = base_chunks(req.text)
-    chunks = apply_overlap(chunks, overlap=1)
-
-    if not chunks:
-        return {"status": "no content"}
-
-    embeddings = embed_texts(chunks)
-    ids = [str(uuid.uuid4()) for _ in chunks]
-    metadatas = []
-
-    for i in range(len(chunks)):
-        meta = {
-            "chunk_id": ids[i],
-            "document_id": req.document_id,
-            "doc_hash": doc_hash,
-            "chunk_index": i,
-            "document_type": req.document_type,
-            "course": req.course,
-            "topic_tags": ", ".join(req.topic_tags) if req.topic_tags else "",
-        }
-
-        if req.source:
-            meta["source"] = req.source
-        if req.owner:
-            meta["owner"] = req.owner
-
-        metadatas.append(meta)
-
-    whoosh_chunks = [
-        {
-            "chunk_id": ids[i],
-            "document_id": req.document_id,
-            "chunk_index": i,
-            "text": chunks[i],
-            "source": req.source or "",
-            "owner": req.owner or "",
-        }
-        for i in range(len(chunks))
-    ]
-
-    store.add_texts(
-        ids=ids,
-        texts=chunks,
-        embeddings=embeddings,
-        metadatas=metadatas,
-    )
-
-    add_chunks_to_whoosh(whoosh_chunks)
-
-    upsert_document_entry(
-        {
-            "document_id": req.document_id,
-            "title": req.document_id,
-            "preview": chunks[0][:300],
-            "chunk_count": len(chunks),
-        }
-    )
-
-    return {"status": "ingested", "chunks_added": len(chunks)}
+    try:
+        return add_document(store, req, embed=embed_texts)
+    except IngestionError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 # -------------------------------------------------------------------
@@ -263,11 +186,7 @@ def list_documents():
 
 @app.delete("/documents/{document_id}")
 def delete_document(document_id: str):
-    store.collection.delete(
-        where={"document_id": document_id}
-    )
-
-    return {
-        "status": "deleted",
-        "document_id": document_id,
-    }
+    deleted = remove_document(store, document_id)
+    if not any(deleted.values()):
+        raise HTTPException(status_code=404, detail=f"No note named '{document_id}'.")
+    return {"status": "deleted", "document_id": document_id, **deleted}

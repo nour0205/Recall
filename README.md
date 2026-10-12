@@ -20,7 +20,7 @@ I built Recall as a hybrid-search RAG system and treated it as an engineering pr
 - **Searches by meaning *and* by exact terms.** Semantic search (OpenAI embeddings in ChromaDB) and keyword search (BM25 in Whoosh) run side by side and are merged with Reciprocal Rank Fusion. Paraphrased questions and exact technical terms are both covered.
 - **Shows what it used.** The source panel marks which retrieved passages the answer cites and which it didn't, so weak retrieval is visible rather than hidden.
 - **Scopes questions to specific notes.** Ask about one lecture or a chosen set, or search the whole library.
-- **Manages a personal library.** Add notes by pasting text or uploading `.txt`/`.md` files. Duplicates are detected by content hash.
+- **Manages a personal library.** Add notes by pasting text or uploading `.txt`/`.md` files, or delete them. Duplicates are detected by content hash, and adding a note is all-or-nothing across both search indexes.
 
 | Every answer is checkable | No support, no answer | Your library |
 |---|---|---|
@@ -114,7 +114,7 @@ These are what I'd want a reviewer to know:
 - **Vector-only search wasn't beaten.** On the original exact-chunk labels, vector-only search had the best MRR (0.854 vs 0.802 for hybrid). The evidence-group rescoring only compared hybrid orderings. Hybrid stays for keyword robustness, but I don't claim it's better.
 - **Retrieved context contains near-duplicates.** Each chunk includes the previous chunk for context, so the top 5 passages can repeat text. In the demo above, two of the five passages are neighbouring chunks of the same note and share text. **Next:** sentence-level overlap plus de-duplication, measured against the benchmark.
 - **Answers are short (about 22 words on average).** That's good for grounding but thin for studying. **Next:** a cited short answer first, with a grounded "explain more" option.
-- **It's a local prototype.** It ingests plain text only (no PDF yet), has no accounts or deployment, and uses OpenAI only. The vector and keyword indexes are written separately with no rollback.
+- **It's a local prototype.** It ingests plain text only (no PDF yet), has no accounts or deployment, and uses OpenAI only.
 
 ## Run it locally
 
@@ -148,10 +148,12 @@ npm run dev                          # app on :5173
 
 `app.seed_demo` loads the [12 demo notes](demo_notes/) the benchmark was built on, so the "Try asking" examples work straight away. To use your own material instead, skip it and click **Add notes** in the app.
 
+To check that the vector and keyword indexes hold the same chunks, run `python -m app.check_indexes` (add `--repair` to fix any drift; no API calls).
+
 **Tests and evaluation checks** (offline, no API key needed):
 
 ```sh
-python -m unittest discover -s tests       # 206 tests
+python -m unittest discover -s tests       # 218 tests
 python -m evaluation.validate_benchmark    # benchmark schema checks
 python -m evaluation.verify_saved_results  # recompute saved scores from saved runs
 ```

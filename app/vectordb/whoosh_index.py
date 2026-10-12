@@ -47,6 +47,37 @@ def add_chunks_to_whoosh(chunks: list[dict]):
         raise
 
 
+def whoosh_records() -> list[dict]:
+    """Every stored chunk record (chunk_id, document_id, chunk_index, content, ...)."""
+    ix = get_or_create_index()
+    with ix.searcher() as searcher:
+        return [dict(fields) for fields in searcher.all_stored_fields()]
+
+
+def delete_chunks_from_whoosh(chunk_ids: list[str]) -> int:
+    ix = get_or_create_index()
+    writer = ix.writer()
+    try:
+        deleted = sum(writer.delete_by_term("chunk_id", chunk_id) for chunk_id in chunk_ids)
+        writer.commit()
+    except Exception:
+        writer.cancel()
+        raise
+    return deleted
+
+
+def delete_document_from_whoosh(document_id: str) -> int:
+    ix = get_or_create_index()
+    writer = ix.writer()
+    try:
+        deleted = writer.delete_by_term("document_id", document_id)
+        writer.commit()
+    except Exception:
+        writer.cancel()
+        raise
+    return deleted
+
+
 def search_whoosh(query_text: str, limit: int = 5):
     ix = get_or_create_index()
 

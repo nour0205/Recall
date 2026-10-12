@@ -180,19 +180,22 @@ class ProductionPromotionTests(unittest.TestCase):
             self.assertEqual(retrieve.call_args.kwargs['where'],{'document_id':'notes'})
             self.assertEqual(len(result),5)
 
-    def test_new_ingestion_preserves_owner_and_source_in_both_indexes(self):
-        from app.schemas.api import IngestRequest
-        with patch.object(self.api.store.collection,'get',return_value={'ids':[]}), \
-             patch.object(self.api,'base_chunks',return_value=['Notes']), \
-             patch.object(self.api,'apply_overlap',return_value=['Notes']), \
-             patch.object(self.api,'embed_texts',return_value=[[0.1]]), \
-             patch.object(self.api.store,'add_texts') as dense, \
-             patch.object(self.api,'add_chunks_to_whoosh') as sparse, \
-             patch.object(self.api,'upsert_document_entry'):
-            result = self.api.ingest(IngestRequest(text='Notes',document_id='new',owner='student',source='course'))
-        self.assertEqual(result['status'],'ingested')
-        for key in ('owner','source'):
-            self.assertEqual(sparse.call_args.args[0][0][key],dense.call_args.kwargs['metadatas'][0][key])
+    def test_ingest_and_delete_endpoints_use_the_library(self):
+        # Index behaviour itself is tested on real indexes in tests/test_library.py.
+        from fastapi.testclient import TestClient
+        from app.library import IngestionError
+        with TestClient(self.api.app) as client:
+            with patch.object(self.api, 'add_document', return_value={'status':'ingested','chunks_added':2}) as add:
+                self.assertEqual(client.post('/ingest', json={'document_id':'n','text':'Notes.'}).json()['status'], 'ingested')
+                self.assertIs(add.call_args.kwargs['embed'], self.api.embed_texts)
+            with patch.object(self.api, 'add_document', side_effect=IngestionError('rolled back')):
+                failed = client.post('/ingest', json={'document_id':'n','text':'Notes.'})
+                self.assertEqual((failed.status_code, failed.json()['detail']), (500, 'rolled back'))
+            with patch.object(self.api, 'remove_document', return_value={'vector_chunks_deleted':0,'bm25_chunks_deleted':0}):
+                self.assertEqual(client.delete('/documents/missing').status_code, 404)
+            with patch.object(self.api, 'remove_document', return_value={'vector_chunks_deleted':2,'bm25_chunks_deleted':2}):
+                deleted = client.delete('/documents/n').json()
+                self.assertEqual((deleted['status'], deleted['bm25_chunks_deleted']), ('deleted', 2))
 
     def test_fallback_empty_context_refuses_without_model(self):
         from app.rag import pipeline
