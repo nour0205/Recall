@@ -43,6 +43,10 @@ The runner seeds a fresh, temporary install from [`demo_notes/`](../demo_notes/)
 
 Every route uses the same prompt, so the planner's output did not change any answer in this run, while it accounted for roughly 40% of request latency. It is a candidate for removal; that will be decided with a planner-on/off comparison once the judge exists.
 
+### Quality scores
+
+Scored in [JUDGE_CALIBRATION.md](JUDGE_CALIBRATION.md#scoring-the-production-ask-run): the 15 answers identical to human-reviewed Strict v2 answers keep their human labels, and a calibrated LLM judge scores the 4 new ones. Production: grounded 19/19, correct 15/16, citation correctness 15/16, required points 14.5/16, refusals 3/3, matching the isolated Milestone 2 result. One new answer (013) needs human confirmation.
+
 ### Limits
 
 19 questions over 12 short notes, one run. These numbers describe behaviour on this set, not general performance. The judge and a larger benchmark are the next steps.
