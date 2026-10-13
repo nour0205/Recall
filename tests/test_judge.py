@@ -48,6 +48,35 @@ class JudgeInputTests(unittest.TestCase):
         self.assertTrue(all(len(c['sources']) == 5 for c in cases))
 
 
+class DeterministicRefusalTests(unittest.TestCase):
+    def test_refusal_labels_reproduce_every_human_label_for_exact_refusals(self):
+        refusals = [c for c in run_judge.calibration_cases() if c['answer'].strip() == judge_lib.REFUSAL]
+        self.assertGreaterEqual(len(refusals), 10)
+        for case in refusals:
+            labels = judge_lib.refusal_labels(case)
+            for dimension in ('correctness', 'groundedness', 'refusal_correctness', 'citation_correctness'):
+                self.assertEqual(labels[dimension], case['human'][dimension], (case['run'], case['question_id'], dimension))
+            score = judge_lib.completeness_score(labels, case)
+            self.assertEqual(score, case['human']['completeness_score'], (case['run'], case['question_id']))
+            self.assertEqual(judge_lib.validate_judgment(labels, case), [])
+
+    def test_v3_runs_take_references_from_the_draft(self):
+        import tempfile
+        from pathlib import Path
+        draft = json.loads(Path('evaluation/drafts/benchmark_v3_draft.json').read_text(encoding='utf-8'))
+        first = draft['cases'][0]
+        run = {'provenance': {'benchmark': 'evaluation/drafts/benchmark_v3_draft.json'},
+               'queries': [{'question_id': first['question_id'], 'question': first['question'],
+                            'expected_behavior': 'answer', 'answer': 'x [S1].',
+                            'retrieved_context': [{'document_id': 'ml_gradient_descent', 'text': 'T'}]}]}
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'run.json'
+            path.write_text(json.dumps(run), encoding='utf-8')
+            case = run_judge.end_to_end_cases(path)[0]
+        self.assertEqual(case['required_points'], first['required_points'])
+        self.assertEqual(case['case_notes'], first['review_notes'])
+
+
 class JudgmentValidationTests(unittest.TestCase):
     def setUp(self):
         self.case = {'expected_behavior': 'answer', 'answer': 'It may diverge [S1].',

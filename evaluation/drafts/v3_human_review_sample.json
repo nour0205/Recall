@@ -1,0 +1,1093 @@
+{
+  "judge_run": "evaluation/results/judge_end_to_end_judge_v2_20261013T145257Z.json",
+  "seed": 13,
+  "label_help": {
+    "correctness": "1 if every claim is accurate according to the notes, 0 if any claim is wrong or cannot be validated, N/A for a pure refusal",
+    "groundedness": "1 if every claim follows from the supplied sources, 0 if anything is added (including a dropped may/usually/often)",
+    "citation_correctness": "1 if every claim has a citation to a source that supports it (a trailing citation may cover a short paragraph), else 0; N/A for a pure refusal",
+    "refusal_correctness": "N/A when an answerable question was answered; otherwise 1 for a justified refusal, 0 for a wrong one",
+    "points": "pass or fail for each required point"
+  },
+  "cases": [
+    {
+      "question_id": "v3_001",
+      "question": "What can happen when the steps an optimizer takes are far too small?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_gradient_descent",
+          "text": "Gradient descent is an optimization algorithm used to minimize a loss function. The algorithm updates model parameters in the direction that reduces prediction error. The learning rate controls the size of parameter updates. A learning rate that is too large may cause divergence. A learning rate that is too small may result in slow convergence. Gradient descent is a fundamental component of many machine learning algorithms and neural networks."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting. Techniques such as regularization, cross-validation, and collecting more data can help reduce overfitting. The bias-variance tradeoff explains the relationship between model complexity and generalization performance."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "The bias-variance tradeoff helps explain prediction error in machine learning models. Bias refers to error caused by overly simplistic assumptions in the learning algorithm. High-bias models are usually too simple and may underfit the training data. Variance refers to error caused by excessive sensitivity to the training data. High-variance models may fit noise in the training set and therefore overfit. Good generalization requires balancing these two sources of error. Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "The bias-variance tradeoff helps explain prediction error in machine learning models. Bias refers to error caused by overly simplistic assumptions in the learning algorithm. High-bias models are usually too simple and may underfit the training data. Variance refers to error caused by excessive sensitivity to the training data. High-variance models may fit noise in the training set and therefore overfit. Good generalization requires balancing these two sources of error."
+        }
+      ],
+      "answer": "A learning rate that is too small may result in slow convergence [S1].",
+      "reference_answer": "If the learning rate (step size) is too small, gradient descent may converge slowly.",
+      "case_notes": "Preserve may. The question never says learning rate or convergence.",
+      "required_points": [
+        {
+          "point_id": "slow_convergence",
+          "text": "A learning rate that is too small may result in slow convergence."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "slow_convergence": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_003",
+      "question": "Which transformation makes every input have an average of zero and a spread of one?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_feature_engineering",
+          "text": "Features are the inputs used by a machine learning model. Feature engineering is the process of selecting, transforming, and creating useful features from raw data. Feature scaling is commonly used to place features on comparable ranges. Normalization rescales values to a specific range. Standardization transforms values so they have zero mean and unit variance. Good features often improve model performance more than increasing model complexity."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data. A deletion anomaly happens when removing one row accidentally removes other valuable information. The first normal form requires that each attribute contain atomic values and that there are no repeating groups. The second normal form removes partial dependency, meaning that non-key attributes must depend on the whole primary key rather than just part of a composite key. The third normal form removes transitive dependency, so non-key attributes should not depend on other non-key attributes."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "A process is an executing program with its own memory space, resources, and execution state. A thread is a smaller unit of execution within a process. Threads of the same process share memory and resources, which makes communication between them faster but also introduces synchronization issues. Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored. CPU scheduling determines which ready process or thread gets access to the processor. Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin. First-come first-served is simple but can produce poor average waiting time. Round robin assigns each process a fixed time quantum and cycles through ready tasks, which improves responsiveness in time-sharing systems. Starvation can occur when lower-priority tasks wait indefinitely."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Supervised learning is a machine learning paradigm in which a model learns from labeled examples. Each training example contains input features and a target output. The goal is to learn a mapping from inputs to outputs so that the model can generalize to unseen data. Supervised learning tasks are often divided into classification and regression. Classification predicts discrete categories, such as whether an email is spam or not spam."
+        }
+      ],
+      "answer": "Standardization transforms values so they have zero mean and unit variance [S1].",
+      "reference_answer": "Standardization, which transforms values to have zero mean and unit variance.",
+      "case_notes": "Must not answer normalization, which rescales to a range.",
+      "required_points": [
+        {
+          "point_id": "standardization",
+          "text": "Standardization transforms values to zero mean and unit variance."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "standardization": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_005",
+      "question": "Two people edit the same record at the same time and one person's change silently disappears. What is this called?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "db_transactions_concurrency",
+          "text": "Durability means that once a transaction is committed, its effects persist even after a crash. Concurrency control is needed because many users may access the same data at the same time. Problems that can appear without proper control include lost updates, dirty reads, and non-repeatable reads. A lost update occurs when one transaction overwrites the result of another. A dirty read happens when a transaction reads data written by another transaction that has not yet committed. A non-repeatable read occurs when the same query returns different results within a single transaction because another transaction modified the data in the meantime. Locking and multiversion concurrency control are two common approaches to handling concurrency."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "db_transactions_concurrency",
+          "text": "A transaction is a logical unit of work that must either complete entirely or have no effect at all. The ACID properties describe the reliability of transactions. Atomicity means all operations of a transaction happen or none happen. Consistency means the database moves from one valid state to another valid state. Isolation means concurrent transactions should not interfere in a way that produces incorrect results. Durability means that once a transaction is committed, its effects persist even after a crash. Concurrency control is needed because many users may access the same data at the same time. Problems that can appear without proper control include lost updates, dirty reads, and non-repeatable reads. A lost update occurs when one transaction overwrites the result of another. A dirty read happens when a transaction reads data written by another transaction that has not yet committed."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data. A deletion anomaly happens when removing one row accidentally removes other valuable information. The first normal form requires that each attribute contain atomic values and that there are no repeating groups. The second normal form removes partial dependency, meaning that non-key attributes must depend on the whole primary key rather than just part of a composite key. The third normal form removes transitive dependency, so non-key attributes should not depend on other non-key attributes."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "A process is an executing program with its own memory space, resources, and execution state. A thread is a smaller unit of execution within a process. Threads of the same process share memory and resources, which makes communication between them faster but also introduces synchronization issues. Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored. CPU scheduling determines which ready process or thread gets access to the processor. Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin. First-come first-served is simple but can produce poor average waiting time. Round robin assigns each process a fixed time quantum and cycles through ready tasks, which improves responsiveness in time-sharing systems. Starvation can occur when lower-priority tasks wait indefinitely."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data."
+        }
+      ],
+      "answer": "This is called a lost update [S1].",
+      "reference_answer": "A lost update, where one transaction overwrites the result of another.",
+      "case_notes": "Name and mechanism both required.",
+      "required_points": [
+        {
+          "point_id": "lost_update",
+          "text": "This is a lost update: one transaction overwrites the result of another."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "lost_update": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_006",
+      "question": "Why is switching between two separate running programs slower than switching between two workers inside the same program?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "A process is an executing program with its own memory space, resources, and execution state. A thread is a smaller unit of execution within a process. Threads of the same process share memory and resources, which makes communication between them faster but also introduces synchronization issues. Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored. CPU scheduling determines which ready process or thread gets access to the processor. Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin. First-come first-served is simple but can produce poor average waiting time. Round robin assigns each process a fixed time quantum and cycles through ready tasks, which improves responsiveness in time-sharing systems. Starvation can occur when lower-priority tasks wait indefinitely."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "A process is an executing program with its own memory space, resources, and execution state. A thread is a smaller unit of execution within a process. Threads of the same process share memory and resources, which makes communication between them faster but also introduces synchronization issues. Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "os_process_vs_thread",
+          "text": "Because each process has its own memory space, communication between processes usually requires inter-process communication mechanisms such as pipes, sockets, or shared memory. Threads communicate more easily because they share memory. This makes threads more efficient for tasks that need frequent communication, but it also introduces risks such as race conditions and synchronization problems. Creating and switching between processes is generally more expensive than creating and switching between threads because processes require more operating system overhead. Multithreading is useful for applications that perform multiple tasks concurrently, such as a web server handling multiple client requests or a program performing background work while keeping the user interface responsive. A process can contain one thread or multiple threads."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "os_process_vs_thread",
+          "text": "Creating and switching between processes is generally more expensive than creating and switching between threads because processes require more operating system overhead. Multithreading is useful for applications that perform multiple tasks concurrently, such as a web server handling multiple client requests or a program performing background work while keeping the user interface responsive. A process can contain one thread or multiple threads. If a process has only one thread, it is called single-threaded. If it has multiple threads, it is called multithreaded. In summary, a process provides isolation and resource ownership, while a thread provides a lightweight path of execution within a process."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "os_process_vs_thread",
+          "text": "A process is an independent program in execution. Each process has its own memory space, resources, and execution state. A thread is the smallest unit of execution within a process. Threads that belong to the same process share the same memory space and resources, but each thread has its own stack and program counter. Processes are more isolated than threads."
+        }
+      ],
+      "answer": "Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored for processes [S1].",
+      "reference_answer": "Switching between processes is generally more expensive than switching between threads, because more state must be saved and restored and processes require more operating-system overhead.",
+      "case_notes": "Either reason satisfies the reason point. Preserve generally.",
+      "required_points": [
+        {
+          "point_id": "more_expensive",
+          "text": "Switching between processes is generally more expensive than switching between threads."
+        },
+        {
+          "point_id": "reason",
+          "text": "Because more state must be saved and restored (more operating system overhead)."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "more_expensive": null,
+          "reason": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_007",
+      "question": "What do you call a model that is too simple and does badly even on the data it learned from?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting. Techniques such as regularization, cross-validation, and collecting more data can help reduce overfitting. The bias-variance tradeoff explains the relationship between model complexity and generalization performance."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting. Feature selection, regularization, and cross-validation are common techniques used to improve generalization."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "The bias-variance tradeoff helps explain prediction error in machine learning models. Bias refers to error caused by overly simplistic assumptions in the learning algorithm. High-bias models are usually too simple and may underfit the training data. Variance refers to error caused by excessive sensitivity to the training data. High-variance models may fit noise in the training set and therefore overfit. Good generalization requires balancing these two sources of error. Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Supervised learning is a machine learning paradigm in which a model learns from labeled examples. Each training example contains input features and a target output. The goal is to learn a mapping from inputs to outputs so that the model can generalize to unseen data. Supervised learning tasks are often divided into classification and regression. Classification predicts discrete categories, such as whether an email is spam or not spam. Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting."
+        }
+      ],
+      "answer": "A model that is too simple and does badly even on the data it learned from is called underfitting [S1].",
+      "reference_answer": "Underfitting: the model is too simple to capture the patterns in the training data, so it performs poorly even there.",
+      "case_notes": "Naming underfitting with its meaning is required.",
+      "required_points": [
+        {
+          "point_id": "underfitting",
+          "text": "This is underfitting: the model is too simple to capture patterns in the training data."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "underfitting": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_008",
+      "question": "What is it called when one large table is split into several smaller ones while keeping what the data means?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "db_normalization_intro",
+          "text": "A deletion anomaly happens when removing one row accidentally removes other valuable information. The first normal form requires that each attribute contain atomic values and that there are no repeating groups. The second normal form removes partial dependency, meaning that non-key attributes must depend on the whole primary key rather than just part of a composite key. The third normal form removes transitive dependency, so non-key attributes should not depend on other non-key attributes. For example, if a student table stores department_name and department_office, and department_office depends on department_name rather than student_id, then the design has a transitive dependency. Decomposition is often used to split such a table into smaller relations while preserving data meaning."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "ml_cross_validation",
+          "text": "Cross-validation evaluates model performance by repeatedly splitting data into training and validation sets. K-fold cross-validation divides data into k subsets. Each subset serves as the validation set once. Cross-validation reduces the risk of relying on a single train-test split. It is commonly used to estimate model generalization performance."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data. A deletion anomaly happens when removing one row accidentally removes other valuable information. The first normal form requires that each attribute contain atomic values and that there are no repeating groups. The second normal form removes partial dependency, meaning that non-key attributes must depend on the whole primary key rather than just part of a composite key. The third normal form removes transitive dependency, so non-key attributes should not depend on other non-key attributes."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "db_transactions_concurrency",
+          "text": "Durability means that once a transaction is committed, its effects persist even after a crash. Concurrency control is needed because many users may access the same data at the same time. Problems that can appear without proper control include lost updates, dirty reads, and non-repeatable reads. A lost update occurs when one transaction overwrites the result of another. A dirty read happens when a transaction reads data written by another transaction that has not yet committed. A non-repeatable read occurs when the same query returns different results within a single transaction because another transaction modified the data in the meantime. Locking and multiversion concurrency control are two common approaches to handling concurrency."
+        }
+      ],
+      "answer": "Decomposition. [S1]",
+      "reference_answer": "Decomposition, which splits a table into smaller relations while preserving data meaning.",
+      "case_notes": "The question avoids the words relation, decompose and normalization.",
+      "required_points": [
+        {
+          "point_id": "decomposition",
+          "text": "Decomposition splits a table into smaller relations while preserving data meaning."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "decomposition": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_010",
+      "question": "Which way of sharing the processor gives every task a fixed slice of time in turn, and what does that improve?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "CPU scheduling determines which ready process or thread gets access to the processor. Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin. First-come first-served is simple but can produce poor average waiting time. Round robin assigns each process a fixed time quantum and cycles through ready tasks, which improves responsiveness in time-sharing systems. Starvation can occur when lower-priority tasks wait indefinitely. Aging is a technique used to gradually increase the priority of waiting tasks in order to reduce starvation. The distinction between process and thread is important for performance, isolation, and system design."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "A process is an executing program with its own memory space, resources, and execution state. A thread is a smaller unit of execution within a process. Threads of the same process share memory and resources, which makes communication between them faster but also introduces synchronization issues. Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored. CPU scheduling determines which ready process or thread gets access to the processor. Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin. First-come first-served is simple but can produce poor average waiting time. Round robin assigns each process a fixed time quantum and cycles through ready tasks, which improves responsiveness in time-sharing systems. Starvation can occur when lower-priority tasks wait indefinitely."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "db_transactions_concurrency",
+          "text": "A transaction is a logical unit of work that must either complete entirely or have no effect at all. The ACID properties describe the reliability of transactions. Atomicity means all operations of a transaction happen or none happen. Consistency means the database moves from one valid state to another valid state. Isolation means concurrent transactions should not interfere in a way that produces incorrect results. Durability means that once a transaction is committed, its effects persist even after a crash. Concurrency control is needed because many users may access the same data at the same time. Problems that can appear without proper control include lost updates, dirty reads, and non-repeatable reads. A lost update occurs when one transaction overwrites the result of another. A dirty read happens when a transaction reads data written by another transaction that has not yet committed."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "A process is an executing program with its own memory space, resources, and execution state. A thread is a smaller unit of execution within a process. Threads of the same process share memory and resources, which makes communication between them faster but also introduces synchronization issues. Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "db_transactions_concurrency",
+          "text": "A transaction is a logical unit of work that must either complete entirely or have no effect at all. The ACID properties describe the reliability of transactions. Atomicity means all operations of a transaction happen or none happen. Consistency means the database moves from one valid state to another valid state. Isolation means concurrent transactions should not interfere in a way that produces incorrect results."
+        }
+      ],
+      "answer": "Round robin scheduling gives every task a fixed slice of time in turn, and it improves responsiveness in time-sharing systems [S1].",
+      "reference_answer": "Round robin: each process gets a fixed time quantum in turn, which improves responsiveness in time-sharing systems.",
+      "case_notes": "Both parts required.",
+      "required_points": [
+        {
+          "point_id": "round_robin",
+          "text": "Round robin assigns each process a fixed time quantum and cycles through ready tasks."
+        },
+        {
+          "point_id": "responsiveness",
+          "text": "It improves responsiveness in time-sharing systems."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "round_robin": null,
+          "responsiveness": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_017",
+      "question": "What does recall measure for a classifier?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_model_evaluation",
+          "text": "Model evaluation measures how well a machine learning model performs on unseen data. A model should not only fit the training data but also generalize to new examples. A confusion matrix summarizes classification results using true positives, true negatives, false positives, and false negatives. Accuracy measures the proportion of correct predictions. Accuracy can be misleading on imbalanced datasets. Precision measures how many predicted positive instances are actually positive. Recall measures how many actual positive instances are correctly identified. The F1 score combines precision and recall into a single metric and is useful when both are important. Cross-validation is often used to obtain a more reliable estimate of model performance."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting. Feature selection, regularization, and cross-validation are common techniques used to improve generalization."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Supervised learning is a machine learning paradigm in which a model learns from labeled examples. Each training example contains input features and a target output. The goal is to learn a mapping from inputs to outputs so that the model can generalize to unseen data. Supervised learning tasks are often divided into classification and regression. Classification predicts discrete categories, such as whether an email is spam or not spam."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Supervised learning is a machine learning paradigm in which a model learns from labeled examples. Each training example contains input features and a target output. The goal is to learn a mapping from inputs to outputs so that the model can generalize to unseen data. Supervised learning tasks are often divided into classification and regression. Classification predicts discrete categories, such as whether an email is spam or not spam. Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_model_evaluation",
+          "text": "Model evaluation measures how well a machine learning model performs on unseen data. A model should not only fit the training data but also generalize to new examples. A confusion matrix summarizes classification results using true positives, true negatives, false positives, and false negatives. Accuracy measures the proportion of correct predictions. Accuracy can be misleading on imbalanced datasets. Precision measures how many predicted positive instances are actually positive."
+        }
+      ],
+      "answer": "Recall measures how many actual positive instances are correctly identified [S1].",
+      "reference_answer": "How many actual positive instances are correctly identified.",
+      "case_notes": "Must not be confused with precision.",
+      "required_points": [
+        {
+          "point_id": "recall",
+          "text": "Recall measures how many actual positive instances are correctly identified."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "recall": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_018",
+      "question": "Which CPU scheduling algorithms are listed as common?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "CPU scheduling determines which ready process or thread gets access to the processor. Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin. First-come first-served is simple but can produce poor average waiting time. Round robin assigns each process a fixed time quantum and cycles through ready tasks, which improves responsiveness in time-sharing systems. Starvation can occur when lower-priority tasks wait indefinitely. Aging is a technique used to gradually increase the priority of waiting tasks in order to reduce starvation. The distinction between process and thread is important for performance, isolation, and system design."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "A process is an executing program with its own memory space, resources, and execution state. A thread is a smaller unit of execution within a process. Threads of the same process share memory and resources, which makes communication between them faster but also introduces synchronization issues. Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored. CPU scheduling determines which ready process or thread gets access to the processor. Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin. First-come first-served is simple but can produce poor average waiting time. Round robin assigns each process a fixed time quantum and cycles through ready tasks, which improves responsiveness in time-sharing systems. Starvation can occur when lower-priority tasks wait indefinitely."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "db_transactions_concurrency",
+          "text": "Durability means that once a transaction is committed, its effects persist even after a crash. Concurrency control is needed because many users may access the same data at the same time. Problems that can appear without proper control include lost updates, dirty reads, and non-repeatable reads. A lost update occurs when one transaction overwrites the result of another. A dirty read happens when a transaction reads data written by another transaction that has not yet committed. A non-repeatable read occurs when the same query returns different results within a single transaction because another transaction modified the data in the meantime. Locking and multiversion concurrency control are two common approaches to handling concurrency."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "A process is an executing program with its own memory space, resources, and execution state. A thread is a smaller unit of execution within a process. Threads of the same process share memory and resources, which makes communication between them faster but also introduces synchronization issues. Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "os_process_vs_thread",
+          "text": "Because each process has its own memory space, communication between processes usually requires inter-process communication mechanisms such as pipes, sockets, or shared memory. Threads communicate more easily because they share memory. This makes threads more efficient for tasks that need frequent communication, but it also introduces risks such as race conditions and synchronization problems. Creating and switching between processes is generally more expensive than creating and switching between threads because processes require more operating system overhead. Multithreading is useful for applications that perform multiple tasks concurrently, such as a web server handling multiple client requests or a program performing background work while keeping the user interface responsive. A process can contain one thread or multiple threads."
+        }
+      ],
+      "answer": "The common CPU scheduling algorithms listed are first-come first-served, shortest job first, priority scheduling, and round robin [S1].",
+      "reference_answer": "First-come first-served, shortest job first, priority scheduling and round robin.",
+      "case_notes": "All four are needed for the point.",
+      "required_points": [
+        {
+          "point_id": "algorithms",
+          "text": "First-come first-served, shortest job first, priority scheduling and round robin."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "algorithms": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_021",
+      "question": "What is the difference between normalization in databases and normalization of features?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_feature_engineering",
+          "text": "Features are the inputs used by a machine learning model. Feature engineering is the process of selecting, transforming, and creating useful features from raw data. Feature scaling is commonly used to place features on comparable ranges. Normalization rescales values to a specific range. Standardization transforms values so they have zero mean and unit variance. Good features often improve model performance more than increasing model complexity."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting. Feature selection, regularization, and cross-validation are common techniques used to improve generalization."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data. A deletion anomaly happens when removing one row accidentally removes other valuable information. The first normal form requires that each attribute contain atomic values and that there are no repeating groups. The second normal form removes partial dependency, meaning that non-key attributes must depend on the whole primary key rather than just part of a composite key. The third normal form removes transitive dependency, so non-key attributes should not depend on other non-key attributes."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting. Techniques such as regularization, cross-validation, and collecting more data can help reduce overfitting. The bias-variance tradeoff explains the relationship between model complexity and generalization performance."
+        }
+      ],
+      "answer": "Normalization in databases is the process of organizing data to reduce redundancy and improve data integrity, while normalization of features is a process used in machine learning to rescale values to a specific range. The former addresses issues like update, insertion, and deletion anomalies in relational databases [S2], [S4], whereas the latter focuses on preparing features for model training by ensuring they are on comparable scales [S1].",
+      "reference_answer": "Database normalization organizes relational data to reduce redundancy and improve integrity; feature normalization rescales values to a specific range.",
+      "case_notes": "Ambiguous term across notes: retrieval must find both.",
+      "required_points": [
+        {
+          "point_id": "database",
+          "text": "In databases, normalization organizes data to reduce redundancy and improve data integrity."
+        },
+        {
+          "point_id": "features",
+          "text": "For features, normalization rescales values to a specific range."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "database": null,
+          "features": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_022",
+      "question": "What signs of overfitting do the notes describe?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting. Techniques such as regularization, cross-validation, and collecting more data can help reduce overfitting. The bias-variance tradeoff explains the relationship between model complexity and generalization performance."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting. Feature selection, regularization, and cross-validation are common techniques used to improve generalization."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting. Selecting a model is not only about maximizing training performance but about achieving robust performance on unseen examples."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "db_transactions_concurrency",
+          "text": "A transaction is a logical unit of work that must either complete entirely or have no effect at all. The ACID properties describe the reliability of transactions. Atomicity means all operations of a transaction happen or none happen. Consistency means the database moves from one valid state to another valid state. Isolation means concurrent transactions should not interfere in a way that produces incorrect results."
+        }
+      ],
+      "answer": "A gap between training accuracy and validation accuracy is often a sign of overfitting [S4].",
+      "reference_answer": "Overfit models often perform well on training data but poorly on unseen data, and a gap between training and validation accuracy is often a sign of overfitting.",
+      "case_notes": "Preserve often.",
+      "required_points": [
+        {
+          "point_id": "train_vs_unseen",
+          "text": "Performing well on training data but poorly on unseen or test data."
+        },
+        {
+          "point_id": "accuracy_gap",
+          "text": "A gap between training accuracy and validation accuracy is often a sign of overfitting."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "train_vs_unseen": null,
+          "accuracy_gap": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_023",
+      "question": "What role does cross-validation play in evaluating a model?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_cross_validation",
+          "text": "Cross-validation evaluates model performance by repeatedly splitting data into training and validation sets. K-fold cross-validation divides data into k subsets. Each subset serves as the validation set once. Cross-validation reduces the risk of relying on a single train-test split. It is commonly used to estimate model generalization performance."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting. Selecting a model is not only about maximizing training performance but about achieving robust performance on unseen examples."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "The bias-variance tradeoff helps explain prediction error in machine learning models. Bias refers to error caused by overly simplistic assumptions in the learning algorithm. High-bias models are usually too simple and may underfit the training data. Variance refers to error caused by excessive sensitivity to the training data. High-variance models may fit noise in the training set and therefore overfit. Good generalization requires balancing these two sources of error. Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_model_evaluation",
+          "text": "Model evaluation measures how well a machine learning model performs on unseen data. A model should not only fit the training data but also generalize to new examples. A confusion matrix summarizes classification results using true positives, true negatives, false positives, and false negatives. Accuracy measures the proportion of correct predictions. Accuracy can be misleading on imbalanced datasets. Precision measures how many predicted positive instances are actually positive. Recall measures how many actual positive instances are correctly identified. The F1 score combines precision and recall into a single metric and is useful when both are important. Cross-validation is often used to obtain a more reliable estimate of model performance."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting. Feature selection, regularization, and cross-validation are common techniques used to improve generalization."
+        }
+      ],
+      "answer": "Cross-validation evaluates model performance by repeatedly splitting data into training and validation sets, reducing the risk of relying on a single train-test split. It is commonly used to estimate model generalization performance and provides a more reliable estimate of how well a model is likely to perform on unseen data [S1], [S4].",
+      "reference_answer": "It estimates how well a model is likely to perform on unseen data and is often used to obtain a more reliable estimate of model performance.",
+      "case_notes": "Evidence spread over three notes.",
+      "required_points": [
+        {
+          "point_id": "estimate_unseen",
+          "text": "It estimates how well a model is likely to perform on unseen data (its generalization performance)."
+        },
+        {
+          "point_id": "more_reliable",
+          "text": "It is often used to obtain a more reliable estimate of model performance."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "estimate_unseen": null,
+          "more_reliable": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_025",
+      "question": "Which three kinds of anomalies can poorly designed tables cause, and what is a deletion anomaly?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "db_normalization_intro",
+          "text": "A deletion anomaly happens when removing one row accidentally removes other valuable information. The first normal form requires that each attribute contain atomic values and that there are no repeating groups. The second normal form removes partial dependency, meaning that non-key attributes must depend on the whole primary key rather than just part of a composite key. The third normal form removes transitive dependency, so non-key attributes should not depend on other non-key attributes. For example, if a student table stores department_name and department_office, and department_office depends on department_name rather than student_id, then the design has a transitive dependency. Decomposition is often used to split such a table into smaller relations while preserving data meaning."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data. A deletion anomaly happens when removing one row accidentally removes other valuable information. The first normal form requires that each attribute contain atomic values and that there are no repeating groups. The second normal form removes partial dependency, meaning that non-key attributes must depend on the whole primary key rather than just part of a composite key. The third normal form removes transitive dependency, so non-key attributes should not depend on other non-key attributes."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting. Feature selection, regularization, and cross-validation are common techniques used to improve generalization."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting."
+        }
+      ],
+      "answer": "Poorly designed tables can cause update anomalies, insertion anomalies, and deletion anomalies [S2]. A deletion anomaly happens when removing one row accidentally removes other valuable information [S1].",
+      "reference_answer": "Update, insertion and deletion anomalies. A deletion anomaly happens when removing one row accidentally removes other valuable information.",
+      "case_notes": "Both parts required.",
+      "required_points": [
+        {
+          "point_id": "three_anomalies",
+          "text": "Update, insertion and deletion anomalies."
+        },
+        {
+          "point_id": "deletion",
+          "text": "A deletion anomaly happens when removing one row accidentally removes other valuable information."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "three_anomalies": null,
+          "deletion": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_026",
+      "question": "What is a transaction, and what does consistency mean in ACID?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "db_transactions_concurrency",
+          "text": "A transaction is a logical unit of work that must either complete entirely or have no effect at all. The ACID properties describe the reliability of transactions. Atomicity means all operations of a transaction happen or none happen. Consistency means the database moves from one valid state to another valid state. Isolation means concurrent transactions should not interfere in a way that produces incorrect results."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "db_transactions_concurrency",
+          "text": "A transaction is a logical unit of work that must either complete entirely or have no effect at all. The ACID properties describe the reliability of transactions. Atomicity means all operations of a transaction happen or none happen. Consistency means the database moves from one valid state to another valid state. Isolation means concurrent transactions should not interfere in a way that produces incorrect results. Durability means that once a transaction is committed, its effects persist even after a crash. Concurrency control is needed because many users may access the same data at the same time. Problems that can appear without proper control include lost updates, dirty reads, and non-repeatable reads. A lost update occurs when one transaction overwrites the result of another. A dirty read happens when a transaction reads data written by another transaction that has not yet committed."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "db_transactions_concurrency",
+          "text": "Durability means that once a transaction is committed, its effects persist even after a crash. Concurrency control is needed because many users may access the same data at the same time. Problems that can appear without proper control include lost updates, dirty reads, and non-repeatable reads. A lost update occurs when one transaction overwrites the result of another. A dirty read happens when a transaction reads data written by another transaction that has not yet committed. A non-repeatable read occurs when the same query returns different results within a single transaction because another transaction modified the data in the meantime. Locking and multiversion concurrency control are two common approaches to handling concurrency."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data. A deletion anomaly happens when removing one row accidentally removes other valuable information. The first normal form requires that each attribute contain atomic values and that there are no repeating groups. The second normal form removes partial dependency, meaning that non-key attributes must depend on the whole primary key rather than just part of a composite key. The third normal form removes transitive dependency, so non-key attributes should not depend on other non-key attributes."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_feature_engineering",
+          "text": "Features are the inputs used by a machine learning model. Feature engineering is the process of selecting, transforming, and creating useful features from raw data. Feature scaling is commonly used to place features on comparable ranges. Normalization rescales values to a specific range. Standardization transforms values so they have zero mean and unit variance. Good features often improve model performance more than increasing model complexity."
+        }
+      ],
+      "answer": "A transaction is a logical unit of work that must either complete entirely or have no effect at all [S1]. Consistency means the database moves from one valid state to another valid state [S1].",
+      "reference_answer": "A logical unit of work that either completes entirely or has no effect; consistency means the database moves from one valid state to another.",
+      "case_notes": "Both parts required.",
+      "required_points": [
+        {
+          "point_id": "transaction",
+          "text": "A transaction is a logical unit of work that must either complete entirely or have no effect at all."
+        },
+        {
+          "point_id": "consistency",
+          "text": "Consistency means the database moves from one valid state to another valid state."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "transaction": null,
+          "consistency": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_027",
+      "question": "What is feature scaling for, and how do normalization and standardization differ?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_feature_engineering",
+          "text": "Features are the inputs used by a machine learning model. Feature engineering is the process of selecting, transforming, and creating useful features from raw data. Feature scaling is commonly used to place features on comparable ranges. Normalization rescales values to a specific range. Standardization transforms values so they have zero mean and unit variance. Good features often improve model performance more than increasing model complexity."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting. Feature selection, regularization, and cross-validation are common techniques used to improve generalization."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "db_normalization_intro",
+          "text": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity. Poorly designed tables often repeat the same facts in multiple rows, which can cause update anomalies, insertion anomalies, and deletion anomalies. An update anomaly happens when the same fact must be changed in several places and some copies are missed. An insertion anomaly happens when a new fact cannot be inserted without adding unrelated data. A deletion anomaly happens when removing one row accidentally removes other valuable information. The first normal form requires that each attribute contain atomic values and that there are no repeating groups. The second normal form removes partial dependency, meaning that non-key attributes must depend on the whole primary key rather than just part of a composite key. The third normal form removes transitive dependency, so non-key attributes should not depend on other non-key attributes."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting. Selecting a model is not only about maximizing training performance but about achieving robust performance on unseen examples."
+        }
+      ],
+      "answer": "Feature scaling is commonly used to place features on comparable ranges [S1]. Normalization rescales values to a specific range, while standardization transforms values so they have zero mean and unit variance [S1].",
+      "reference_answer": "Feature scaling places features on comparable ranges. Normalization rescales values to a specific range; standardization gives them zero mean and unit variance.",
+      "case_notes": "Three points. Must not mix in database normalization.",
+      "required_points": [
+        {
+          "point_id": "scaling",
+          "text": "Feature scaling places features on comparable ranges."
+        },
+        {
+          "point_id": "normalization",
+          "text": "Normalization rescales values to a specific range."
+        },
+        {
+          "point_id": "standardization",
+          "text": "Standardization transforms values to zero mean and unit variance."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "scaling": null,
+          "normalization": null,
+          "standardization": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_028",
+      "question": "What is the goal of supervised learning, and what does the model minimize during training?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Supervised learning is a machine learning paradigm in which a model learns from labeled examples. Each training example contains input features and a target output. The goal is to learn a mapping from inputs to outputs so that the model can generalize to unseen data. Supervised learning tasks are often divided into classification and regression. Classification predicts discrete categories, such as whether an email is spam or not spam. Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Supervised learning is a machine learning paradigm in which a model learns from labeled examples. Each training example contains input features and a target output. The goal is to learn a mapping from inputs to outputs so that the model can generalize to unseen data. Supervised learning tasks are often divided into classification and regression. Classification predicts discrete categories, such as whether an email is spam or not spam."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting. Feature selection, regularization, and cross-validation are common techniques used to improve generalization."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_gradient_descent",
+          "text": "Gradient descent is an optimization algorithm used to minimize a loss function. The algorithm updates model parameters in the direction that reduces prediction error. The learning rate controls the size of parameter updates. A learning rate that is too large may cause divergence. A learning rate that is too small may result in slow convergence. Gradient descent is a fundamental component of many machine learning algorithms and neural networks."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "The bias-variance tradeoff helps explain prediction error in machine learning models. Bias refers to error caused by overly simplistic assumptions in the learning algorithm. High-bias models are usually too simple and may underfit the training data. Variance refers to error caused by excessive sensitivity to the training data. High-variance models may fit noise in the training set and therefore overfit. Good generalization requires balancing these two sources of error. Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting."
+        }
+      ],
+      "answer": "The goal of supervised learning is to learn a mapping from inputs to outputs so that the model can generalize to unseen data. During training, the model minimizes a loss function that measures the difference between predictions and true labels [S1].",
+      "reference_answer": "To learn a mapping from inputs to outputs that generalizes to unseen data; it minimizes a loss function measuring the difference between predictions and true labels.",
+      "case_notes": "Both parts required.",
+      "required_points": [
+        {
+          "point_id": "goal",
+          "text": "To learn a mapping from inputs to outputs that generalizes to unseen data."
+        },
+        {
+          "point_id": "loss",
+          "text": "A loss function measuring the difference between predictions and true labels."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "goal": null,
+          "loss": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_029",
+      "question": "What is multithreading useful for, and which two examples are given?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "os_process_vs_thread",
+          "text": "Creating and switching between processes is generally more expensive than creating and switching between threads because processes require more operating system overhead. Multithreading is useful for applications that perform multiple tasks concurrently, such as a web server handling multiple client requests or a program performing background work while keeping the user interface responsive. A process can contain one thread or multiple threads. If a process has only one thread, it is called single-threaded. If it has multiple threads, it is called multithreaded. In summary, a process provides isolation and resource ownership, while a thread provides a lightweight path of execution within a process."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "os_process_vs_thread",
+          "text": "Because each process has its own memory space, communication between processes usually requires inter-process communication mechanisms such as pipes, sockets, or shared memory. Threads communicate more easily because they share memory. This makes threads more efficient for tasks that need frequent communication, but it also introduces risks such as race conditions and synchronization problems. Creating and switching between processes is generally more expensive than creating and switching between threads because processes require more operating system overhead. Multithreading is useful for applications that perform multiple tasks concurrently, such as a web server handling multiple client requests or a program performing background work while keeping the user interface responsive. A process can contain one thread or multiple threads."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "A process is an executing program with its own memory space, resources, and execution state. A thread is a smaller unit of execution within a process. Threads of the same process share memory and resources, which makes communication between them faster but also introduces synchronization issues. Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored. CPU scheduling determines which ready process or thread gets access to the processor. Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin. First-come first-served is simple but can produce poor average waiting time. Round robin assigns each process a fixed time quantum and cycles through ready tasks, which improves responsiveness in time-sharing systems. Starvation can occur when lower-priority tasks wait indefinitely."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_classification_regression",
+          "text": "Classification predicts discrete categories. Examples include spam detection, disease diagnosis, and sentiment analysis. Regression predicts continuous numerical values. Examples include house price prediction and temperature forecasting. Classification and regression are the two main categories of supervised learning problems. The choice between classification and regression depends on the type of target variable."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "os_processes_threads_scheduling",
+          "text": "CPU scheduling determines which ready process or thread gets access to the processor. Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin. First-come first-served is simple but can produce poor average waiting time. Round robin assigns each process a fixed time quantum and cycles through ready tasks, which improves responsiveness in time-sharing systems. Starvation can occur when lower-priority tasks wait indefinitely. Aging is a technique used to gradually increase the priority of waiting tasks in order to reduce starvation. The distinction between process and thread is important for performance, isolation, and system design."
+        }
+      ],
+      "answer": "Multithreading is useful for applications that perform multiple tasks concurrently, such as a web server handling multiple client requests or a program performing background work while keeping the user interface responsive [S1].",
+      "reference_answer": "Applications that perform multiple tasks concurrently, such as a web server handling many client requests or a program doing background work while keeping its interface responsive.",
+      "case_notes": "Both examples are needed for the examples point.",
+      "required_points": [
+        {
+          "point_id": "concurrent_tasks",
+          "text": "Applications that perform multiple tasks concurrently."
+        },
+        {
+          "point_id": "examples",
+          "text": "A web server handling multiple client requests, and a program doing background work while keeping the user interface responsive."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "concurrent_tasks": null,
+          "examples": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_030",
+      "question": "What is the difference between training error and test error?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting. Feature selection, regularization, and cross-validation are common techniques used to improve generalization."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Supervised learning is a machine learning paradigm in which a model learns from labeled examples. Each training example contains input features and a target output. The goal is to learn a mapping from inputs to outputs so that the model can generalize to unseen data. Supervised learning tasks are often divided into classification and regression. Classification predicts discrete categories, such as whether an email is spam or not spam. Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "The bias-variance tradeoff helps explain prediction error in machine learning models. Bias refers to error caused by overly simplistic assumptions in the learning algorithm. High-bias models are usually too simple and may underfit the training data. Variance refers to error caused by excessive sensitivity to the training data. High-variance models may fit noise in the training set and therefore overfit. Good generalization requires balancing these two sources of error."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "The bias-variance tradeoff helps explain prediction error in machine learning models. Bias refers to error caused by overly simplistic assumptions in the learning algorithm. High-bias models are usually too simple and may underfit the training data. Variance refers to error caused by excessive sensitivity to the training data. High-variance models may fit noise in the training set and therefore overfit. Good generalization requires balancing these two sources of error. Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting."
+        }
+      ],
+      "answer": "Training error refers to performance on the training set, while test error refers to performance on new unseen data [S1].",
+      "reference_answer": "Training error is performance on the training set; test error is performance on new, unseen data.",
+      "case_notes": "Both parts required.",
+      "required_points": [
+        {
+          "point_id": "training_error",
+          "text": "Training error refers to performance on the training set."
+        },
+        {
+          "point_id": "test_error",
+          "text": "Test error refers to performance on new unseen data."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "training_error": null,
+          "test_error": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_032",
+      "question": "Do good features always improve a model more than making it more complex?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_feature_engineering",
+          "text": "Features are the inputs used by a machine learning model. Feature engineering is the process of selecting, transforming, and creating useful features from raw data. Feature scaling is commonly used to place features on comparable ranges. Normalization rescales values to a specific range. Standardization transforms values so they have zero mean and unit variance. Good features often improve model performance more than increasing model complexity."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting. Selecting a model is not only about maximizing training performance but about achieving robust performance on unseen examples."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "The bias-variance tradeoff helps explain prediction error in machine learning models. Bias refers to error caused by overly simplistic assumptions in the learning algorithm. High-bias models are usually too simple and may underfit the training data. Variance refers to error caused by excessive sensitivity to the training data. High-variance models may fit noise in the training set and therefore overfit. Good generalization requires balancing these two sources of error. Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting. Techniques such as regularization, cross-validation, and collecting more data can help reduce overfitting. The bias-variance tradeoff explains the relationship between model complexity and generalization performance."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_supervised_learning_basics",
+          "text": "Regression predicts continuous values, such as the price of a house. During training, the model minimizes a loss function that measures the difference between predictions and true labels. Training error refers to performance on the training set, while test error refers to performance on new unseen data. A model that performs very well on training data but poorly on test data is said to be overfitting. A model that performs poorly even on training data may be underfitting. Feature selection, regularization, and cross-validation are common techniques used to improve generalization."
+        }
+      ],
+      "answer": "Good features often improve model performance more than increasing model complexity [S1].",
+      "reference_answer": "The notes say good features often, not always, improve performance more than increasing model complexity.",
+      "case_notes": "Preserve often (C4).",
+      "required_points": [
+        {
+          "point_id": "often",
+          "text": "Not always: good features often improve performance more than increasing model complexity."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "often": null
+        },
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "v3_033",
+      "question": "Are high-bias models always too simple?",
+      "expected_behavior": "answer",
+      "sources": [
+        {
+          "label": "[S1]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "The bias-variance tradeoff helps explain prediction error in machine learning models. Bias refers to error caused by overly simplistic assumptions in the learning algorithm. High-bias models are usually too simple and may underfit the training data. Variance refers to error caused by excessive sensitivity to the training data. High-variance models may fit noise in the training set and therefore overfit. Good generalization requires balancing these two sources of error."
+        },
+        {
+          "label": "[S2]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting. Techniques such as regularization, cross-validation, and collecting more data can help reduce overfitting. The bias-variance tradeoff explains the relationship between model complexity and generalization performance."
+        },
+        {
+          "label": "[S3]",
+          "document_id": "ml_overfitting_underfitting",
+          "text": "Underfitting occurs when a model is too simple to capture patterns in the training data. Underfit models typically have high bias and poor performance on both training and test data. Overfitting occurs when a model learns noise and specific details of the training data instead of general patterns. Overfit models often perform well on training data but poorly on unseen data. Model complexity influences the balance between underfitting and overfitting."
+        },
+        {
+          "label": "[S4]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "The bias-variance tradeoff helps explain prediction error in machine learning models. Bias refers to error caused by overly simplistic assumptions in the learning algorithm. High-bias models are usually too simple and may underfit the training data. Variance refers to error caused by excessive sensitivity to the training data. High-variance models may fit noise in the training set and therefore overfit. Good generalization requires balancing these two sources of error. Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting."
+        },
+        {
+          "label": "[S5]",
+          "document_id": "ml_bias_variance_generalization",
+          "text": "Increasing model complexity can reduce bias but may increase variance. Regularization can reduce variance by discouraging overly complex models. Cross-validation is used to estimate how well a model is likely to perform on unseen data. In k-fold cross-validation, the dataset is divided into k subsets, and the model is trained multiple times, each time leaving out one subset for validation. A gap between training accuracy and validation accuracy is often a sign of overfitting. Selecting a model is not only about maximizing training performance but about achieving robust performance on unseen examples."
+        }
+      ],
+      "answer": "High-bias models are usually too simple [S1].",
+      "reference_answer": "The notes say high-bias models are usually too simple and may underfit, not always.",
+      "case_notes": "Preserve usually and may (C4).",
+      "required_points": [
+        {
+          "point_id": "usually",
+          "text": "Not always: high-bias models are usually too simple and may underfit."
+        }
+      ],
+      "labels": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_correctness": null,
+        "refusal_correctness": null,
+        "points": {
+          "usually": null
+        },
+        "notes": ""
+      }
+    }
+  ]
+}

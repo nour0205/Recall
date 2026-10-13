@@ -101,6 +101,25 @@ def validate_judgment(judgment: dict, case: dict) -> list[str]:
     return problems
 
 
+REFUSAL = "I don't know."
+
+
+def refusal_labels(case: dict) -> dict:
+    """Fixed rubric labels for an exact refusal, matching the Milestone 2 human review:
+    a pure refusal makes no claims (correctness and citations N/A, grounded); it is a
+    correct refusal on a refuse case and a false refusal that fails every point otherwise."""
+    answerable = case["expected_behavior"] == "answer"
+    return {
+        "claims": [],
+        "point_judgments": [{"point_id": p["point_id"], "judgment": "fail", "reason": "Refused an answerable question."}
+                            for p in case["required_points"]] if answerable else [],
+        "correctness": "N/A", "groundedness": 1, "citation_correctness": "N/A",
+        "refusal_correctness": 0 if answerable else 1,
+        "unsupported_claims": [], "citation_issues": [],
+        "rationale": "Deterministic: exact refusal." + (" False refusal of an answerable question." if answerable else ""),
+    }
+
+
 def completeness_score(judgment: dict, case: dict):
     if case["expected_behavior"] != "answer":
         return "N/A"

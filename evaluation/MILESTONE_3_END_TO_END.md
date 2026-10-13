@@ -24,6 +24,27 @@ Milestones 1 and 2 measured retrieval and the answer prompt in isolation, with r
 
 **Run-to-run noise:** temperature 0 is not deterministic. Two runs with byte-identical prompts differ on 2 of 19 answers, and on one question one run was wrong and the other correct. Comparisons need several runs per configuration.
 
+## Pilot of the v3 benchmark (draft, unreviewed)
+
+48 new questions ([draft](drafts/benchmark_v3_review.md)) run twice through the planner-free `/ask`, and one run scored by judge v2. Exact refusals were labelled with the rubric's fixed refusal labels, which reproduce every human label for exact refusals in Milestone 2. [Run 1](results/end_to_end_benchmark_v3_draft_20261013T143406Z.json) · [run 2](results/end_to_end_benchmark_v3_draft_20261013T143512Z.json) · [judge](results/judge_end_to_end_judge_v2_20261013T145257Z.json)
+
+| Category | Grounded | Correct | Citations | Required points |
+|---|---:|---:|---:|---:|
+| Paraphrase (10) | 10/10 | 10/10 | 10/10 | 8/10 |
+| Exact term (8) | 8/8 | 8/8 | 8/8 | 8/8 |
+| Multi-part (6) | 6/6 | 6/6 | 6/6 | 6/6 |
+| Cross-note (6) | 4/6 | 4/6 | 3/6 | 5/6 |
+| Qualifier traps (4) | 4/4 | 2/4 | 2/4 | 1/4 |
+| Refusal cases (14) | 14/14 correctly refused, in both runs | | | |
+
+- **Retrieval is still saturated:** the required evidence was retrieved for 34/34 answerable questions in both runs, including paraphrases and cross-note questions. With 27 chunks, the top 5 covers almost a fifth of the corpus; separating retrieval methods needs a larger corpus, not only harder questions.
+- **Refusals are reliable:** all 10 near-miss traps (topic present, detail absent) and all 4 out-of-scope questions were refused in both runs.
+- **New weaknesses the 19-question set could not show:** "always?" questions are falsely refused (v3_031 and v3_034, in both runs); combining two notes invites elaboration and dropped qualifiers (v3_020, v3_021); and some answers name a concept without its mechanism (v3_005, v3_008).
+- **Run-to-run noise:** 41 of 48 answers were identical across the two runs; the behaviour counts above were identical.
+- **Caveat:** the judge misses subtle elaborations, so the grounded counts may be optimistic. A held-out human review of 20 random answers is prepared in [`drafts/v3_human_review_sample.md`](drafts/v3_human_review_sample.md) (`python -m evaluation.v3_human_review score` once labelled).
+
+A live run of the planner-free `/ask` on the original 19 questions (two runs) confirmed one model call per question and prompts identical to the planner ablation's planner-off run. Latency varied from 1.3 s to 4.4 s between the two runs, entirely inside the OpenAI API call, so latency claims need several runs.
+
 ## Decisions
 
 - **Removed the intent planner.** Structural evidence: it could not change the answer prompt.
@@ -33,9 +54,9 @@ Milestones 1 and 2 measured retrieval and the answer prompt in isolation, with r
 
 ## Not yet done
 
-1. **A larger benchmark** with harder retrieval questions (paraphrases with no shared words, exact technical terms) and more refusal traps than the current 3.
-2. **A held-out test of judge v2** on newly human-labelled answers.
-3. **Several end-to-end runs per configuration**, including a live run of the planner-free `/ask`.
+1. **Review and freeze the v3 benchmark** (author review of the 48 draft questions; several were flagged for a decision).
+2. **Held-out test of judge v2:** label the 20-answer sample and run `python -m evaluation.v3_human_review score`.
+3. **Fix the measured weaknesses** (false refusals on qualifier questions, elaboration when combining notes, short answers), measured on the frozen v3 set over several runs.
 
 ## Limits
 

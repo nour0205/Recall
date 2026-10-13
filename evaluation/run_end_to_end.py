@@ -93,16 +93,41 @@ def to_benchmark_chunks(chunks, chunk_map):
     return mapped
 
 
-def build_row(case, reference, *, status_code, response, plan, retrieved, calls, latency, chunk_map):
+def quote_evidence(required_points, retrieved) -> list[dict]:
+    """v3 benchmark: a point has evidence when any of its quotes appears in a retrieved chunk."""
+    texts = [(c.get("document_id"), c.get("text") or "") for c in retrieved or []]
+    output = []
+    for point in required_points:
+        found = sorted({doc for e in point["evidence"] for doc, text in texts
+                        if doc == e["document_id"] and e["quote"] in text})
+        output.append({"point_id": point["point_id"], "sufficient_retrieved_evidence": bool(found),
+                       "documents_with_evidence": found, "method": "verbatim_quote_in_retrieved_chunk"})
+    return output
+
+
+def load_v3_cases(path: Path):
+    """Adapt the quote-based v3 benchmark to the runner's (case, reference) pairs."""
+    draft = json.loads(Path(path).read_text(encoding="utf-8"))
+    pairs = []
+    for raw in draft["cases"]:
+        case = SimpleNamespace(question_id=raw["question_id"], question=raw["question"], category=raw["category"])
+        reference = SimpleNamespace(expected_behavior=raw["expected_behavior"], required_points=raw["required_points"])
+        pairs.append((case, reference))
+    return pairs
+
+
+def build_row(case, reference, *, status_code, response, plan, retrieved, calls, latency, chunk_map, evidence=None):
     answer = (response or {}).get("answer")
     sources = (response or {}).get("sources") or []
-    evidence = point_evidence(reference, case, to_benchmark_chunks(retrieved or [], chunk_map))
+    if evidence is None:
+        evidence = point_evidence(reference, case, to_benchmark_chunks(retrieved or [], chunk_map))
     factual = [p["sufficient_retrieved_evidence"] for p in evidence if p["sufficient_retrieved_evidence"] is not None]
     labels = cited_labels(answer)
     answer_calls = [c for c in calls if c["kind"] == "chat" and c["stage"] == "answer"]
     return {
         "question_id": case.question_id,
         "question": case.question,
+        "category": getattr(case, "category", None),
         "expected_behavior": reference.expected_behavior,
         "http_status": status_code,
         "answer": answer,
@@ -169,7 +194,25 @@ def summarize(rows) -> dict:
         "latency_seconds": _stats([r["latency_seconds"] for r in ok]),
         "tokens": {"planner": tokens("chat", "planner"), "answer": tokens("chat", "answer"),
                    "query_embeddings": tokens("embedding")},
+        "by_category": _by_category(ok),
     }
+
+
+def _by_category(rows) -> dict | None:
+    if not any(r.get("category") for r in rows):
+        return None
+    result = {}
+    for category in sorted({r["category"] for r in rows}):
+        group = [r for r in rows if r["category"] == category]
+        answerable = [r for r in group if r["expected_behavior"] == "answer"]
+        result[category] = {
+            "cases": len(group),
+            "refusal_outcomes": {o: sum(r["refusal_outcome"] == o for r in group)
+                                 for o in sorted({r["refusal_outcome"] for r in group})},
+            "evidence_retrieved": (f"{sum(r['context_sufficient_for_full_answer'] is True for r in answerable)}/{len(answerable)}"
+                                   if answerable else None),
+        }
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -227,14 +270,20 @@ def save(path: Path, report: dict):
     temporary.replace(path)
 
 
-def main(output_path: Path | None = None, keep_workspace: bool = False, planner: bool = True):
+def main(output_path: Path | None = None, keep_workspace: bool = False, planner: bool = True, benchmark_path: Path | None = None):
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     name = f"end_to_end_v1_{stamp}.json" if planner else f"end_to_end_v1_no_planner_{stamp}.json"
+    if benchmark_path:
+        name = f"end_to_end_{Path(benchmark_path).stem}_{stamp}.json"
     output_path = Path(output_path or RESULTS_DIR / name).resolve()
     if output_path.exists():
         raise FileExistsError(f"Refusing to overwrite an existing run: {output_path}")
 
-    benchmark, references = load_generation_benchmark(REPO_ROOT / REFERENCE_PATH, REPO_ROOT / RETRIEVAL_PATH)
+    if benchmark_path:
+        pairs = load_v3_cases(REPO_ROOT / benchmark_path)
+    else:
+        benchmark, references = load_generation_benchmark(REPO_ROOT / REFERENCE_PATH, REPO_ROOT / RETRIEVAL_PATH)
+        pairs = list(zip(benchmark.cases, references.cases))
     notes = load_manifest()
     chunk_map = benchmark_chunk_map(notes)
     workspace = Path(tempfile.mkdtemp(prefix="recall-e2e-"))
@@ -249,8 +298,9 @@ def main(output_path: Path | None = None, keep_workspace: bool = False, planner:
                           "planner": planner, "fallbacks": "production", "sdk_retries": "production defaults"},
         "provenance": {
             "git_commit": git_commit(),
-            "retrieval_benchmark_sha256": file_hash(REPO_ROOT / RETRIEVAL_PATH),
-            "generation_reference_sha256": file_hash(REPO_ROOT / REFERENCE_PATH),
+            "benchmark": Path(benchmark_path).as_posix() if benchmark_path else RETRIEVAL_PATH.as_posix(),
+            "benchmark_sha256": file_hash(REPO_ROOT / (benchmark_path or RETRIEVAL_PATH)),
+            "generation_reference_sha256": None if benchmark_path else file_hash(REPO_ROOT / REFERENCE_PATH),
             "demo_manifest_sha256": file_hash(DEMO_DIR / "manifest.json"),
             "runtime_versions": {name: version(name) for name in ("openai", "chromadb", "Whoosh", "fastapi")},
         },
@@ -319,7 +369,7 @@ def main(output_path: Path | None = None, keep_workspace: bool = False, planner:
                     stack.enter_context(patch.object(api, "plan_question", observe_plan))
                 stack.enter_context(patch.object(api, "hybrid_retrieve", observe_retrieval))
                 http = stack.enter_context(TestClient(api.app))
-                for case, reference in zip(benchmark.cases, references.cases):
+                for case, reference in pairs:
                     observed.clear()
                     recorder.take()
                     recorder.stage = "answer"
@@ -330,7 +380,8 @@ def main(output_path: Path | None = None, keep_workspace: bool = False, planner:
                         case, reference, status_code=response.status_code,
                         response=response.json() if response.status_code == 200 else None,
                         plan=observed.get("plan"), retrieved=observed.get("retrieved"),
-                        calls=recorder.take(), latency=latency, chunk_map=chunk_map)
+                        calls=recorder.take(), latency=latency, chunk_map=chunk_map,
+                        evidence=quote_evidence(reference.required_points, observed.get("retrieved")) if benchmark_path else None)
                     report["queries"].append(row)
                     save(output_path, report)
                     print(f"{case.question_id}: {row['refusal_outcome']} "
@@ -355,5 +406,6 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path, help="Result path (default: a new timestamped file)")
     parser.add_argument("--keep-workspace", action="store_true", help="Keep the temporary seeded install")
     parser.add_argument("--no-planner", action="store_true", help="Skip the planner call (route 'unknown', no targets)")
+    parser.add_argument("--benchmark", type=Path, help="A quote-based benchmark such as evaluation/drafts/benchmark_v3_draft.json")
     args = parser.parse_args()
-    main(args.output, args.keep_workspace, planner=not args.no_planner)
+    main(args.output, args.keep_workspace, planner=not args.no_planner, benchmark_path=args.benchmark)

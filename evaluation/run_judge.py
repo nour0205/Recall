@@ -59,7 +59,10 @@ def calibration_cases() -> list[dict]:
 
 def end_to_end_cases(run_path: Path) -> list[dict]:
     run = json.loads(run_path.read_text(encoding="utf-8"))
-    references = {c["question_id"]: c for c in json.loads(REFERENCE_PATH.read_text(encoding="utf-8"))["cases"]}
+    # Runs on a quote-based benchmark (v3 draft) record it in their provenance.
+    benchmark = (run.get("provenance") or {}).get("benchmark") or ""
+    source = Path(benchmark) if benchmark.endswith("benchmark_v3_draft.json") else REFERENCE_PATH
+    references = {c["question_id"]: c for c in json.loads(source.read_text(encoding="utf-8"))["cases"]}
     cases = []
     for row in run["queries"]:
         reference = references[row["question_id"]]
@@ -75,10 +78,18 @@ def end_to_end_cases(run_path: Path) -> list[dict]:
     return cases
 
 
-def judge_all(cases, client, prompt, report, output_path):
+def judge_all(cases, client, prompt, report, output_path, deterministic_refusals=False):
     lock = threading.Lock()
 
     def one(case):
+        if deterministic_refusals and (case["answer"] or "").strip() == judge_lib.REFUSAL:
+            judgment = judge_lib.refusal_labels(case)
+            row = {**case, "judge": judgment, "judge_meta": {"deterministic": True}, "judge_problems": [],
+                   "judge_completeness_score": judge_lib.completeness_score(judgment, case)}
+            with lock:
+                report["judgments"].append(row)
+                save(output_path, report)
+            return
         try:
             judgment, meta = judge_lib.judge(client, case, prompt)
             problems = judge_lib.validate_judgment(judgment, case)
@@ -124,7 +135,7 @@ def save(path: Path, report: dict):
     temporary.replace(path)
 
 
-def main(mode: str, run_path: Path | None = None, prompt_path: Path = DEFAULT_PROMPT):
+def main(mode: str, run_path: Path | None = None, prompt_path: Path = DEFAULT_PROMPT, deterministic_refusals: bool = False):
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     prompt = judge_lib.load_prompt(prompt_path)
     kind = "calibration" if mode == "calibrate" else "end_to_end"
@@ -144,14 +155,14 @@ def main(mode: str, run_path: Path | None = None, prompt_path: Path = DEFAULT_PR
         "judge": {"prompt_id": prompt["prompt_id"], "model": prompt["model"],
                   "reasoning_effort": prompt["reasoning_effort"], "instructions_sha256": prompt["instructions_sha256"],
                   "schema_sha256": prompt["schema_sha256"], "prompt_path": Path(prompt_path).as_posix(), "prompt_file_sha256": file_hash(Path(prompt_path)),
-                  "reference_sha256": file_hash(REFERENCE_PATH)},
+                  "reference_sha256": file_hash(REFERENCE_PATH), "deterministic_refusals": deterministic_refusals},
         "inputs": sources, "judgments": [], "summary": None,
     }
     with output_path.open("x", encoding="utf-8") as stream:
         json.dump(report, stream)
     client = OpenAI(api_key=OPENAI_API_KEY, max_retries=2, timeout=300)
     try:
-        judge_all(cases, client, prompt, report, output_path)
+        judge_all(cases, client, prompt, report, output_path, deterministic_refusals)
         good = usable(report["judgments"])
         if mode == "calibrate":
             report["summary"] = {"judged": f"{len(good)}/{len(cases)}", "agreement": compare(good),
@@ -179,5 +190,7 @@ if __name__ == "__main__":
     sub.add_parser("calibrate")
     e2e = sub.add_parser("end-to-end")
     e2e.add_argument("run_path", type=Path)
+    e2e.add_argument("--deterministic-refusals", action="store_true",
+                     help="Label exact \"I don't know.\" answers with the rubric's fixed refusal labels, without a model call")
     args = parser.parse_args()
-    main(args.mode, getattr(args, "run_path", None), args.prompt)
+    main(args.mode, getattr(args, "run_path", None), args.prompt, getattr(args, "deterministic_refusals", False))
