@@ -69,6 +69,27 @@ class EndToEndRunnerTests(unittest.TestCase):
         self.assertEqual(set(e2e.PLANNER_BYPASS), {'route', 'targets', 'reason'})
         self.assertEqual((e2e.PLANNER_BYPASS['route'], e2e.PLANNER_BYPASS['targets']), ('unknown', []))
 
+    def test_v3_quote_evidence_needs_the_quote_in_the_right_note(self):
+        points = [{'point_id': 'p', 'evidence': [{'document_id': 'ml_gradient_descent', 'quote': 'may cause divergence'}]}]
+        hit = [{'document_id': 'ml_gradient_descent', 'text': 'A learning rate that is too large may cause divergence.'}]
+        wrong_note = [{'document_id': 'ml_cross_validation', 'text': 'may cause divergence'}]
+        self.assertTrue(e2e.quote_evidence(points, hit)[0]['sufficient_retrieved_evidence'])
+        self.assertFalse(e2e.quote_evidence(points, wrong_note)[0]['sufficient_retrieved_evidence'])
+        self.assertFalse(e2e.quote_evidence(points, None)[0]['sufficient_retrieved_evidence'])
+
+    def test_v3_cases_load_with_categories_and_summarize_by_category(self):
+        from pathlib import Path
+        pairs = e2e.load_v3_cases(e2e.REPO_ROOT / Path('evaluation/drafts/benchmark_v3_draft.json'))
+        self.assertEqual(len(pairs), 48)
+        case, reference = pairs[0]
+        row = e2e.build_row(case, reference, status_code=200,
+                            response={'answer': 'It may converge slowly [S1].', 'sources': [{'document_id': 'ml_gradient_descent'}]},
+                            plan=None, retrieved=[], calls=[], latency=1.0, chunk_map={},
+                            evidence=e2e.quote_evidence(reference.required_points, []))
+        self.assertEqual(row['category'], 'paraphrase')
+        summary = e2e.summarize([row])
+        self.assertEqual(summary['by_category']['paraphrase']['evidence_retrieved'], '0/1')
+
     def test_summary_counts_behaviour_evidence_and_tokens(self):
         usage = {'prompt_tokens': 10, 'completion_tokens': 2, 'total_tokens': 12}
         calls = [{'kind': 'chat', 'stage': 'planner', 'usage': usage}, {'kind': 'chat', 'stage': 'answer', 'usage': usage},

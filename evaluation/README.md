@@ -19,7 +19,7 @@ Milestone 1 evaluates retrieval, not generated answers. Start with the
 | [rescore_evidence.py](rescore_evidence.py) | Evidence rescoring of saved rankings (`--source`, `--modes`); default: the MiniLM experiment |
 | [validate_benchmark.py](validate_benchmark.py) | Schema validation, optionally persisted Chroma reference checks |
 | [verify_saved_results.py](verify_saved_results.py) | Offline reproduction of historical per-query and aggregate evidence scores |
-| [drafts/benchmark_v3_review.md](drafts/benchmark_v3_review.md) / [benchmark_draft.py](benchmark_draft.py) | Draft v3 benchmark (48 questions, evidence quoted verbatim from `demo_notes/`), awaiting author review |
+| [benchmarks/benchmark_v3.json](benchmarks/benchmark_v3.json) / [benchmark_draft.py](benchmark_draft.py) | v3 benchmark: 48 questions, evidence quoted verbatim from `demo_notes/`, author-reviewed ([review sheet](drafts/benchmark_v3_review.md)); run with `run_end_to_end --benchmark evaluation/benchmarks/benchmark_v3.json` |
 | [MILESTONE_3_END_TO_END.md](MILESTONE_3_END_TO_END.md) | Milestone 3 summary: end-to-end evaluation, judge, planner ablation, retrieval rescoring |
 | [run_end_to_end.py](run_end_to_end.py) / [END_TO_END_EVALUATION.md](END_TO_END_EVALUATION.md) | Production `/ask` on a fresh install seeded from `demo_notes/`; unscored run and findings |
 | [judge.py](judge.py) / [run_judge.py](run_judge.py) / [JUDGE_CALIBRATION.md](JUDGE_CALIBRATION.md) | LLM judge, its calibration against the Milestone 2 human labels, and production scores |

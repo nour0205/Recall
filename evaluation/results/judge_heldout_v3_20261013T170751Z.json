@@ -1,0 +1,82 @@
+{
+  "sheet": "evaluation/drafts/v3_human_review_sample.json",
+  "annotation": "Pre-labelled with AI assistance (15 answers, reasons in ai_prefill), then verified and corrected by the author. Five answers were left blank for the author because the pre-labeller had seen the judge's verdicts on them. Only cases with verified=true are scored.",
+  "labelled": 20,
+  "prefilled": 15,
+  "prefill_labels_changed_by_author": [],
+  "agreement": {
+    "groundedness": {
+      "n": 20,
+      "agreement": "19/20",
+      "agreement_rate": 0.95,
+      "kappa": 0.0,
+      "confusion": {
+        "human=1 judge=0": 1,
+        "human=1 judge=1": 19
+      }
+    },
+    "correctness": {
+      "n": 20,
+      "agreement": "19/20",
+      "agreement_rate": 0.95,
+      "kappa": 0.0,
+      "confusion": {
+        "human=1 judge=0": 1,
+        "human=1 judge=1": 19
+      }
+    },
+    "citation_correctness": {
+      "n": 20,
+      "agreement": "19/20",
+      "agreement_rate": 0.95,
+      "kappa": 0.0,
+      "confusion": {
+        "human=1 judge=0": 1,
+        "human=1 judge=1": 19
+      }
+    },
+    "refusal_correctness": {
+      "n": 20,
+      "agreement": "20/20",
+      "agreement_rate": 1.0,
+      "kappa": null,
+      "confusion": {
+        "human=N/A judge=N/A": 20
+      }
+    },
+    "completeness_points": {
+      "n": 32,
+      "agreement": "32/32",
+      "agreement_rate": 1.0,
+      "kappa": 1.0,
+      "confusion": {
+        "human=fail judge=fail": 4,
+        "human=pass judge=pass": 28
+      }
+    },
+    "completeness_score_mean_abs_error": 0.0
+  },
+  "disagreements": [
+    {
+      "run": "v3_heldout",
+      "question_id": "v3_021",
+      "dimension": "groundedness",
+      "human": 1,
+      "judge": 0
+    },
+    {
+      "run": "v3_heldout",
+      "question_id": "v3_021",
+      "dimension": "correctness",
+      "human": 1,
+      "judge": 0
+    },
+    {
+      "run": "v3_heldout",
+      "question_id": "v3_021",
+      "dimension": "citation_correctness",
+      "human": 1,
+      "judge": 0
+    }
+  ]
+}

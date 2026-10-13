@@ -112,7 +112,7 @@ flowchart LR
 
 These are what I'd want a reviewer to know:
 
-- **End-to-end scores rest on a small benchmark and a partly trusted judge.** The production `/ask` path is now [evaluated end to end](evaluation/END_TO_END_EVALUATION.md) (17/19 grounded, 3/3 refusals), and an [LLM judge is calibrated](evaluation/JUDGE_CALIBRATION.md) against my labels (kappa 0.82 on required points, 0.75 on groundedness). But the judge consistently misses subtle unsupported elaborations, so its "grounded" verdicts still need human review. **Next:** a larger, freshly labelled benchmark, which also gives the judge a held-out test.
+- **End-to-end scores rest on a small benchmark and a partly trusted judge.** The production `/ask` path is now [evaluated end to end](evaluation/END_TO_END_EVALUATION.md) (17/19 grounded, 3/3 refusals), and an [LLM judge is calibrated](evaluation/JUDGE_CALIBRATION.md) against my labels (kappa 0.82 on required points, 0.75 on groundedness), and on 20 new, held-out answers it matched my required-point judgments 32 out of 32. But it consistently misses subtle unsupported elaborations, and its groundedness has not yet been tested on held-out answers that contain failures, so its "grounded" verdicts still need human review. **Next:** a larger, freshly labelled benchmark, which also gives the judge a held-out test.
 - **Retrieval decisions were made at a small scale.** With 12 short notes (27 chunks), every retrieval method finds the required evidence, so the benchmark cannot show that hybrid search or a reranker helps. The original exact-chunk labels even favoured vector-only search (MRR 0.854 vs 0.802 for hybrid), an artefact that disappears with evidence-group labels. **Next:** harder retrieval questions (paraphrases with no shared words, exact technical terms) and a larger corpus, then re-test hybrid search and a cross-encoder reranker.
 - **Retrieved context contains near-duplicates.** Each chunk includes the previous chunk for context, so the top 5 passages can repeat text. In the demo above, two of the five passages are neighbouring chunks of the same note and share text. **Next:** sentence-level overlap plus de-duplication, measured against the benchmark.
 - **Answers are short (about 22 words on average).** That's good for grounding but thin for studying. **Next:** a cited short answer first, with a grounded "explain more" option.
@@ -190,7 +190,8 @@ CI runs these checks, plus the frontend typecheck and build and both Docker imag
 - [x] **Production promotion:** the measured retrieval and prompt configuration, with regression tests, CI and Docker
 - [x] **Interface redesign:** clickable citations, source panel, refusal state, note scoping and library
 - [x] **End-to-end evaluation:** the production `/ask` path on a reproducible demo corpus, an LLM judge calibrated against the human labels, and the planner ablation
-- [ ] A larger benchmark with harder retrieval questions, and a held-out test of the judge
+- [x] **A larger benchmark:** 48 harder questions (paraphrase, exact-term, cross-note, qualifier traps and 14 refusals), with a held-out check of the judge
+- [ ] Fix what it found: false refusals on "always?" questions, added claims when combining notes, and answers that name a concept without explaining it
 - [ ] PDF ingestion with page-level citations, structure-aware chunking and French-language support
 - [ ] A tool-using study agent (search, read, quiz) evaluated against plain RAG
 - [ ] Tracing, a provider switch and a hosted demo
