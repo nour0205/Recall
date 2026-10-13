@@ -43,5 +43,21 @@ class BenchmarkDraftTests(unittest.TestCase):
         self.assertFalse(frozen & {c["question"].strip().lower() for c in self.draft["cases"]})
 
 
+    def test_frozen_benchmark_is_valid_and_differs_from_the_draft_only_where_recorded(self):
+        import hashlib
+        from pathlib import Path
+        frozen = draft_lib.load(draft_lib.FROZEN)
+        self.assertEqual(frozen["status"], "frozen")
+        self.assertEqual(draft_lib.validate(frozen, self.notes), [])
+        derived = frozen["provenance"]["derived_from"]
+        self.assertEqual(hashlib.sha256(Path(derived["path"]).read_bytes()).hexdigest(), derived["sha256"])
+        draft_cases = {c["question_id"]: c for c in self.draft["cases"]}
+        for case in frozen["cases"]:
+            old = draft_cases[case["question_id"]]
+            changed = {k for k in case if case[k] != old[k]}
+            self.assertEqual(changed, {"reference_answer", "review_notes"} if case["question_id"] == "v3_034" else set(),
+                             case["question_id"])
+
+
 if __name__ == "__main__":
     unittest.main()

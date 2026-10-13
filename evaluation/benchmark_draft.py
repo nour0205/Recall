@@ -1,6 +1,7 @@
-"""Validate and render the draft v3 benchmark (evaluation/drafts/benchmark_v3_draft.json).
+"""Validate and render the v3 benchmark (frozen: evaluation/benchmarks/benchmark_v3.json; draft: evaluation/drafts/).
 
-    python -m evaluation.benchmark_draft            # validate
+    python -m evaluation.benchmark_draft            # validate the draft
+    python -m evaluation.benchmark_draft --path evaluation/benchmarks/benchmark_v3.json
     python -m evaluation.benchmark_draft --render   # also write a review sheet next to the draft
 
 Validation guarantees that every evidence quote appears word for word in the
@@ -12,6 +13,7 @@ import json
 from pathlib import Path
 
 DRAFT = Path("evaluation/drafts/benchmark_v3_draft.json")
+FROZEN = Path("evaluation/benchmarks/benchmark_v3.json")
 NOTES = Path("demo_notes")
 
 
@@ -86,14 +88,14 @@ def render(draft: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def main(write_sheet=False):
-    draft = load()
+def main(write_sheet=False, path=DRAFT):
+    draft = load(path)
     problems = validate(draft, note_texts())
     if problems:
         raise SystemExit("Invalid draft:\n" + "\n".join(problems))
     print(f"Valid: {len(draft['cases'])} questions; every evidence quote found verbatim in its note.")
     if write_sheet:
-        sheet = DRAFT.with_name("benchmark_v3_review.md")
+        sheet = DRAFT.with_name("benchmark_v3_review.md")  # Review sheets are for the draft only.
         sheet.write_text(render(draft), encoding="utf-8")
         print(f"Review sheet: {sheet}")
 
@@ -101,4 +103,6 @@ def main(write_sheet=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--render", action="store_true")
-    main(parser.parse_args().render)
+    parser.add_argument("--path", type=Path, default=DRAFT)
+    args = parser.parse_args()
+    main(args.render, args.path)

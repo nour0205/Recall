@@ -24,9 +24,11 @@ Milestones 1 and 2 measured retrieval and the answer prompt in isolation, with r
 
 **Run-to-run noise:** temperature 0 is not deterministic. Two runs with byte-identical prompts differ on 2 of 19 answers, and on one question one run was wrong and the other correct. Comparisons need several runs per configuration.
 
-## Pilot of the v3 benchmark (draft, unreviewed)
+## The v3 benchmark
 
-48 new questions ([draft](drafts/benchmark_v3_review.md)) run twice through the planner-free `/ask`, and one run scored by judge v2. Exact refusals were labelled with the rubric's fixed refusal labels, which reproduce every human label for exact refusals in Milestone 2. [Run 1](results/end_to_end_benchmark_v3_draft_20261013T143406Z.json) · [run 2](results/end_to_end_benchmark_v3_draft_20261013T143512Z.json) · [judge](results/judge_end_to_end_judge_v2_20261013T145257Z.json)
+48 new questions, drafted with AI assistance, every evidence quote verified verbatim against the notes, then reviewed and approved by the author: [`benchmarks/benchmark_v3.json`](benchmarks/benchmark_v3.json) ([review sheet](drafts/benchmark_v3_review.md)). The author kept the four flagged questions and confirmed that v3_034 is answerable, so a refusal there is a failure. The pilot below ran on the draft, which differs from the frozen file only in v3_034's reference answer; that case was a deterministically labelled refusal, so the results apply unchanged.
+
+The questions were run twice through the planner-free `/ask`, and one run scored by judge v2. Exact refusals were labelled with the rubric's fixed refusal labels, which reproduce every human label for exact refusals in Milestone 2. [Run 1](results/end_to_end_benchmark_v3_draft_20261013T143406Z.json) · [run 2](results/end_to_end_benchmark_v3_draft_20261013T143512Z.json) · [judge](results/judge_end_to_end_judge_v2_20261013T145257Z.json)
 
 | Category | Grounded | Correct | Citations | Required points |
 |---|---:|---:|---:|---:|
@@ -54,7 +56,7 @@ A live run of the planner-free `/ask` on the original 19 questions (two runs) co
 
 ## Not yet done
 
-1. **Review and freeze the v3 benchmark** (author review of the 48 draft questions; several were flagged for a decision).
+1. **Done:** the v3 benchmark is reviewed and frozen.
 2. **Held-out test of judge groundedness and citations:** done for required points; groundedness and citations need a labelled sample that contains failures.
 3. **Fix the measured weaknesses** (false refusals on qualifier questions, elaboration when combining notes, short answers), measured on the frozen v3 set over several runs.
 

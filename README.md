@@ -190,7 +190,8 @@ CI runs these checks, plus the frontend typecheck and build and both Docker imag
 - [x] **Production promotion:** the measured retrieval and prompt configuration, with regression tests, CI and Docker
 - [x] **Interface redesign:** clickable citations, source panel, refusal state, note scoping and library
 - [x] **End-to-end evaluation:** the production `/ask` path on a reproducible demo corpus, an LLM judge calibrated against the human labels, and the planner ablation
-- [ ] A larger benchmark with harder retrieval questions, and a held-out test of the judge
+- [x] **A larger benchmark:** 48 harder questions (paraphrase, exact-term, cross-note, qualifier traps and 14 refusals), with a held-out check of the judge
+- [ ] Fix what it found: false refusals on "always?" questions, added claims when combining notes, and answers that name a concept without explaining it
 - [ ] PDF ingestion with page-level citations, structure-aware chunking and French-language support
 - [ ] A tool-using study agent (search, read, quiz) evaluated against plain RAG
 - [ ] Tracing, a provider switch and a hosted demo

@@ -61,7 +61,7 @@ def end_to_end_cases(run_path: Path) -> list[dict]:
     run = json.loads(run_path.read_text(encoding="utf-8"))
     # Runs on a quote-based benchmark (v3 draft) record it in their provenance.
     benchmark = (run.get("provenance") or {}).get("benchmark") or ""
-    source = Path(benchmark) if benchmark.endswith("benchmark_v3_draft.json") else REFERENCE_PATH
+    source = Path(benchmark) if Path(benchmark).name.startswith("benchmark_v3") else REFERENCE_PATH
     references = {c["question_id"]: c for c in json.loads(source.read_text(encoding="utf-8"))["cases"]}
     cases = []
     for row in run["queries"]:

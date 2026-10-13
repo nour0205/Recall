@@ -1,0 +1,1117 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "corpus": "demo_notes/",
+  "policy": "Evidence is cited by exact quotation from the demo notes, not by chunk ID, so labels survive re-chunking. Reference answers are examples of a correct synthesis, not exact-match targets. Answer cases list the points a complete answer must express; refuse cases must be answered exactly \"I don't know.\".",
+  "categories": {
+    "paraphrase": "Asks about a fact without the notes' key words; needs semantic search.",
+    "exact_term": "Hinges on a precise technical term; needs keyword search.",
+    "cross_note": "Needs evidence from two different notes.",
+    "multi_part": "Several requested parts from one note; tests completeness.",
+    "qualifier": "Tempts the answer to drop a qualifier such as may, often or usually.",
+    "near_miss_refusal": "The topic is in the notes but the requested detail is not.",
+    "out_of_scope": "The topic is not in the notes at all."
+  },
+  "cases": [
+    {
+      "question_id": "v3_001",
+      "category": "paraphrase",
+      "expected_behavior": "answer",
+      "question": "What can happen when the steps an optimizer takes are far too small?",
+      "required_points": [
+        {
+          "point_id": "slow_convergence",
+          "text": "A learning rate that is too small may result in slow convergence.",
+          "evidence": [
+            {
+              "document_id": "ml_gradient_descent",
+              "quote": "A learning rate that is too small may result in slow convergence."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "If the learning rate (step size) is too small, gradient descent may converge slowly.",
+      "review_notes": "Preserve may. The question never says learning rate or convergence."
+    },
+    {
+      "question_id": "v3_002",
+      "category": "paraphrase",
+      "expected_behavior": "answer",
+      "question": "What do we call choosing, reshaping and inventing the inputs a model uses from raw data?",
+      "required_points": [
+        {
+          "point_id": "feature_engineering",
+          "text": "This is feature engineering: selecting, transforming and creating useful features from raw data.",
+          "evidence": [
+            {
+              "document_id": "ml_feature_engineering",
+              "quote": "Feature engineering is the process of selecting, transforming, and creating useful features from raw data."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Feature engineering: selecting, transforming and creating useful features from raw data.",
+      "review_notes": "Naming feature engineering is the core point."
+    },
+    {
+      "question_id": "v3_003",
+      "category": "paraphrase",
+      "expected_behavior": "answer",
+      "question": "Which transformation makes every input have an average of zero and a spread of one?",
+      "required_points": [
+        {
+          "point_id": "standardization",
+          "text": "Standardization transforms values to zero mean and unit variance.",
+          "evidence": [
+            {
+              "document_id": "ml_feature_engineering",
+              "quote": "Standardization transforms values so they have zero mean and unit variance."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Standardization, which transforms values to have zero mean and unit variance.",
+      "review_notes": "Must not answer normalization, which rescales to a range."
+    },
+    {
+      "question_id": "v3_004",
+      "category": "paraphrase",
+      "expected_behavior": "answer",
+      "question": "My report used numbers that another user had changed but then cancelled before saving. Which concurrency problem is this?",
+      "required_points": [
+        {
+          "point_id": "dirty_read",
+          "text": "This is a dirty read: reading data written by another transaction that has not yet committed.",
+          "evidence": [
+            {
+              "document_id": "db_transactions_concurrency",
+              "quote": "A dirty read happens when a transaction reads data written by another transaction that has not yet committed."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "A dirty read: a transaction reads data written by another transaction that has not yet committed.",
+      "review_notes": "The name alone is not enough; the uncommitted-data mechanism is required."
+    },
+    {
+      "question_id": "v3_005",
+      "category": "paraphrase",
+      "expected_behavior": "answer",
+      "question": "Two people edit the same record at the same time and one person's change silently disappears. What is this called?",
+      "required_points": [
+        {
+          "point_id": "lost_update",
+          "text": "This is a lost update: one transaction overwrites the result of another.",
+          "evidence": [
+            {
+              "document_id": "db_transactions_concurrency",
+              "quote": "A lost update occurs when one transaction overwrites the result of another."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "A lost update, where one transaction overwrites the result of another.",
+      "review_notes": "Name and mechanism both required."
+    },
+    {
+      "question_id": "v3_006",
+      "category": "paraphrase",
+      "expected_behavior": "answer",
+      "question": "Why is switching between two separate running programs slower than switching between two workers inside the same program?",
+      "required_points": [
+        {
+          "point_id": "more_expensive",
+          "text": "Switching between processes is generally more expensive than switching between threads.",
+          "evidence": [
+            {
+              "document_id": "os_processes_threads_scheduling",
+              "quote": "Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored."
+            },
+            {
+              "document_id": "os_process_vs_thread",
+              "quote": "Creating and switching between processes is generally more expensive than creating and switching between threads because processes require more operating system overhead."
+            }
+          ]
+        },
+        {
+          "point_id": "reason",
+          "text": "Because more state must be saved and restored (more operating system overhead).",
+          "evidence": [
+            {
+              "document_id": "os_processes_threads_scheduling",
+              "quote": "because more state must be saved and restored"
+            },
+            {
+              "document_id": "os_process_vs_thread",
+              "quote": "because processes require more operating system overhead"
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Switching between processes is generally more expensive than switching between threads, because more state must be saved and restored and processes require more operating-system overhead.",
+      "review_notes": "Either reason satisfies the reason point. Preserve generally."
+    },
+    {
+      "question_id": "v3_007",
+      "category": "paraphrase",
+      "expected_behavior": "answer",
+      "question": "What do you call a model that is too simple and does badly even on the data it learned from?",
+      "required_points": [
+        {
+          "point_id": "underfitting",
+          "text": "This is underfitting: the model is too simple to capture patterns in the training data.",
+          "evidence": [
+            {
+              "document_id": "ml_overfitting_underfitting",
+              "quote": "Underfitting occurs when a model is too simple to capture patterns in the training data."
+            },
+            {
+              "document_id": "ml_supervised_learning_basics",
+              "quote": "A model that performs poorly even on training data may be underfitting."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Underfitting: the model is too simple to capture the patterns in the training data, so it performs poorly even there.",
+      "review_notes": "Naming underfitting with its meaning is required."
+    },
+    {
+      "question_id": "v3_008",
+      "category": "paraphrase",
+      "expected_behavior": "answer",
+      "question": "What is it called when one large table is split into several smaller ones while keeping what the data means?",
+      "required_points": [
+        {
+          "point_id": "decomposition",
+          "text": "Decomposition splits a table into smaller relations while preserving data meaning.",
+          "evidence": [
+            {
+              "document_id": "db_normalization_intro",
+              "quote": "Decomposition is often used to split such a table into smaller relations while preserving data meaning."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Decomposition, which splits a table into smaller relations while preserving data meaning.",
+      "review_notes": "The question avoids the words relation, decompose and normalization."
+    },
+    {
+      "question_id": "v3_009",
+      "category": "paraphrase",
+      "expected_behavior": "answer",
+      "question": "What kind of learning uses examples that each come with the correct answer attached?",
+      "required_points": [
+        {
+          "point_id": "supervised",
+          "text": "Supervised learning, in which a model learns from labeled examples.",
+          "evidence": [
+            {
+              "document_id": "ml_supervised_learning_basics",
+              "quote": "Supervised learning is a machine learning paradigm in which a model learns from labeled examples."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Supervised learning: the model learns from labeled examples, each with input features and a target output.",
+      "review_notes": "The question avoids the words supervised and labeled."
+    },
+    {
+      "question_id": "v3_010",
+      "category": "paraphrase",
+      "expected_behavior": "answer",
+      "question": "Which way of sharing the processor gives every task a fixed slice of time in turn, and what does that improve?",
+      "required_points": [
+        {
+          "point_id": "round_robin",
+          "text": "Round robin assigns each process a fixed time quantum and cycles through ready tasks.",
+          "evidence": [
+            {
+              "document_id": "os_processes_threads_scheduling",
+              "quote": "Round robin assigns each process a fixed time quantum and cycles through ready tasks"
+            }
+          ]
+        },
+        {
+          "point_id": "responsiveness",
+          "text": "It improves responsiveness in time-sharing systems.",
+          "evidence": [
+            {
+              "document_id": "os_processes_threads_scheduling",
+              "quote": "which improves responsiveness in time-sharing systems"
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Round robin: each process gets a fixed time quantum in turn, which improves responsiveness in time-sharing systems.",
+      "review_notes": "Both parts required."
+    },
+    {
+      "question_id": "v3_011",
+      "category": "exact_term",
+      "expected_behavior": "answer",
+      "question": "What does 1NF require?",
+      "required_points": [
+        {
+          "point_id": "atomic_values",
+          "text": "Each attribute must contain atomic values.",
+          "evidence": [
+            {
+              "document_id": "db_normalization_intro",
+              "quote": "The first normal form requires that each attribute contain atomic values and that there are no repeating groups."
+            }
+          ]
+        },
+        {
+          "point_id": "no_repeating_groups",
+          "text": "There must be no repeating groups.",
+          "evidence": [
+            {
+              "document_id": "db_normalization_intro",
+              "quote": "there are no repeating groups"
+            }
+          ]
+        }
+      ],
+      "reference_answer": "The first normal form requires atomic attribute values and no repeating groups.",
+      "review_notes": "The notes write 'first normal form', never '1NF'. Mapping the abbreviation is acceptable; the content must come from the notes."
+    },
+    {
+      "question_id": "v3_012",
+      "category": "exact_term",
+      "expected_behavior": "answer",
+      "question": "What does the D in ACID stand for, and what does it guarantee?",
+      "required_points": [
+        {
+          "point_id": "durability",
+          "text": "D stands for durability.",
+          "evidence": [
+            {
+              "document_id": "db_transactions_concurrency",
+              "quote": "Durability means that once a transaction is committed, its effects persist even after a crash."
+            }
+          ]
+        },
+        {
+          "point_id": "persist_after_crash",
+          "text": "Once a transaction is committed, its effects persist even after a crash.",
+          "evidence": [
+            {
+              "document_id": "db_transactions_concurrency",
+              "quote": "once a transaction is committed, its effects persist even after a crash"
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Durability: once a transaction is committed, its effects persist even after a crash.",
+      "review_notes": "Both the name and the guarantee are required."
+    },
+    {
+      "question_id": "v3_013",
+      "category": "exact_term",
+      "expected_behavior": "answer",
+      "question": "Besides locking, which approach to handling concurrency do the notes mention?",
+      "required_points": [
+        {
+          "point_id": "mvcc",
+          "text": "Multiversion concurrency control.",
+          "evidence": [
+            {
+              "document_id": "db_transactions_concurrency",
+              "quote": "Locking and multiversion concurrency control are two common approaches to handling concurrency."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Multiversion concurrency control.",
+      "review_notes": "The notes do not explain how it works; an answer that adds a mechanism is ungrounded."
+    },
+    {
+      "question_id": "v3_014",
+      "category": "exact_term",
+      "expected_behavior": "answer",
+      "question": "Which inter-process communication mechanisms are listed, and why are they needed?",
+      "required_points": [
+        {
+          "point_id": "mechanisms",
+          "text": "Pipes, sockets and shared memory.",
+          "evidence": [
+            {
+              "document_id": "os_process_vs_thread",
+              "quote": "inter-process communication mechanisms such as pipes, sockets, or shared memory"
+            }
+          ]
+        },
+        {
+          "point_id": "own_memory",
+          "text": "Because each process has its own memory space, communication between processes usually requires them.",
+          "evidence": [
+            {
+              "document_id": "os_process_vs_thread",
+              "quote": "Because each process has its own memory space, communication between processes usually requires inter-process communication mechanisms"
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Pipes, sockets and shared memory. Because each process has its own memory space, communication between processes usually requires such mechanisms.",
+      "review_notes": "Preserve usually (convention C4)."
+    },
+    {
+      "question_id": "v3_015",
+      "category": "exact_term",
+      "expected_behavior": "answer",
+      "question": "Which four counts does a confusion matrix summarize?",
+      "required_points": [
+        {
+          "point_id": "four_counts",
+          "text": "True positives, true negatives, false positives and false negatives.",
+          "evidence": [
+            {
+              "document_id": "ml_model_evaluation",
+              "quote": "A confusion matrix summarizes classification results using true positives, true negatives, false positives, and false negatives."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "True positives, true negatives, false positives and false negatives.",
+      "review_notes": "All four are needed for the point."
+    },
+    {
+      "question_id": "v3_016",
+      "category": "exact_term",
+      "expected_behavior": "answer",
+      "question": "In k-fold cross-validation, how many times does each subset serve as the validation set?",
+      "required_points": [
+        {
+          "point_id": "once",
+          "text": "Each subset serves as the validation set once.",
+          "evidence": [
+            {
+              "document_id": "ml_cross_validation",
+              "quote": "Each subset serves as the validation set once."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Once.",
+      "review_notes": "Short factual lookup."
+    },
+    {
+      "question_id": "v3_017",
+      "category": "exact_term",
+      "expected_behavior": "answer",
+      "question": "What does recall measure for a classifier?",
+      "required_points": [
+        {
+          "point_id": "recall",
+          "text": "Recall measures how many actual positive instances are correctly identified.",
+          "evidence": [
+            {
+              "document_id": "ml_model_evaluation",
+              "quote": "Recall measures how many actual positive instances are correctly identified."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "How many actual positive instances are correctly identified.",
+      "review_notes": "Must not be confused with precision."
+    },
+    {
+      "question_id": "v3_018",
+      "category": "exact_term",
+      "expected_behavior": "answer",
+      "question": "Which CPU scheduling algorithms are listed as common?",
+      "required_points": [
+        {
+          "point_id": "algorithms",
+          "text": "First-come first-served, shortest job first, priority scheduling and round robin.",
+          "evidence": [
+            {
+              "document_id": "os_processes_threads_scheduling",
+              "quote": "Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "First-come first-served, shortest job first, priority scheduling and round robin.",
+      "review_notes": "All four are needed for the point."
+    },
+    {
+      "question_id": "v3_019",
+      "category": "cross_note",
+      "expected_behavior": "answer",
+      "question": "How does regularization help, and which other techniques can help reduce overfitting?",
+      "required_points": [
+        {
+          "point_id": "reduces_variance",
+          "text": "Regularization can reduce variance by discouraging overly complex models.",
+          "evidence": [
+            {
+              "document_id": "ml_bias_variance_generalization",
+              "quote": "Regularization can reduce variance by discouraging overly complex models."
+            }
+          ]
+        },
+        {
+          "point_id": "other_techniques",
+          "text": "Cross-validation and collecting more data can also help reduce overfitting.",
+          "evidence": [
+            {
+              "document_id": "ml_overfitting_underfitting",
+              "quote": "Techniques such as regularization, cross-validation, and collecting more data can help reduce overfitting."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Regularization can reduce variance by discouraging overly complex models. Cross-validation and collecting more data can also help reduce overfitting.",
+      "review_notes": "Needs both notes. Preserve can."
+    },
+    {
+      "question_id": "v3_020",
+      "category": "cross_note",
+      "expected_behavior": "answer",
+      "question": "How are bias and variance related to underfitting and overfitting?",
+      "required_points": [
+        {
+          "point_id": "bias_underfit",
+          "text": "High-bias models are usually too simple and may underfit.",
+          "evidence": [
+            {
+              "document_id": "ml_bias_variance_generalization",
+              "quote": "High-bias models are usually too simple and may underfit the training data."
+            },
+            {
+              "document_id": "ml_overfitting_underfitting",
+              "quote": "Underfit models typically have high bias"
+            }
+          ]
+        },
+        {
+          "point_id": "variance_overfit",
+          "text": "High-variance models may fit noise in the training set and therefore overfit.",
+          "evidence": [
+            {
+              "document_id": "ml_bias_variance_generalization",
+              "quote": "High-variance models may fit noise in the training set and therefore overfit."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "High-bias models are usually too simple and may underfit; high-variance models may fit noise in the training data and overfit.",
+      "review_notes": "Preserve usually and may."
+    },
+    {
+      "question_id": "v3_021",
+      "category": "cross_note",
+      "expected_behavior": "answer",
+      "question": "What is the difference between normalization in databases and normalization of features?",
+      "required_points": [
+        {
+          "point_id": "database",
+          "text": "In databases, normalization organizes data to reduce redundancy and improve data integrity.",
+          "evidence": [
+            {
+              "document_id": "db_normalization_intro",
+              "quote": "Normalization is the process of organizing data in a relational database to reduce redundancy and improve data integrity."
+            }
+          ]
+        },
+        {
+          "point_id": "features",
+          "text": "For features, normalization rescales values to a specific range.",
+          "evidence": [
+            {
+              "document_id": "ml_feature_engineering",
+              "quote": "Normalization rescales values to a specific range."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Database normalization organizes relational data to reduce redundancy and improve integrity; feature normalization rescales values to a specific range.",
+      "review_notes": "Ambiguous term across notes: retrieval must find both."
+    },
+    {
+      "question_id": "v3_022",
+      "category": "cross_note",
+      "expected_behavior": "answer",
+      "question": "What signs of overfitting do the notes describe?",
+      "required_points": [
+        {
+          "point_id": "train_vs_unseen",
+          "text": "Performing well on training data but poorly on unseen or test data.",
+          "evidence": [
+            {
+              "document_id": "ml_overfitting_underfitting",
+              "quote": "Overfit models often perform well on training data but poorly on unseen data."
+            },
+            {
+              "document_id": "ml_supervised_learning_basics",
+              "quote": "A model that performs very well on training data but poorly on test data is said to be overfitting."
+            }
+          ]
+        },
+        {
+          "point_id": "accuracy_gap",
+          "text": "A gap between training accuracy and validation accuracy is often a sign of overfitting.",
+          "evidence": [
+            {
+              "document_id": "ml_bias_variance_generalization",
+              "quote": "A gap between training accuracy and validation accuracy is often a sign of overfitting."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Overfit models often perform well on training data but poorly on unseen data, and a gap between training and validation accuracy is often a sign of overfitting.",
+      "review_notes": "Preserve often."
+    },
+    {
+      "question_id": "v3_023",
+      "category": "cross_note",
+      "expected_behavior": "answer",
+      "question": "What role does cross-validation play in evaluating a model?",
+      "required_points": [
+        {
+          "point_id": "estimate_unseen",
+          "text": "It estimates how well a model is likely to perform on unseen data (its generalization performance).",
+          "evidence": [
+            {
+              "document_id": "ml_bias_variance_generalization",
+              "quote": "Cross-validation is used to estimate how well a model is likely to perform on unseen data."
+            },
+            {
+              "document_id": "ml_cross_validation",
+              "quote": "It is commonly used to estimate model generalization performance."
+            }
+          ]
+        },
+        {
+          "point_id": "more_reliable",
+          "text": "It is often used to obtain a more reliable estimate of model performance.",
+          "evidence": [
+            {
+              "document_id": "ml_model_evaluation",
+              "quote": "Cross-validation is often used to obtain a more reliable estimate of model performance."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "It estimates how well a model is likely to perform on unseen data and is often used to obtain a more reliable estimate of model performance.",
+      "review_notes": "Evidence spread over three notes."
+    },
+    {
+      "question_id": "v3_024",
+      "category": "cross_note",
+      "expected_behavior": "answer",
+      "question": "Why do threads communicate more easily than processes, and what risk does that bring?",
+      "required_points": [
+        {
+          "point_id": "shared_memory",
+          "text": "Threads of the same process share memory.",
+          "evidence": [
+            {
+              "document_id": "os_process_vs_thread",
+              "quote": "Threads communicate more easily because they share memory."
+            },
+            {
+              "document_id": "os_processes_threads_scheduling",
+              "quote": "Threads of the same process share memory and resources, which makes communication between them faster"
+            }
+          ]
+        },
+        {
+          "point_id": "risk",
+          "text": "It introduces risks such as race conditions and synchronization problems.",
+          "evidence": [
+            {
+              "document_id": "os_process_vs_thread",
+              "quote": "it also introduces risks such as race conditions and synchronization problems"
+            },
+            {
+              "document_id": "os_processes_threads_scheduling",
+              "quote": "also introduces synchronization issues"
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Threads share memory, so they communicate more easily, but this introduces risks such as race conditions and synchronization problems.",
+      "review_notes": "Either note supports each point."
+    },
+    {
+      "question_id": "v3_025",
+      "category": "multi_part",
+      "expected_behavior": "answer",
+      "question": "Which three kinds of anomalies can poorly designed tables cause, and what is a deletion anomaly?",
+      "required_points": [
+        {
+          "point_id": "three_anomalies",
+          "text": "Update, insertion and deletion anomalies.",
+          "evidence": [
+            {
+              "document_id": "db_normalization_intro",
+              "quote": "which can cause update anomalies, insertion anomalies, and deletion anomalies"
+            }
+          ]
+        },
+        {
+          "point_id": "deletion",
+          "text": "A deletion anomaly happens when removing one row accidentally removes other valuable information.",
+          "evidence": [
+            {
+              "document_id": "db_normalization_intro",
+              "quote": "A deletion anomaly happens when removing one row accidentally removes other valuable information."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Update, insertion and deletion anomalies. A deletion anomaly happens when removing one row accidentally removes other valuable information.",
+      "review_notes": "Both parts required."
+    },
+    {
+      "question_id": "v3_026",
+      "category": "multi_part",
+      "expected_behavior": "answer",
+      "question": "What is a transaction, and what does consistency mean in ACID?",
+      "required_points": [
+        {
+          "point_id": "transaction",
+          "text": "A transaction is a logical unit of work that must either complete entirely or have no effect at all.",
+          "evidence": [
+            {
+              "document_id": "db_transactions_concurrency",
+              "quote": "A transaction is a logical unit of work that must either complete entirely or have no effect at all."
+            }
+          ]
+        },
+        {
+          "point_id": "consistency",
+          "text": "Consistency means the database moves from one valid state to another valid state.",
+          "evidence": [
+            {
+              "document_id": "db_transactions_concurrency",
+              "quote": "Consistency means the database moves from one valid state to another valid state."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "A logical unit of work that either completes entirely or has no effect; consistency means the database moves from one valid state to another.",
+      "review_notes": "Both parts required."
+    },
+    {
+      "question_id": "v3_027",
+      "category": "multi_part",
+      "expected_behavior": "answer",
+      "question": "What is feature scaling for, and how do normalization and standardization differ?",
+      "required_points": [
+        {
+          "point_id": "scaling",
+          "text": "Feature scaling places features on comparable ranges.",
+          "evidence": [
+            {
+              "document_id": "ml_feature_engineering",
+              "quote": "Feature scaling is commonly used to place features on comparable ranges."
+            }
+          ]
+        },
+        {
+          "point_id": "normalization",
+          "text": "Normalization rescales values to a specific range.",
+          "evidence": [
+            {
+              "document_id": "ml_feature_engineering",
+              "quote": "Normalization rescales values to a specific range."
+            }
+          ]
+        },
+        {
+          "point_id": "standardization",
+          "text": "Standardization transforms values to zero mean and unit variance.",
+          "evidence": [
+            {
+              "document_id": "ml_feature_engineering",
+              "quote": "Standardization transforms values so they have zero mean and unit variance."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Feature scaling places features on comparable ranges. Normalization rescales values to a specific range; standardization gives them zero mean and unit variance.",
+      "review_notes": "Three points. Must not mix in database normalization."
+    },
+    {
+      "question_id": "v3_028",
+      "category": "multi_part",
+      "expected_behavior": "answer",
+      "question": "What is the goal of supervised learning, and what does the model minimize during training?",
+      "required_points": [
+        {
+          "point_id": "goal",
+          "text": "To learn a mapping from inputs to outputs that generalizes to unseen data.",
+          "evidence": [
+            {
+              "document_id": "ml_supervised_learning_basics",
+              "quote": "The goal is to learn a mapping from inputs to outputs so that the model can generalize to unseen data."
+            }
+          ]
+        },
+        {
+          "point_id": "loss",
+          "text": "A loss function measuring the difference between predictions and true labels.",
+          "evidence": [
+            {
+              "document_id": "ml_supervised_learning_basics",
+              "quote": "During training, the model minimizes a loss function that measures the difference between predictions and true labels."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "To learn a mapping from inputs to outputs that generalizes to unseen data; it minimizes a loss function measuring the difference between predictions and true labels.",
+      "review_notes": "Both parts required."
+    },
+    {
+      "question_id": "v3_029",
+      "category": "multi_part",
+      "expected_behavior": "answer",
+      "question": "What is multithreading useful for, and which two examples are given?",
+      "required_points": [
+        {
+          "point_id": "concurrent_tasks",
+          "text": "Applications that perform multiple tasks concurrently.",
+          "evidence": [
+            {
+              "document_id": "os_process_vs_thread",
+              "quote": "Multithreading is useful for applications that perform multiple tasks concurrently"
+            }
+          ]
+        },
+        {
+          "point_id": "examples",
+          "text": "A web server handling multiple client requests, and a program doing background work while keeping the user interface responsive.",
+          "evidence": [
+            {
+              "document_id": "os_process_vs_thread",
+              "quote": "such as a web server handling multiple client requests or a program performing background work while keeping the user interface responsive"
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Applications that perform multiple tasks concurrently, such as a web server handling many client requests or a program doing background work while keeping its interface responsive.",
+      "review_notes": "Both examples are needed for the examples point."
+    },
+    {
+      "question_id": "v3_030",
+      "category": "multi_part",
+      "expected_behavior": "answer",
+      "question": "What is the difference between training error and test error?",
+      "required_points": [
+        {
+          "point_id": "training_error",
+          "text": "Training error refers to performance on the training set.",
+          "evidence": [
+            {
+              "document_id": "ml_supervised_learning_basics",
+              "quote": "Training error refers to performance on the training set"
+            }
+          ]
+        },
+        {
+          "point_id": "test_error",
+          "text": "Test error refers to performance on new unseen data.",
+          "evidence": [
+            {
+              "document_id": "ml_supervised_learning_basics",
+              "quote": "test error refers to performance on new unseen data"
+            }
+          ]
+        }
+      ],
+      "reference_answer": "Training error is performance on the training set; test error is performance on new, unseen data.",
+      "review_notes": "Both parts required."
+    },
+    {
+      "question_id": "v3_031",
+      "category": "qualifier",
+      "expected_behavior": "answer",
+      "question": "Does a learning rate that is too large always make gradient descent diverge?",
+      "required_points": [
+        {
+          "point_id": "may_not_always",
+          "text": "No: the notes say a learning rate that is too large may cause divergence, not that it always does.",
+          "evidence": [
+            {
+              "document_id": "ml_gradient_descent",
+              "quote": "A learning rate that is too large may cause divergence."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "The notes say it may cause divergence; they do not say it always does.",
+      "review_notes": "Answering 'yes, always' fails groundedness and correctness (C4)."
+    },
+    {
+      "question_id": "v3_032",
+      "category": "qualifier",
+      "expected_behavior": "answer",
+      "question": "Do good features always improve a model more than making it more complex?",
+      "required_points": [
+        {
+          "point_id": "often",
+          "text": "Not always: good features often improve performance more than increasing model complexity.",
+          "evidence": [
+            {
+              "document_id": "ml_feature_engineering",
+              "quote": "Good features often improve model performance more than increasing model complexity."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "The notes say good features often, not always, improve performance more than increasing model complexity.",
+      "review_notes": "Preserve often (C4)."
+    },
+    {
+      "question_id": "v3_033",
+      "category": "qualifier",
+      "expected_behavior": "answer",
+      "question": "Are high-bias models always too simple?",
+      "required_points": [
+        {
+          "point_id": "usually",
+          "text": "Not always: high-bias models are usually too simple and may underfit.",
+          "evidence": [
+            {
+              "document_id": "ml_bias_variance_generalization",
+              "quote": "High-bias models are usually too simple and may underfit the training data."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "The notes say high-bias models are usually too simple and may underfit, not always.",
+      "review_notes": "Preserve usually and may (C4)."
+    },
+    {
+      "question_id": "v3_034",
+      "category": "qualifier",
+      "expected_behavior": "answer",
+      "question": "Is decomposition always required to fix a transitive dependency?",
+      "required_points": [
+        {
+          "point_id": "often_used",
+          "text": "The notes say decomposition is often used for such tables; they do not say it is always required.",
+          "evidence": [
+            {
+              "document_id": "db_normalization_intro",
+              "quote": "Decomposition is often used to split such a table into smaller relations while preserving data meaning."
+            }
+          ]
+        }
+      ],
+      "reference_answer": "No. The notes say decomposition is often used, not that it is always required. It is used to split tables into smaller relations while preserving data meaning.",
+      "review_notes": "Answerable: \"often used\" supports rejecting the absolute \"always\" without outside knowledge. A refusal is an unjustified refusal (refusal_correctness 0, point fails). Preserve often (C4); claiming it is required is unsupported."
+    },
+    {
+      "question_id": "v3_035",
+      "category": "near_miss_refusal",
+      "expected_behavior": "refuse",
+      "question": "What is the mathematical formula for precision?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "ml_model_evaluation",
+          "quote": "Precision measures how many predicted positive instances are actually positive."
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "Precision is defined in words only; no formula is given."
+    },
+    {
+      "question_id": "v3_036",
+      "category": "near_miss_refusal",
+      "expected_behavior": "refuse",
+      "question": "What value of k is usually chosen for k-fold cross-validation?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "ml_cross_validation",
+          "quote": "K-fold cross-validation divides data into k subsets."
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "No value of k is given."
+    },
+    {
+      "question_id": "v3_037",
+      "category": "near_miss_refusal",
+      "expected_behavior": "refuse",
+      "question": "How long should the time quantum be in round robin scheduling?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "os_processes_threads_scheduling",
+          "quote": "Round robin assigns each process a fixed time quantum"
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "The quantum is mentioned but no length is given."
+    },
+    {
+      "question_id": "v3_038",
+      "category": "near_miss_refusal",
+      "expected_behavior": "refuse",
+      "question": "What learning rate value should I start with?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "ml_gradient_descent",
+          "quote": "The learning rate controls the size of parameter updates."
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "No recommended value is given."
+    },
+    {
+      "question_id": "v3_039",
+      "category": "near_miss_refusal",
+      "expected_behavior": "refuse",
+      "question": "What does the fourth normal form remove?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "db_normalization_intro",
+          "quote": "The third normal form removes transitive dependency"
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "Only the first three normal forms are covered."
+    },
+    {
+      "question_id": "v3_040",
+      "category": "near_miss_refusal",
+      "expected_behavior": "refuse",
+      "question": "How does shortest job first decide which process runs next?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "os_processes_threads_scheduling",
+          "quote": "Common scheduling algorithms include first-come first-served, shortest job first, priority scheduling, and round robin."
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "Shortest job first is named but its rule is not described. Explaining it from the name is outside knowledge."
+    },
+    {
+      "question_id": "v3_041",
+      "category": "near_miss_refusal",
+      "expected_behavior": "refuse",
+      "question": "Which transaction isolation levels do SQL databases offer?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "db_transactions_concurrency",
+          "quote": "Isolation means concurrent transactions should not interfere in a way that produces incorrect results."
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "Isolation is defined, but no isolation levels are listed."
+    },
+    {
+      "question_id": "v3_042",
+      "category": "near_miss_refusal",
+      "expected_behavior": "refuse",
+      "question": "How does multiversion concurrency control work internally?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "db_transactions_concurrency",
+          "quote": "Locking and multiversion concurrency control are two common approaches to handling concurrency."
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "Named only; no mechanism."
+    },
+    {
+      "question_id": "v3_043",
+      "category": "near_miss_refusal",
+      "expected_behavior": "refuse",
+      "question": "What is the difference between L1 and L2 regularization?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "ml_bias_variance_generalization",
+          "quote": "Regularization can reduce variance by discouraging overly complex models."
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "Regularization is covered, but no types of it."
+    },
+    {
+      "question_id": "v3_044",
+      "category": "near_miss_refusal",
+      "expected_behavior": "refuse",
+      "question": "How does a race condition happen, step by step?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "os_process_vs_thread",
+          "quote": "it also introduces risks such as race conditions and synchronization problems"
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "Race conditions are named as a risk only."
+    },
+    {
+      "question_id": "v3_045",
+      "category": "out_of_scope",
+      "expected_behavior": "refuse",
+      "question": "How does backpropagation compute gradients in a neural network?",
+      "required_points": [],
+      "closest_evidence": [
+        {
+          "document_id": "ml_gradient_descent",
+          "quote": "Gradient descent is a fundamental component of many machine learning algorithms and neural networks."
+        }
+      ],
+      "reference_answer": "I don't know.",
+      "review_notes": "Neural networks are mentioned in passing; backpropagation is not covered."
+    },
+    {
+      "question_id": "v3_046",
+      "category": "out_of_scope",
+      "expected_behavior": "refuse",
+      "question": "Who proposed the relational model of data?",
+      "required_points": [],
+      "closest_evidence": [],
+      "reference_answer": "I don't know.",
+      "review_notes": "No history is covered."
+    },
+    {
+      "question_id": "v3_047",
+      "category": "out_of_scope",
+      "expected_behavior": "refuse",
+      "question": "How does a B-tree index speed up queries?",
+      "required_points": [],
+      "closest_evidence": [],
+      "reference_answer": "I don't know.",
+      "review_notes": "Indexing is not covered."
+    },
+    {
+      "question_id": "v3_048",
+      "category": "out_of_scope",
+      "expected_behavior": "refuse",
+      "question": "What happens during a page fault in virtual memory?",
+      "required_points": [],
+      "closest_evidence": [],
+      "reference_answer": "I don't know.",
+      "review_notes": "Memory management is not covered."
+    }
+  ],
+  "provenance": {
+    "drafted": "Drafted with AI assistance from the demo notes; every evidence quote is checked verbatim against its note by evaluation/benchmark_draft.py.",
+    "review": "Reviewed and approved by the author. Author decisions: v3_011 (abbreviation 1NF), v3_012 (overlaps retrieval_009 on durability), v3_040 (shortest job first named but not described) and v3_045 (backpropagation) kept as drafted; v3_034 is answerable, and a refusal is an unjustified refusal because \"often used\" supports rejecting the absolute \"always\".",
+    "derived_from": {
+      "path": "evaluation/drafts/benchmark_v3_draft.json",
+      "sha256": "8b5a7e2e54becf4a5b1c67f57842af99df6b629e216430f5a7062e31c38d54c8"
+    },
+    "changes_from_draft": [
+      "status",
+      "provenance",
+      "v3_034 reference_answer and review_notes"
+    ]
+  }
+}
