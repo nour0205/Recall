@@ -74,7 +74,7 @@ def render(data) -> str:
     return "\n".join(lines) + "\n"
 
 
-def score(sheet=SHEET):
+def score(sheet=SHEET, save_to=None):
     data = json.loads(Path(sheet).read_text(encoding="utf-8"))
     judged = {r["question_id"]: r for r in json.loads(Path(data["judge_run"]).read_text(encoding="utf-8"))["judgments"]}
     cases, missing, changed = [], [], []
@@ -110,12 +110,16 @@ def score(sheet=SHEET):
               "prefill_labels_changed_by_author": changed,
               "agreement": compare(cases), "disagreements": disagreements(cases)}
     print(json.dumps(report, indent=2))
+    if save_to:
+        Path(save_to).write_text(json.dumps({"sheet": Path(sheet).as_posix(), "annotation": data.get("annotation"), **report},
+                                            indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return report
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("command", choices=["prepare", "render", "score"])
+    parser.add_argument("--save", action="store_true", help="With score: write a new timestamped result file")
     args = parser.parse_args()
     if args.command == "prepare":
         data = prepare()
@@ -124,4 +128,12 @@ if __name__ == "__main__":
         SHEET.with_suffix(".md").write_text(render(json.loads(SHEET.read_text(encoding="utf-8"))), encoding="utf-8")
         print(f"Rewrote {SHEET.with_suffix('.md')} from the JSON sheet.")
     else:
-        score()
+        from datetime import datetime, timezone
+        target = None
+        if args.save:
+            target = Path("evaluation/results") / f"judge_heldout_v3_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}.json"
+            if target.exists():
+                raise FileExistsError(target)
+        score(save_to=target)
+        if target:
+            print(f"Saved: {target}")

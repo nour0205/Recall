@@ -41,7 +41,7 @@ Milestones 1 and 2 measured retrieval and the answer prompt in isolation, with r
 - **Refusals are reliable:** all 10 near-miss traps (topic present, detail absent) and all 4 out-of-scope questions were refused in both runs.
 - **New weaknesses the 19-question set could not show:** "always?" questions are falsely refused (v3_031 and v3_034, in both runs); combining two notes invites elaboration and dropped qualifiers (v3_020, v3_021); and some answers name a concept without its mechanism (v3_005, v3_008).
 - **Run-to-run noise:** 41 of 48 answers were identical across the two runs; the behaviour counts above were identical.
-- **Caveat:** the judge misses subtle elaborations, so the grounded counts may be optimistic. A held-out human review of 20 random answers is prepared in [`drafts/v3_human_review_sample.md`](drafts/v3_human_review_sample.md) (`python -m evaluation.v3_human_review score` once labelled).
+- **Held-out check of the judge:** on 20 random answers labelled by the author, the judge matched all 32 required-point judgments, including all 4 failures (kappa 1.00). Groundedness and citations could not be tested this way: the author labelled all 20 grounded, so the sample held no failures; the only disagreement was the judge being stricter on one answer. [Details](JUDGE_CALIBRATION.md#held-out-check-on-new-answers-v3-pilot).
 
 A live run of the planner-free `/ask` on the original 19 questions (two runs) confirmed one model call per question and prompts identical to the planner ablation's planner-off run. Latency varied from 1.3 s to 4.4 s between the two runs, entirely inside the OpenAI API call, so latency claims need several runs.
 
@@ -55,7 +55,7 @@ A live run of the planner-free `/ask` on the original 19 questions (two runs) co
 ## Not yet done
 
 1. **Review and freeze the v3 benchmark** (author review of the 48 draft questions; several were flagged for a decision).
-2. **Held-out test of judge v2:** label the 20-answer sample and run `python -m evaluation.v3_human_review score`.
+2. **Held-out test of judge groundedness and citations:** done for required points; groundedness and citations need a labelled sample that contains failures.
 3. **Fix the measured weaknesses** (false refusals on qualifier questions, elaboration when combining notes, short answers), measured on the frozen v3 set over several runs.
 
 ## Limits

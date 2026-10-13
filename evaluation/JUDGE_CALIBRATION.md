@@ -51,6 +51,21 @@ C4 means some original human labels were too lenient. On question 003, the Basel
 - **What the conventions fixed.** v2 labels the 008 definitions grounded-but-incorrect like the human review (C3), and its stricter citation verdicts fell from 9 to 7 (C1, C2). Those remaining are mostly 008 definitions and 003 qualifiers, where the judge follows the conventions and the original labels do not.
 - **Refusal:** the one disagreement is the baseline answer that said "I don't know." and then kept going. The rubric says a refusal followed by unsupported content fails; I judged the continuation supported and passed it.
 
+## Held-out check on new answers (v3 pilot)
+
+Judge v2's conventions were written after reading its disagreements on the Milestone 2 answers, so its calibration numbers there are optimistic. To test it on answers it was never tuned on, 20 answers were drawn at random (fixed seed) from the judged v3 pilot run and labelled by the author with the judge's verdicts hidden. 15 were pre-labelled with AI assistance and verified by the author, who changed none of them; 5 were labelled by the author from scratch, because the pre-labeller had already seen the judge's verdicts on them. [Result](results/judge_heldout_v3_20261013T170751Z.json) · [sheet](drafts/v3_human_review_sample.md)
+
+| Dimension | Agreement | Kappa |
+|---|---:|---:|
+| Required points | 32/32 | 1.00 |
+| Groundedness | 19/20 | 0.00 |
+| Correctness | 19/20 | 0.00 |
+| Citation correctness | 19/20 | 0.00 |
+
+- **Required points are confirmed on held-out answers:** the judge matched every human point judgment, including all 4 failures (answers that named a concept without its mechanism, or omitted a requested sign or qualifier).
+- **Groundedness and citations remain untested on held-out data.** The author labelled all 20 answers grounded and correctly cited, so the sample holds no failure to agree on; kappa is 0 because the only variation is one disagreement. A sample that includes failures is needed.
+- **The one disagreement** (v3_021) is the judge being stricter than the author: it failed "feature normalization focuses on preparing features for model training" as not stated in the source; the author accepted it as a fair reading. The human label stands.
+
 ## Scoring the production `/ask` run
 
 Scores for [end-to-end run 1](results/end_to_end_v1_20261012T071846Z.json). 15 of the 19 production answers are word-for-word identical to Strict v2 answers I reviewed, so they keep their human labels. The 4 new answers were [adjudicated](results/end_to_end_v1_adjudications.json) with the rubric and conventions C1–C4. Judge v2 agreed on 3 of them, and missed the added explanation in 013, its known blind spot.
@@ -69,6 +84,6 @@ The new failures are 003 (dropped "usually", C4) and 013 (an added explanation a
 
 ## Next
 
-1. Use the judge as a **screen**: trust its required-point and correctness verdicts, but review by hand every answer it fails on groundedness or citations, plus a sample of those it passes.
+1. Use the judge as a **screen**: trust its required-point verdicts (confirmed on held-out answers), but review by hand every answer it fails on groundedness or citations, plus a sample of those it passes.
 2. Grow the benchmark with new human-labelled answers. They give a held-out test for judge v2 and more refusal cases.
 3. Use this setup for the planner on/off comparison and the chunk de-duplication experiment.

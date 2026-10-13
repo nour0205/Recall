@@ -69,7 +69,7 @@
         },
         "reason": "Restates S1 verbatim, keeping 'may'."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_003",
@@ -131,7 +131,7 @@
         },
         "reason": "Verbatim from S1 (feature engineering note)."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_005",
@@ -174,17 +174,17 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "lost_update": null
+          "lost_update": "fail"
         },
-        "notes": "Left blank for the author: the AI pre-labeller had already seen the judge verdict on this answer."
+        "notes": "Labelled by the author from scratch (no pre-label)."
       },
       "ai_prefill": null,
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_006",
@@ -252,7 +252,7 @@
         },
         "reason": "S1 states both the cost difference ('generally', kept) and the reason (more state saved and restored)."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_007",
@@ -314,7 +314,7 @@
         },
         "reason": "Names underfitting and S1 supports 'too simple'. Borderline: the answer mostly echoes the question and calls the model 'underfitting' rather than saying the model underfits."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_008",
@@ -357,17 +357,17 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "decomposition": null
+          "decomposition": "fail"
         },
-        "notes": "Left blank for the author: the AI pre-labeller had already seen the judge verdict on this answer."
+        "notes": "Labelled by the author from scratch (no pre-label)."
       },
       "ai_prefill": null,
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_010",
@@ -435,7 +435,7 @@
         },
         "reason": "S1 supports the fixed time quantum and the responsiveness benefit."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_017",
@@ -497,7 +497,7 @@
         },
         "reason": "Verbatim from S1 (model evaluation note)."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_018",
@@ -559,7 +559,7 @@
         },
         "reason": "All four algorithms, verbatim from S1."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_021",
@@ -606,18 +606,18 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "database": null,
-          "features": null
+          "database": "pass",
+          "features": "pass"
         },
-        "notes": "Left blank for the author: the AI pre-labeller had already seen the judge verdict on this answer."
+        "notes": "Labelled by the author from scratch (no pre-label)."
       },
       "ai_prefill": null,
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_022",
@@ -664,18 +664,18 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "train_vs_unseen": null,
-          "accuracy_gap": null
+          "train_vs_unseen": "fail",
+          "accuracy_gap": "pass"
         },
-        "notes": "Left blank for the author: the AI pre-labeller had already seen the judge verdict on this answer."
+        "notes": "Labelled by the author from scratch (no pre-label)."
       },
       "ai_prefill": null,
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_023",
@@ -743,7 +743,7 @@
         },
         "reason": "S1 supports splitting, the single-split risk and estimating generalization; S4 the more reliable estimate. Trailing citations cover the short paragraph (C1). Borderline C4: S4 says cross-validation 'is often used to obtain' a more reliable estimate, the answer says it 'provides' one; I read 'often' as describing how often it is used, not the reliability claim, so not a strengthening."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_025",
@@ -811,7 +811,7 @@
         },
         "reason": "S2 lists the three anomalies; S1 defines deletion anomaly. Each claim cited separately."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_026",
@@ -879,7 +879,7 @@
         },
         "reason": "Both definitions verbatim from S1."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_027",
@@ -953,7 +953,7 @@
         },
         "reason": "All three points verbatim from S1; no mix-up with database normalization."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_028",
@@ -1021,7 +1021,7 @@
         },
         "reason": "Both sentences are in S1; one trailing citation covers the short paragraph (C1)."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_029",
@@ -1089,7 +1089,7 @@
         },
         "reason": "Use and both examples verbatim from S1."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_030",
@@ -1157,7 +1157,7 @@
         },
         "reason": "Verbatim from S1."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_032",
@@ -1219,7 +1219,7 @@
         },
         "reason": "Keeps 'often', which implies 'not always'. Borderline: it never says 'no' to the yes/no question."
       },
-      "verified": false
+      "verified": true
     },
     {
       "question_id": "v3_033",
@@ -1262,17 +1262,17 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "usually": null
+          "usually": "fail"
         },
-        "notes": "Left blank for the author: the AI pre-labeller had already seen the judge verdict on this answer."
+        "notes": "Labelled by the author from scratch (no pre-label)."
       },
       "ai_prefill": null,
-      "verified": false
+      "verified": true
     }
   ],
   "annotation": "Pre-labelled with AI assistance (15 answers, reasons in ai_prefill), then verified and corrected by the author. Five answers were left blank for the author because the pre-labeller had seen the judge's verdicts on them. Only cases with verified=true are scored."

@@ -32,7 +32,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: slow_convergence=pass  
 *Why:* Restates S1 verbatim, keeping 'may'.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_003
 
@@ -56,7 +56,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: standardization=pass  
 *Why:* Verbatim from S1 (feature engineering note).
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_005
 
@@ -79,7 +79,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Case notes:* Name and mechanism both required.
 
 **No pre-label:** label this one from scratch.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_006
 
@@ -104,7 +104,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: more_expensive=pass, reason=pass  
 *Why:* S1 states both the cost difference ('generally', kept) and the reason (more state saved and restored).
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_007
 
@@ -128,7 +128,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: underfitting=pass  
 *Why:* Names underfitting and S1 supports 'too simple'. Borderline: the answer mostly echoes the question and calls the model 'underfitting' rather than saying the model underfits.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_008
 
@@ -151,7 +151,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Case notes:* The question avoids the words relation, decompose and normalization.
 
 **No pre-label:** label this one from scratch.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_010
 
@@ -176,7 +176,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: round_robin=pass, responsiveness=pass  
 *Why:* S1 supports the fixed time quantum and the responsiveness benefit.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_017
 
@@ -200,7 +200,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: recall=pass  
 *Why:* Verbatim from S1 (model evaluation note).
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_018
 
@@ -224,7 +224,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: algorithms=pass  
 *Why:* All four algorithms, verbatim from S1.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_021
 
@@ -248,7 +248,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Case notes:* Ambiguous term across notes: retrieval must find both.
 
 **No pre-label:** label this one from scratch.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_022
 
@@ -272,7 +272,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Case notes:* Preserve often.
 
 **No pre-label:** label this one from scratch.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_023
 
@@ -297,7 +297,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: estimate_unseen=pass, more_reliable=pass  
 *Why:* S1 supports splitting, the single-split risk and estimating generalization; S4 the more reliable estimate. Trailing citations cover the short paragraph (C1). Borderline C4: S4 says cross-validation 'is often used to obtain' a more reliable estimate, the answer says it 'provides' one; I read 'often' as describing how often it is used, not the reliability claim, so not a strengthening.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_025
 
@@ -322,7 +322,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: three_anomalies=pass, deletion=pass  
 *Why:* S2 lists the three anomalies; S1 defines deletion anomaly. Each claim cited separately.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_026
 
@@ -347,7 +347,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: transaction=pass, consistency=pass  
 *Why:* Both definitions verbatim from S1.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_027
 
@@ -373,7 +373,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: scaling=pass, normalization=pass, standardization=pass  
 *Why:* All three points verbatim from S1; no mix-up with database normalization.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_028
 
@@ -398,7 +398,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: goal=pass, loss=pass  
 *Why:* Both sentences are in S1; one trailing citation covers the short paragraph (C1).
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_029
 
@@ -423,7 +423,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: concurrent_tasks=pass, examples=pass  
 *Why:* Use and both examples verbatim from S1.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_030
 
@@ -448,7 +448,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: training_error=pass, test_error=pass  
 *Why:* Verbatim from S1.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_032
 
@@ -472,7 +472,7 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 **AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: often=pass  
 *Why:* Keeps 'often', which implies 'not always'. Borderline: it never says 'no' to the yes/no question.
-*Verified by author:* False
+*Verified by author:* True
 
 ## v3_033
 
@@ -495,4 +495,4 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Case notes:* Preserve usually and may (C4).
 
 **No pre-label:** label this one from scratch.
-*Verified by author:* False
+*Verified by author:* True
