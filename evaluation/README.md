@@ -16,9 +16,10 @@ Milestone 1 evaluates retrieval, not generated answers. Start with the
 | [run_retrieval_benchmark.py](run_retrieval_benchmark.py) | Four-mode canonical benchmark runner |
 | [run_reranker_ablation.py](run_reranker_ablation.py) | Shared-pool heuristic ablation |
 | [semantic_reranker.py](semantic_reranker.py) / [run_semantic_ablation.py](run_semantic_ablation.py) | Optional MiniLM scorer / three-way shared-pool experiment |
-| [rescore_evidence.py](rescore_evidence.py) | Evidence rescoring of saved MiniLM experiment outputs |
+| [rescore_evidence.py](rescore_evidence.py) | Evidence rescoring of saved rankings (`--source`, `--modes`); default: the MiniLM experiment |
 | [validate_benchmark.py](validate_benchmark.py) | Schema validation, optionally persisted Chroma reference checks |
 | [verify_saved_results.py](verify_saved_results.py) | Offline reproduction of historical per-query and aggregate evidence scores |
+| [MILESTONE_3_END_TO_END.md](MILESTONE_3_END_TO_END.md) | Milestone 3 summary: end-to-end evaluation, judge, planner ablation, retrieval rescoring |
 | [run_end_to_end.py](run_end_to_end.py) / [END_TO_END_EVALUATION.md](END_TO_END_EVALUATION.md) | Production `/ask` on a fresh install seeded from `demo_notes/`; unscored run and findings |
 | [judge.py](judge.py) / [run_judge.py](run_judge.py) / [JUDGE_CALIBRATION.md](JUDGE_CALIBRATION.md) | LLM judge, its calibration against the Milestone 2 human labels, and production scores |
 | [PLANNER_ABLATION.md](PLANNER_ABLATION.md) | `/ask` with and without the intent planner (`run_end_to_end --no-planner`) |

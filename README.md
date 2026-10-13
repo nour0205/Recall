@@ -55,13 +55,15 @@ Strict v2 is the production prompt. Strict v1 was the most grounded, but it unde
 
 </details>
 
+**End to end, through the real `/ask`.** On a fresh install of the same notes, with live retrieval: 17/19 answers grounded, 14.25/16 required points, 3/3 out-of-scope questions refused and 0 answerable ones refused. Unchanged answers keep my human labels; the rest were scored with an [LLM judge calibrated against them](evaluation/JUDGE_CALIBRATION.md) and adjudicated with the written labelling conventions. The one-answer gap from the table above comes from a stricter labelling rule adopted since (dropping "usually" now fails), which the isolated answer fails too ([end-to-end report](evaluation/END_TO_END_EVALUATION.md)).
+
 **Design decisions came from measurement too:**
 - **Rejected a heuristic reranker.** It made rankings worse on 6 of 16 questions and better on none (MRR 0.802 → 0.693).
-- **Kept a neural cross-encoder (MiniLM) out of production.** It was close to plain fusion in quality but added about 0.65 s of CPU latency per query.
-- **Production uses plain Vector + BM25 + RRF fusion.** It scored the highest evidence MRR (0.969) of the hybrid orderings tested.
+- **Kept a neural cross-encoder (MiniLM) out of production, for now.** On 12 short notes it was close to plain fusion in quality but added about 0.65 s of CPU latency per query. Rerankers matter most on large corpora, so it gets re-tested when PDF ingestion grows the library.
+- **Production uses plain Vector + BM25 + RRF fusion, kept for robustness, not because it scored higher.** On the evidence labels, vector-only, keyword-only and hybrid search all put every required passage in the top 5 for all 16 answerable questions, and differ on single questions. This benchmark is too easy to separate them ([rescoring](evaluation/results/evidence_rescore_20261013T141146718706Z.md)).
 - **Removed an LLM intent planner.** With and without it, the answering model received byte-identical prompts for all 19 questions, while it took about 40% of response time. Removing it cut mean latency from about 2.1 s to 1.2 s ([ablation](evaluation/PLANNER_ABLATION.md)).
 
-> **Scope:** a small, hand-built benchmark of 19 questions (16 answerable, 3 deliberate refusals) over 12 short notes on machine learning, operating systems and databases. The numbers describe this set; I make no statistical-significance claims. Full methodology: [retrieval report](evaluation/MILESTONE_1_RETRIEVAL_EVALUATION.md) · [generation report](evaluation/MILESTONE_2_GENERATION_EVALUATION.md).
+> **Scope:** a small, hand-built benchmark of 19 questions (16 answerable, 3 deliberate refusals) over 12 short notes on machine learning, operating systems and databases. The numbers describe this set; I make no statistical-significance claims. Full methodology: [retrieval report](evaluation/MILESTONE_1_RETRIEVAL_EVALUATION.md) · [generation report](evaluation/MILESTONE_2_GENERATION_EVALUATION.md) · [end-to-end and judge report](evaluation/MILESTONE_3_END_TO_END.md).
 
 ## How it works
 
@@ -111,7 +113,7 @@ flowchart LR
 These are what I'd want a reviewer to know:
 
 - **End-to-end scores rest on a small benchmark and a partly trusted judge.** The production `/ask` path is now [evaluated end to end](evaluation/END_TO_END_EVALUATION.md) (17/19 grounded, 3/3 refusals), and an [LLM judge is calibrated](evaluation/JUDGE_CALIBRATION.md) against my labels (kappa 0.82 on required points, 0.75 on groundedness). But the judge consistently misses subtle unsupported elaborations, so its "grounded" verdicts still need human review. **Next:** a larger, freshly labelled benchmark, which also gives the judge a held-out test.
-- **Vector-only search wasn't beaten.** On the original exact-chunk labels, vector-only search had the best MRR (0.854 vs 0.802 for hybrid). The evidence-group rescoring only compared hybrid orderings. Hybrid stays for keyword robustness, but I don't claim it's better.
+- **Retrieval decisions were made at a small scale.** With 12 short notes (27 chunks), every retrieval method finds the required evidence, so the benchmark cannot show that hybrid search or a reranker helps. The original exact-chunk labels even favoured vector-only search (MRR 0.854 vs 0.802 for hybrid), an artefact that disappears with evidence-group labels. **Next:** harder retrieval questions (paraphrases with no shared words, exact technical terms) and a larger corpus, then re-test hybrid search and a cross-encoder reranker.
 - **Retrieved context contains near-duplicates.** Each chunk includes the previous chunk for context, so the top 5 passages can repeat text. In the demo above, two of the five passages are neighbouring chunks of the same note and share text. **Next:** sentence-level overlap plus de-duplication, measured against the benchmark.
 - **Answers are short (about 22 words on average).** That's good for grounding but thin for studying. **Next:** a cited short answer first, with a grounded "explain more" option.
 - **It's a local prototype.** It ingests plain text only (no PDF yet), has no accounts or deployment, and uses OpenAI only.
@@ -187,7 +189,8 @@ CI runs these checks, plus the frontend typecheck and build and both Docker imag
 - [x] **Generation evaluation:** four prompts, human-reviewed for groundedness, completeness, citations and refusals
 - [x] **Production promotion:** the measured retrieval and prompt configuration, with regression tests, CI and Docker
 - [x] **Interface redesign:** clickable citations, source panel, refusal state, note scoping and library
-- [ ] End-to-end evaluation of `/ask` with a calibrated LLM judge and a larger benchmark
+- [x] **End-to-end evaluation:** the production `/ask` path on a reproducible demo corpus, an LLM judge calibrated against the human labels, and the planner ablation
+- [ ] A larger benchmark with harder retrieval questions, and a held-out test of the judge
 - [ ] PDF ingestion with page-level citations, structure-aware chunking and French-language support
 - [ ] A tool-using study agent (search, read, quiz) evaluated against plain RAG
 - [ ] Tracing, a provider switch and a hosted demo

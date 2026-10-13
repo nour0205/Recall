@@ -1,6 +1,7 @@
 """Rescore saved top-five rankings without importing retrieval or reranking.
 
 Run from repository root: python -m evaluation.rescore_evidence
+Other saved runs: python -m evaluation.rescore_evidence --source <results.json> --modes vector bm25 hybrid
 RR/MRR use the saved final top five, exactly as the source experiment did.
 """
 from datetime import datetime, timezone
@@ -29,7 +30,7 @@ def score(ids, groups):
     return result
 
 
-def rescore(benchmark, saved):
+def rescore(benchmark, saved, modes=MODES):
     source_cases = {q["question_id"]: q for q in saved["queries"]}
     if len(source_cases) != len(saved["queries"]) or set(source_cases) != {c.question_id for c in benchmark.cases}:
         raise ValueError("Saved question IDs must match benchmark exactly")
@@ -45,14 +46,16 @@ def rescore(benchmark, saved):
         groups = [{c.chunk_id for c in g.acceptable_chunks} for g in case.evidence_groups]
         row = {"question_id": case.question_id, "question": case.question, "answerable": case.answerable,
                "notes": case.notes, "evidence_groups": [g.model_dump() for g in case.evidence_groups], "modes": {}}
-        for mode in MODES:
-            ids = old[mode]["retrieved_chunk_ids"]
+        # Ablation files keep modes at the top level; the four-mode benchmark run nests them under "results".
+        ranked = old.get("results", old)
+        for mode in modes:
+            ids = ranked[mode]["retrieved_chunk_ids"]
             if len(ids) > 5:
                 raise ValueError("Expected saved final top-five outputs")
             canonical = {f"{metric}_at_{k}": fn(ids, canonical_ids, k)
                          for metric, fn in (("hit", hit_at_k), ("recall", recall_at_k)) for k in (1,3,5)}
             canonical["reciprocal_rank"] = reciprocal_rank(ids, canonical_ids)
-            if canonical != old[mode]["metrics"]:
+            if canonical != ranked[mode]["metrics"]:
                 raise ValueError(f"Canonical source scores differ: {case.question_id}/{mode}")
             evidence = score(ids, groups)
             row["modes"][mode] = {"retrieved_chunk_ids": ids, "canonical": canonical, "evidence": evidence,
@@ -63,7 +66,7 @@ def rescore(benchmark, saved):
         rows.append(row)
     aggregates = {}
     answerable = [q for q in rows if q["answerable"]]
-    for mode in MODES:
+    for mode in modes:
         aggregates[mode] = {}
         for kind in ("canonical", "evidence"):
             keys = next(q for q in rows if q["answerable"])["modes"][mode][kind]
@@ -96,9 +99,10 @@ def markdown(report):
     return "\n".join(lines)+"\n"
 
 
-def main():
+def main(source=SOURCE, modes=MODES):
+    source = Path(source)
     benchmark = load_benchmark(BENCHMARK)
-    source_bytes = SOURCE.read_bytes()
+    source_bytes = source.read_bytes()
     saved = json.loads(source_bytes)
     # Read persisted corpus solely to validate IDs/ownership, never to search it.
     import chromadb
@@ -108,9 +112,9 @@ def main():
     issues = validate_corpus(benchmark, {"chroma": inventory})
     if issues:
         raise ValueError("\n".join(issues))
-    report = rescore(benchmark,saved)
+    report = rescore(benchmark, saved, modes)
     timestamp = datetime.now(timezone.utc)
-    report["provenance"] = {"rescored_at_utc": timestamp.isoformat(), "source_results": str(SOURCE),
+    report["provenance"] = {"rescored_at_utc": timestamp.isoformat(), "source_results": source.as_posix(), "modes": list(modes),
         "source_sha256": hashlib.sha256(source_bytes).hexdigest(), "benchmark": str(BENCHMARK),
         "benchmark_sha256": hashlib.sha256(BENCHMARK.read_bytes()).hexdigest(),
         "source_configuration": saved["configuration"], "retrieval_rerun": False,
@@ -124,4 +128,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path, default=SOURCE)
+    parser.add_argument("--modes", nargs="+", default=list(MODES))
+    args = parser.parse_args()
+    main(args.source, tuple(args.modes))
