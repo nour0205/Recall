@@ -50,15 +50,26 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "slow_convergence": null
+          "slow_convergence": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "slow_convergence": "pass"
+        },
+        "reason": "Restates S1 verbatim, keeping 'may'."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_003",
@@ -101,15 +112,26 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "standardization": null
+          "standardization": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "standardization": "pass"
+        },
+        "reason": "Verbatim from S1 (feature engineering note)."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_005",
@@ -159,8 +181,10 @@
         "points": {
           "lost_update": null
         },
-        "notes": ""
-      }
+        "notes": "Left blank for the author: the AI pre-labeller had already seen the judge verdict on this answer."
+      },
+      "ai_prefill": null,
+      "verified": false
     },
     {
       "question_id": "v3_006",
@@ -207,16 +231,28 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "more_expensive": null,
-          "reason": null
+          "more_expensive": "pass",
+          "reason": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "more_expensive": "pass",
+          "reason": "pass"
+        },
+        "reason": "S1 states both the cost difference ('generally', kept) and the reason (more state saved and restored)."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_007",
@@ -259,15 +295,26 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "underfitting": null
+          "underfitting": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "underfitting": "pass"
+        },
+        "reason": "Names underfitting and S1 supports 'too simple'. Borderline: the answer mostly echoes the question and calls the model 'underfitting' rather than saying the model underfits."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_008",
@@ -317,8 +364,10 @@
         "points": {
           "decomposition": null
         },
-        "notes": ""
-      }
+        "notes": "Left blank for the author: the AI pre-labeller had already seen the judge verdict on this answer."
+      },
+      "ai_prefill": null,
+      "verified": false
     },
     {
       "question_id": "v3_010",
@@ -365,16 +414,28 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "round_robin": null,
-          "responsiveness": null
+          "round_robin": "pass",
+          "responsiveness": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "round_robin": "pass",
+          "responsiveness": "pass"
+        },
+        "reason": "S1 supports the fixed time quantum and the responsiveness benefit."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_017",
@@ -417,15 +478,26 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "recall": null
+          "recall": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "recall": "pass"
+        },
+        "reason": "Verbatim from S1 (model evaluation note)."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_018",
@@ -468,15 +540,26 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "algorithms": null
+          "algorithms": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "algorithms": "pass"
+        },
+        "reason": "All four algorithms, verbatim from S1."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_021",
@@ -531,8 +614,10 @@
           "database": null,
           "features": null
         },
-        "notes": ""
-      }
+        "notes": "Left blank for the author: the AI pre-labeller had already seen the judge verdict on this answer."
+      },
+      "ai_prefill": null,
+      "verified": false
     },
     {
       "question_id": "v3_022",
@@ -587,8 +672,10 @@
           "train_vs_unseen": null,
           "accuracy_gap": null
         },
-        "notes": ""
-      }
+        "notes": "Left blank for the author: the AI pre-labeller had already seen the judge verdict on this answer."
+      },
+      "ai_prefill": null,
+      "verified": false
     },
     {
       "question_id": "v3_023",
@@ -635,16 +722,28 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "estimate_unseen": null,
-          "more_reliable": null
+          "estimate_unseen": "pass",
+          "more_reliable": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "estimate_unseen": "pass",
+          "more_reliable": "pass"
+        },
+        "reason": "S1 supports splitting, the single-split risk and estimating generalization; S4 the more reliable estimate. Trailing citations cover the short paragraph (C1). Borderline C4: S4 says cross-validation 'is often used to obtain' a more reliable estimate, the answer says it 'provides' one; I read 'often' as describing how often it is used, not the reliability claim, so not a strengthening."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_025",
@@ -691,16 +790,28 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "three_anomalies": null,
-          "deletion": null
+          "three_anomalies": "pass",
+          "deletion": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "three_anomalies": "pass",
+          "deletion": "pass"
+        },
+        "reason": "S2 lists the three anomalies; S1 defines deletion anomaly. Each claim cited separately."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_026",
@@ -747,16 +858,28 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "transaction": null,
-          "consistency": null
+          "transaction": "pass",
+          "consistency": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "transaction": "pass",
+          "consistency": "pass"
+        },
+        "reason": "Both definitions verbatim from S1."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_027",
@@ -807,17 +930,30 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "scaling": null,
-          "normalization": null,
-          "standardization": null
+          "scaling": "pass",
+          "normalization": "pass",
+          "standardization": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "scaling": "pass",
+          "normalization": "pass",
+          "standardization": "pass"
+        },
+        "reason": "All three points verbatim from S1; no mix-up with database normalization."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_028",
@@ -864,16 +1000,28 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "goal": null,
-          "loss": null
+          "goal": "pass",
+          "loss": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "goal": "pass",
+          "loss": "pass"
+        },
+        "reason": "Both sentences are in S1; one trailing citation covers the short paragraph (C1)."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_029",
@@ -920,16 +1068,28 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "concurrent_tasks": null,
-          "examples": null
+          "concurrent_tasks": "pass",
+          "examples": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "concurrent_tasks": "pass",
+          "examples": "pass"
+        },
+        "reason": "Use and both examples verbatim from S1."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_030",
@@ -976,16 +1136,28 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "training_error": null,
-          "test_error": null
+          "training_error": "pass",
+          "test_error": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "training_error": "pass",
+          "test_error": "pass"
+        },
+        "reason": "Verbatim from S1."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_032",
@@ -1028,15 +1200,26 @@
         }
       ],
       "labels": {
-        "correctness": null,
-        "groundedness": null,
-        "citation_correctness": null,
-        "refusal_correctness": null,
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
         "points": {
-          "often": null
+          "often": "pass"
         },
         "notes": ""
-      }
+      },
+      "ai_prefill": {
+        "correctness": 1,
+        "groundedness": 1,
+        "citation_correctness": 1,
+        "refusal_correctness": "N/A",
+        "points": {
+          "often": "pass"
+        },
+        "reason": "Keeps 'often', which implies 'not always'. Borderline: it never says 'no' to the yes/no question."
+      },
+      "verified": false
     },
     {
       "question_id": "v3_033",
@@ -1086,8 +1269,11 @@
         "points": {
           "usually": null
         },
-        "notes": ""
-      }
+        "notes": "Left blank for the author: the AI pre-labeller had already seen the judge verdict on this answer."
+      },
+      "ai_prefill": null,
+      "verified": false
     }
-  ]
+  ],
+  "annotation": "Pre-labelled with AI assistance (15 answers, reasons in ai_prefill), then verified and corrected by the author. Five answers were left blank for the author because the pre-labeller had seen the judge's verdicts on them. Only cases with verified=true are scored."
 }

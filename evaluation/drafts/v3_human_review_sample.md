@@ -30,6 +30,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* If the learning rate (step size) is too small, gradient descent may converge slowly.  
 *Case notes:* Preserve may. The question never says learning rate or convergence.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: slow_convergence=pass  
+*Why:* Restates S1 verbatim, keeping 'may'.
+*Verified by author:* False
+
 ## v3_003
 
 **Q:** Which transformation makes every input have an average of zero and a spread of one?
@@ -50,6 +54,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* Standardization, which transforms values to have zero mean and unit variance.  
 *Case notes:* Must not answer normalization, which rescales to a range.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: standardization=pass  
+*Why:* Verbatim from S1 (feature engineering note).
+*Verified by author:* False
+
 ## v3_005
 
 **Q:** Two people edit the same record at the same time and one person's change silently disappears. What is this called?
@@ -69,6 +77,9 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 *Reference:* A lost update, where one transaction overwrites the result of another.  
 *Case notes:* Name and mechanism both required.
+
+**No pre-label:** label this one from scratch.
+*Verified by author:* False
 
 ## v3_006
 
@@ -91,6 +102,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* Switching between processes is generally more expensive than switching between threads, because more state must be saved and restored and processes require more operating-system overhead.  
 *Case notes:* Either reason satisfies the reason point. Preserve generally.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: more_expensive=pass, reason=pass  
+*Why:* S1 states both the cost difference ('generally', kept) and the reason (more state saved and restored).
+*Verified by author:* False
+
 ## v3_007
 
 **Q:** What do you call a model that is too simple and does badly even on the data it learned from?
@@ -111,6 +126,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* Underfitting: the model is too simple to capture the patterns in the training data, so it performs poorly even there.  
 *Case notes:* Naming underfitting with its meaning is required.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: underfitting=pass  
+*Why:* Names underfitting and S1 supports 'too simple'. Borderline: the answer mostly echoes the question and calls the model 'underfitting' rather than saying the model underfits.
+*Verified by author:* False
+
 ## v3_008
 
 **Q:** What is it called when one large table is split into several smaller ones while keeping what the data means?
@@ -130,6 +149,9 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 *Reference:* Decomposition, which splits a table into smaller relations while preserving data meaning.  
 *Case notes:* The question avoids the words relation, decompose and normalization.
+
+**No pre-label:** label this one from scratch.
+*Verified by author:* False
 
 ## v3_010
 
@@ -152,6 +174,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* Round robin: each process gets a fixed time quantum in turn, which improves responsiveness in time-sharing systems.  
 *Case notes:* Both parts required.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: round_robin=pass, responsiveness=pass  
+*Why:* S1 supports the fixed time quantum and the responsiveness benefit.
+*Verified by author:* False
+
 ## v3_017
 
 **Q:** What does recall measure for a classifier?
@@ -172,6 +198,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* How many actual positive instances are correctly identified.  
 *Case notes:* Must not be confused with precision.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: recall=pass  
+*Why:* Verbatim from S1 (model evaluation note).
+*Verified by author:* False
+
 ## v3_018
 
 **Q:** Which CPU scheduling algorithms are listed as common?
@@ -191,6 +221,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 *Reference:* First-come first-served, shortest job first, priority scheduling and round robin.  
 *Case notes:* All four are needed for the point.
+
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: algorithms=pass  
+*Why:* All four algorithms, verbatim from S1.
+*Verified by author:* False
 
 ## v3_021
 
@@ -213,6 +247,9 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* Database normalization organizes relational data to reduce redundancy and improve integrity; feature normalization rescales values to a specific range.  
 *Case notes:* Ambiguous term across notes: retrieval must find both.
 
+**No pre-label:** label this one from scratch.
+*Verified by author:* False
+
 ## v3_022
 
 **Q:** What signs of overfitting do the notes describe?
@@ -233,6 +270,9 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 *Reference:* Overfit models often perform well on training data but poorly on unseen data, and a gap between training and validation accuracy is often a sign of overfitting.  
 *Case notes:* Preserve often.
+
+**No pre-label:** label this one from scratch.
+*Verified by author:* False
 
 ## v3_023
 
@@ -255,6 +295,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* It estimates how well a model is likely to perform on unseen data and is often used to obtain a more reliable estimate of model performance.  
 *Case notes:* Evidence spread over three notes.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: estimate_unseen=pass, more_reliable=pass  
+*Why:* S1 supports splitting, the single-split risk and estimating generalization; S4 the more reliable estimate. Trailing citations cover the short paragraph (C1). Borderline C4: S4 says cross-validation 'is often used to obtain' a more reliable estimate, the answer says it 'provides' one; I read 'often' as describing how often it is used, not the reliability claim, so not a strengthening.
+*Verified by author:* False
+
 ## v3_025
 
 **Q:** Which three kinds of anomalies can poorly designed tables cause, and what is a deletion anomaly?
@@ -276,6 +320,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* Update, insertion and deletion anomalies. A deletion anomaly happens when removing one row accidentally removes other valuable information.  
 *Case notes:* Both parts required.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: three_anomalies=pass, deletion=pass  
+*Why:* S2 lists the three anomalies; S1 defines deletion anomaly. Each claim cited separately.
+*Verified by author:* False
+
 ## v3_026
 
 **Q:** What is a transaction, and what does consistency mean in ACID?
@@ -296,6 +344,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 *Reference:* A logical unit of work that either completes entirely or has no effect; consistency means the database moves from one valid state to another.  
 *Case notes:* Both parts required.
+
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: transaction=pass, consistency=pass  
+*Why:* Both definitions verbatim from S1.
+*Verified by author:* False
 
 ## v3_027
 
@@ -319,6 +371,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* Feature scaling places features on comparable ranges. Normalization rescales values to a specific range; standardization gives them zero mean and unit variance.  
 *Case notes:* Three points. Must not mix in database normalization.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: scaling=pass, normalization=pass, standardization=pass  
+*Why:* All three points verbatim from S1; no mix-up with database normalization.
+*Verified by author:* False
+
 ## v3_028
 
 **Q:** What is the goal of supervised learning, and what does the model minimize during training?
@@ -339,6 +395,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 *Reference:* To learn a mapping from inputs to outputs that generalizes to unseen data; it minimizes a loss function measuring the difference between predictions and true labels.  
 *Case notes:* Both parts required.
+
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: goal=pass, loss=pass  
+*Why:* Both sentences are in S1; one trailing citation covers the short paragraph (C1).
+*Verified by author:* False
 
 ## v3_029
 
@@ -361,6 +421,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* Applications that perform multiple tasks concurrently, such as a web server handling many client requests or a program doing background work while keeping its interface responsive.  
 *Case notes:* Both examples are needed for the examples point.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: concurrent_tasks=pass, examples=pass  
+*Why:* Use and both examples verbatim from S1.
+*Verified by author:* False
+
 ## v3_030
 
 **Q:** What is the difference between training error and test error?
@@ -382,6 +446,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* Training error is performance on the training set; test error is performance on new, unseen data.  
 *Case notes:* Both parts required.
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: training_error=pass, test_error=pass  
+*Why:* Verbatim from S1.
+*Verified by author:* False
+
 ## v3_032
 
 **Q:** Do good features always improve a model more than making it more complex?
@@ -402,6 +470,10 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 *Reference:* The notes say good features often, not always, improve performance more than increasing model complexity.  
 *Case notes:* Preserve often (C4).
 
+**AI pre-label (check it):** correctness=1, groundedness=1, citation_correctness=1, refusal_correctness=N/A; points: often=pass  
+*Why:* Keeps 'often', which implies 'not always'. Borderline: it never says 'no' to the yes/no question.
+*Verified by author:* False
+
 ## v3_033
 
 **Q:** Are high-bias models always too simple?
@@ -421,3 +493,6 @@ Label each answer in `v3_human_review_sample.json` (fields under `labels`). The 
 
 *Reference:* The notes say high-bias models are usually too simple and may underfit, not always.  
 *Case notes:* Preserve usually and may (C4).
+
+**No pre-label:** label this one from scratch.
+*Verified by author:* False
