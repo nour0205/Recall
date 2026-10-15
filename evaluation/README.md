@@ -125,6 +125,6 @@ Pilots used earlier labels; do not compare their recall directly to final v1.
 Evidence rescoring uses v2 and saved final top-five outputs; alternatives are
 accepted by explicit UUID membership, not semantic similarity. Quality summaries
 exclude unanswerable cases; those outputs remain inspectable. No generation
-evaluation has run. Root `eval_cases.json` and `run_eval.py` are legacy smoke
-artifacts, not these benchmarks; the script targets removed `/ask_routed` and
-should not be used as current reproduction guidance.
+evaluation has run. The former root `eval_cases.json` and `run_eval.py` were legacy smoke
+artifacts targeting a removed `/ask_routed` endpoint, not these benchmarks;
+they have been deleted.

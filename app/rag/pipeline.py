@@ -9,32 +9,6 @@ def build_rag_prompt(question: str, contexts: list[str]) -> list[dict]:
     return build_answer_prompt(question, [SimpleNamespace(document_id="context", text=t) for t in contexts], "unknown")
 
 
-def rag_answer_with_store(
-    question: str,
-    store,
-    k: int = 4,
-    where: dict | None = None,
-    retrieve_k: int = 10
-) -> str:
-    candidates = hybrid_retrieve(
-        store=store,
-        question=question,
-        k=k,
-        where=where,
-        candidate_k=retrieve_k,
-    )
-
-    items = [item for item in candidates if item.text.strip()]
-
-    contexts = [item.text for item in items if item.text.strip()]
-
-    if not contexts:
-        return "I don't know."
-
-    messages = build_answer_prompt(question, items, "unknown")
-    return normalize_answer(chat(messages))
-
-
 def rag_answer_with_sources(
     question: str,
     store,
