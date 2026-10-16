@@ -147,7 +147,7 @@ class ProductionPromotionTests(unittest.TestCase):
         self.assertAlmostEqual(rows[0].hybrid_score,2/61)
         self.assertEqual(store.query_with_scores.call_args.kwargs['k'],10)
         bm25.assert_called_once_with('Q',limit=10)
-        for path in ('app/api/main.py','app/rag/pipeline.py','app/orchestration/retrieval.py','app/rag/hybrid_retriever.py'):
+        for path in ('app/api/main.py','app/rag/pipeline.py','app/rag/hybrid_retriever.py'):
             tree = ast.parse(Path(path).read_text(encoding='utf-8'))
             for node in ast.walk(tree):
                 if isinstance(node,ast.ImportFrom):
@@ -163,9 +163,8 @@ class ProductionPromotionTests(unittest.TestCase):
             result = hybrid.retrieve_bm25_candidates('Q',k=10,where=where)
         self.assertEqual([r['id'] for r in result],['0'])
 
-    def test_fallback_and_document_helper_use_plain_hybrid_and_same_prompt(self):
+    def test_fallback_uses_plain_hybrid_and_same_prompt(self):
         from app.rag import pipeline
-        from app.orchestration import retrieval
         with patch.object(pipeline,'hybrid_retrieve',return_value=self.rows) as retrieve, patch.object(pipeline,'chat',return_value='Point [S1].') as chat:
             result = pipeline.rag_answer_with_sources('Q',Mock(),k=5)
             self.assertEqual(len(result.sources),5)
@@ -174,11 +173,8 @@ class ProductionPromotionTests(unittest.TestCase):
             self.assertIn('[S5]',chat.call_args.args[0][1]['content'])
             self.assertIn(prompts.SYSTEM_PROMPT,chat.call_args.args[0][0]['content'])
             chat.return_value="I don't know. More text"
-            self.assertEqual(pipeline.rag_answer_with_store('Q',Mock()),"I don't know.")
-        with patch.object(retrieval,'hybrid_retrieve',return_value=self.rows) as retrieve:
-            result = retrieval.retrieve_for_document(Mock(),'Q','notes',k=5)
-            self.assertEqual(retrieve.call_args.kwargs['where'],{'document_id':'notes'})
-            self.assertEqual(len(result),5)
+            refusal = pipeline.rag_answer_with_sources('Q',Mock(),k=5)
+            self.assertEqual((refusal.answer, refusal.sources), ("I don't know.", []))
 
     def test_ingest_and_delete_endpoints_use_the_library(self):
         # Index behaviour itself is tested on real indexes in tests/test_library.py.

@@ -1,0 +1,486 @@
+{
+  "result_schema_version": 1,
+  "mode": "run",
+  "created_at_utc": "2026-10-16T13:27:39.767795+00:00",
+  "configuration": {
+    "grader": "gpt-4o-mini",
+    "embeddings": "text-embedding-3-small",
+    "metrics": [
+      "faithfulness",
+      "answer_relevancy",
+      "context_recall",
+      "factual_correctness"
+    ],
+    "ragas": "0.4.3",
+    "langchain_openai": "0.3.35",
+    "exact_refusals_skipped": true
+  },
+  "inputs": {
+    "run": {
+      "path": "evaluation/results/end_to_end_benchmark_v3_draft_20261013T143406Z.json",
+      "sha256": "f1dc9767625d9d4ca692e0b2dd30b68f306c38c5e0ccd37fde90ae1e7dfe1498"
+    }
+  },
+  "token_usage": {
+    "input_tokens": 191912,
+    "output_tokens": 29056
+  },
+  "skipped_refusals": [
+    "v3_031",
+    "v3_034",
+    "v3_035",
+    "v3_036",
+    "v3_037",
+    "v3_038",
+    "v3_039",
+    "v3_040",
+    "v3_041",
+    "v3_042",
+    "v3_043",
+    "v3_044",
+    "v3_045",
+    "v3_046",
+    "v3_047",
+    "v3_048"
+  ],
+  "summary": {
+    "faithfulness": {
+      "mean": 0.9302083333333333,
+      "scored": 32,
+      "missing": 0
+    },
+    "answer_relevancy": {
+      "mean": 0.7388270145021749,
+      "scored": 32,
+      "missing": 0
+    },
+    "context_recall": {
+      "mean": 0.9375,
+      "scored": 32,
+      "missing": 0
+    },
+    "factual_correctness": {
+      "mean": 0.7565625,
+      "scored": 32,
+      "missing": 0
+    }
+  },
+  "rows": [
+    {
+      "question_id": "v3_001",
+      "user_input": "What can happen when the steps an optimizer takes are far too small?",
+      "response": "A learning rate that is too small may result in slow convergence [S1].",
+      "reference": "If the learning rate (step size) is too small, gradient descent may converge slowly.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.5602705584913562,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_002",
+      "user_input": "What do we call choosing, reshaping and inventing the inputs a model uses from raw data?",
+      "response": "Feature engineering. [S1]",
+      "reference": "Feature engineering: selecting, transforming and creating useful features from raw data.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.6208218839482145,
+        "context_recall": 1.0,
+        "factual_correctness": 0.4
+      }
+    },
+    {
+      "question_id": "v3_003",
+      "user_input": "Which transformation makes every input have an average of zero and a spread of one?",
+      "response": "Standardization transforms values so they have zero mean and unit variance [S1].",
+      "reference": "Standardization, which transforms values to have zero mean and unit variance.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.33119780336059745,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_004",
+      "user_input": "My report used numbers that another user had changed but then cancelled before saving. Which concurrency problem is this?",
+      "response": "The concurrency problem is a dirty read, which happens when a transaction reads data written by another transaction that has not yet committed [S1].",
+      "reference": "A dirty read: a transaction reads data written by another transaction that has not yet committed.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 0.6666666666666666,
+        "answer_relevancy": 0.5220885326008744,
+        "context_recall": 1.0,
+        "factual_correctness": 0.67
+      }
+    },
+    {
+      "question_id": "v3_005",
+      "user_input": "Two people edit the same record at the same time and one person's change silently disappears. What is this called?",
+      "response": "This is called a lost update [S1].",
+      "reference": "A lost update, where one transaction overwrites the result of another.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.4930247310625506,
+        "context_recall": 1.0,
+        "factual_correctness": 0.67
+      }
+    },
+    {
+      "question_id": "v3_006",
+      "user_input": "Why is switching between two separate running programs slower than switching between two workers inside the same program?",
+      "response": "Context switching between processes is generally more expensive than switching between threads because more state must be saved and restored for processes [S1].",
+      "reference": "Switching between processes is generally more expensive than switching between threads, because more state must be saved and restored and processes require more operating-system overhead.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.6886256915546647,
+        "context_recall": 1.0,
+        "factual_correctness": 0.8
+      }
+    },
+    {
+      "question_id": "v3_007",
+      "user_input": "What do you call a model that is too simple and does badly even on the data it learned from?",
+      "response": "A model that is too simple and does badly even on the data it learned from is called underfitting [S1].",
+      "reference": "Underfitting: the model is too simple to capture the patterns in the training data, so it performs poorly even there.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8777223609703649,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_008",
+      "user_input": "What is it called when one large table is split into several smaller ones while keeping what the data means?",
+      "response": "Decomposition. [S1]",
+      "reference": "Decomposition, which splits a table into smaller relations while preserving data meaning.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.3192533842915502,
+        "context_recall": 1.0,
+        "factual_correctness": 0.5
+      }
+    },
+    {
+      "question_id": "v3_009",
+      "user_input": "What kind of learning uses examples that each come with the correct answer attached?",
+      "response": "Supervised learning uses examples that each come with the correct answer attached [S1].",
+      "reference": "Supervised learning: the model learns from labeled examples, each with input features and a target output.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.3996379429933147,
+        "context_recall": 1.0,
+        "factual_correctness": 0.8
+      }
+    },
+    {
+      "question_id": "v3_010",
+      "user_input": "Which way of sharing the processor gives every task a fixed slice of time in turn, and what does that improve?",
+      "response": "Round robin scheduling gives every task a fixed slice of time in turn, and it improves responsiveness in time-sharing systems [S1].",
+      "reference": "Round robin: each process gets a fixed time quantum in turn, which improves responsiveness in time-sharing systems.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.5130893138967547,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_011",
+      "user_input": "What does 1NF require?",
+      "response": "The first normal form (1NF) requires that each attribute contain atomic values and that there are no repeating groups [S1].",
+      "reference": "The first normal form requires atomic attribute values and no repeating groups.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.855594600677167,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_012",
+      "user_input": "What does the D in ACID stand for, and what does it guarantee?",
+      "response": "The D in ACID stands for Durability, which guarantees that once a transaction is committed, its effects persist even after a crash [S2].",
+      "reference": "Durability: once a transaction is committed, its effects persist even after a crash.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.8303463998588251,
+        "context_recall": 1.0,
+        "factual_correctness": 0.67
+      }
+    },
+    {
+      "question_id": "v3_013",
+      "user_input": "Besides locking, which approach to handling concurrency do the notes mention?",
+      "response": "Multiversion concurrency control is the other approach to handling concurrency mentioned in the notes [S1].",
+      "reference": "Multiversion concurrency control.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.7989547185149587,
+        "context_recall": 1.0,
+        "factual_correctness": 0.0
+      }
+    },
+    {
+      "question_id": "v3_014",
+      "user_input": "Which inter-process communication mechanisms are listed, and why are they needed?",
+      "response": "The inter-process communication mechanisms listed are pipes, sockets, and shared memory. They are needed because each process has its own memory space, so communication between processes usually requires these mechanisms [S1].",
+      "reference": "Pipes, sockets and shared memory. Because each process has its own memory space, communication between processes usually requires such mechanisms.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9450259590756346,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_015",
+      "user_input": "Which four counts does a confusion matrix summarize?",
+      "response": "A confusion matrix summarizes true positives, true negatives, false positives, and false negatives [S1].",
+      "reference": "True positives, true negatives, false positives and false negatives.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8141201542128595,
+        "context_recall": 1.0,
+        "factual_correctness": 0.0
+      }
+    },
+    {
+      "question_id": "v3_016",
+      "user_input": "In k-fold cross-validation, how many times does each subset serve as the validation set?",
+      "response": "Each subset serves as the validation set once in k-fold cross-validation [S2].",
+      "reference": "Once.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.7752687042987115,
+        "context_recall": 0.0,
+        "factual_correctness": 0.0
+      }
+    },
+    {
+      "question_id": "v3_017",
+      "user_input": "What does recall measure for a classifier?",
+      "response": "Recall measures how many actual positive instances are correctly identified [S1].",
+      "reference": "How many actual positive instances are correctly identified.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.8026324447222946,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_018",
+      "user_input": "Which CPU scheduling algorithms are listed as common?",
+      "response": "The common CPU scheduling algorithms listed are first-come first-served, shortest job first, priority scheduling, and round robin [S1].",
+      "reference": "First-come first-served, shortest job first, priority scheduling and round robin.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8950490765940404,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_019",
+      "user_input": "How does regularization help, and which other techniques can help reduce overfitting?",
+      "response": "Regularization helps reduce overfitting by discouraging overly complex models [S2]. Other techniques that can help reduce overfitting include cross-validation and collecting more data [S1].",
+      "reference": "Regularization can reduce variance by discouraging overly complex models. Cross-validation and collecting more data can also help reduce overfitting.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8823366356205259,
+        "context_recall": 1.0,
+        "factual_correctness": 0.89
+      }
+    },
+    {
+      "question_id": "v3_020",
+      "user_input": "How are bias and variance related to underfitting and overfitting?",
+      "response": "Bias is related to underfitting, as high-bias models are usually too simple and may underfit the training data, resulting in poor performance on both training and test data [S1], [S2]. Variance is related to overfitting, as high-variance models may fit noise in the training set and therefore overfit, performing well on training data but poorly on unseen data [S1], [S2].",
+      "reference": "High-bias models are usually too simple and may underfit; high-variance models may fit noise in the training data and overfit.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9520367183151112,
+        "context_recall": 1.0,
+        "factual_correctness": 0.8
+      }
+    },
+    {
+      "question_id": "v3_021",
+      "user_input": "What is the difference between normalization in databases and normalization of features?",
+      "response": "Normalization in databases is the process of organizing data to reduce redundancy and improve data integrity, while normalization of features is a process used in machine learning to rescale values to a specific range. The former addresses issues like update, insertion, and deletion anomalies in relational databases [S2], [S4], whereas the latter focuses on preparing features for model training by ensuring they are on comparable scales [S1].",
+      "reference": "Database normalization organizes relational data to reduce redundancy and improve integrity; feature normalization rescales values to a specific range.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 0.6,
+        "answer_relevancy": 0.9190265090185308,
+        "context_recall": 1.0,
+        "factual_correctness": 0.8
+      }
+    },
+    {
+      "question_id": "v3_022",
+      "user_input": "What signs of overfitting do the notes describe?",
+      "response": "A gap between training accuracy and validation accuracy is often a sign of overfitting [S4].",
+      "reference": "Overfit models often perform well on training data but poorly on unseen data, and a gap between training and validation accuracy is often a sign of overfitting.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.3735296641674865,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_023",
+      "user_input": "What role does cross-validation play in evaluating a model?",
+      "response": "Cross-validation evaluates model performance by repeatedly splitting data into training and validation sets, reducing the risk of relying on a single train-test split. It is commonly used to estimate model generalization performance and provides a more reliable estimate of how well a model is likely to perform on unseen data [S1], [S4].",
+      "reference": "It estimates how well a model is likely to perform on unseen data and is often used to obtain a more reliable estimate of model performance.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8821036239612831,
+        "context_recall": 1.0,
+        "factual_correctness": 0.75
+      }
+    },
+    {
+      "question_id": "v3_024",
+      "user_input": "Why do threads communicate more easily than processes, and what risk does that bring?",
+      "response": "Threads communicate more easily than processes because they share memory space and resources [S1], [S2]. This ease of communication introduces risks such as race conditions and synchronization problems [S1], [S2].",
+      "reference": "Threads share memory, so they communicate more easily, but this introduces risks such as race conditions and synchronization problems.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8801624384141261,
+        "context_recall": 1.0,
+        "factual_correctness": 0.89
+      }
+    },
+    {
+      "question_id": "v3_025",
+      "user_input": "Which three kinds of anomalies can poorly designed tables cause, and what is a deletion anomaly?",
+      "response": "Poorly designed tables can cause update anomalies, insertion anomalies, and deletion anomalies [S2]. A deletion anomaly happens when removing one row accidentally removes other valuable information [S1].",
+      "reference": "Update, insertion and deletion anomalies. A deletion anomaly happens when removing one row accidentally removes other valuable information.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8383077669047632,
+        "context_recall": 1.0,
+        "factual_correctness": 0.4
+      }
+    },
+    {
+      "question_id": "v3_026",
+      "user_input": "What is a transaction, and what does consistency mean in ACID?",
+      "response": "A transaction is a logical unit of work that must either complete entirely or have no effect at all [S1]. Consistency means the database moves from one valid state to another valid state [S1].",
+      "reference": "A logical unit of work that either completes entirely or has no effect; consistency means the database moves from one valid state to another.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.7438518789046231,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_027",
+      "user_input": "What is feature scaling for, and how do normalization and standardization differ?",
+      "response": "Feature scaling is commonly used to place features on comparable ranges [S1]. Normalization rescales values to a specific range, while standardization transforms values so they have zero mean and unit variance [S1].",
+      "reference": "Feature scaling places features on comparable ranges. Normalization rescales values to a specific range; standardization gives them zero mean and unit variance.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.9719470558231794,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_028",
+      "user_input": "What is the goal of supervised learning, and what does the model minimize during training?",
+      "response": "The goal of supervised learning is to learn a mapping from inputs to outputs so that the model can generalize to unseen data. During training, the model minimizes a loss function that measures the difference between predictions and true labels [S1].",
+      "reference": "To learn a mapping from inputs to outputs that generalizes to unseen data; it minimizes a loss function measuring the difference between predictions and true labels.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.7482647767073006,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_029",
+      "user_input": "What is multithreading useful for, and which two examples are given?",
+      "response": "Multithreading is useful for applications that perform multiple tasks concurrently, such as a web server handling multiple client requests or a program performing background work while keeping the user interface responsive [S1].",
+      "reference": "Applications that perform multiple tasks concurrently, such as a web server handling many client requests or a program doing background work while keeping its interface responsive.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.8467501896117641,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_030",
+      "user_input": "What is the difference between training error and test error?",
+      "response": "Training error refers to performance on the training set, while test error refers to performance on new unseen data [S1].",
+      "reference": "Training error is performance on the training set; test error is performance on new, unseen data.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 1.0,
+        "context_recall": 1.0,
+        "factual_correctness": 1.0
+      }
+    },
+    {
+      "question_id": "v3_032",
+      "user_input": "Do good features always improve a model more than making it more complex?",
+      "response": "Good features often improve model performance more than increasing model complexity [S1].",
+      "reference": "The notes say good features often, not always, improve performance more than increasing model complexity.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.838502941110004,
+        "context_recall": 1.0,
+        "factual_correctness": 0.67
+      }
+    },
+    {
+      "question_id": "v3_033",
+      "user_input": "Are high-bias models always too simple?",
+      "response": "High-bias models are usually too simple [S1].",
+      "reference": "The notes say high-bias models are usually too simple and may underfit, not always.",
+      "expected_behavior": "answer",
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.722920004386165,
+        "context_recall": 0.0,
+        "factual_correctness": 0.5
+      }
+    }
+  ]
+}

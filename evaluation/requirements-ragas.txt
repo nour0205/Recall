@@ -1,0 +1,11 @@
+# RAGAS scoring environment, kept separate from the app's dependencies.
+#   python -m venv .venv-ragas
+#   .venv-ragas/Scripts/python -m pip install -r evaluation/requirements-ragas.txt
+# ragas 0.4.3 imports a Vertex AI module that langchain-community 0.4 removed,
+# so the LangChain packages are pinned to the 0.3 line.
+ragas==0.4.3
+langchain==0.3.30
+langchain-core==0.3.86
+langchain-community==0.3.31
+langchain-openai==0.3.35
+pydantic>=2

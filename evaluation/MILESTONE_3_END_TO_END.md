@@ -10,6 +10,7 @@ Milestones 1 and 2 measured retrieval and the answer prompt in isolation, with r
 | End-to-end runner | Seeds a fresh temporary install, sends the 19 benchmark questions through the real `/ask`, and records answers, retrieved context, prompt fingerprints, latency and tokens. | [END_TO_END_EVALUATION.md](END_TO_END_EVALUATION.md) |
 | LLM judge | GPT-5.5 (pinned) grades answers with the human-review rubric, seeing exactly what the human reviewer saw. Calibrated against the 76 human-labelled Milestone 2 answers. | [JUDGE_CALIBRATION.md](JUDGE_CALIBRATION.md) |
 | Planner ablation | `/ask` with and without the LLM intent planner. | [PLANNER_ABLATION.md](PLANNER_ABLATION.md) |
+| RAGAS comparison | Off-the-shelf RAGAS metrics scored against the same 76 human labels and on the v3 pilot, next to the judge. | [RAGAS_COMPARISON.md](RAGAS_COMPARISON.md) |
 | Retrieval rescoring | Vector-only, keyword-only and hybrid search scored on the evidence-group labels, from saved Milestone 1 rankings. | [rescoring](results/evidence_rescore_20261013T141146718706Z.md) |
 
 ## Results
@@ -17,6 +18,8 @@ Milestones 1 and 2 measured retrieval and the answer prompt in isolation, with r
 **Production `/ask`, 19 questions:** grounded 17/19, correct 13/16, citation correctness 14/16, required points 14.25/16, refusals 3/3, no false refusals, required evidence retrieved for 16/16. Labels: human labels for the 15 answers identical to reviewed Milestone 2 answers, and the [adjudicated](results/end_to_end_v1_adjudications.json) rubric with written conventions for the 4 new ones. This matches the isolated Milestone 2 result once the same conventions apply to both.
 
 **Judge agreement with human labels** (Cohen's kappa on 0/1 labels, judge v2): required points 0.82, correctness 0.75, groundedness 0.75, citations 0.61. Trusted for required points and correctness; used as a screen for groundedness and citations. Both judge versions miss the same 4 subtle unsupported claims, and v2's numbers are optimistic because its conventions were written after reading the disagreements.
+
+**RAGAS as an alternative judge:** on the same 64 non-refusal answers, RAGAS faithfulness agrees with human groundedness at kappa 0.58 at best (AUC 0.85) and factual correctness with human correctness at 0.48 (AUC 0.77), against 0.73 and 0.75 for judge v2. RAGAS stays a second opinion; the calibrated judge stays the primary scorer ([details](RAGAS_COMPARISON.md)).
 
 **Planner:** the answering model received byte-identical prompts with and without the planner for all 19 questions, while the planner took about 40% of latency. It was removed; mean latency went from about 2.1 s to 1.2 s.
 

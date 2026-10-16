@@ -23,6 +23,7 @@ Milestone 1 evaluates retrieval, not generated answers. Start with the
 | [MILESTONE_3_END_TO_END.md](MILESTONE_3_END_TO_END.md) | Milestone 3 summary: end-to-end evaluation, judge, planner ablation, retrieval rescoring |
 | [run_end_to_end.py](run_end_to_end.py) / [END_TO_END_EVALUATION.md](END_TO_END_EVALUATION.md) | Production `/ask` on a fresh install seeded from `demo_notes/`; unscored run and findings |
 | [judge.py](judge.py) / [run_judge.py](run_judge.py) / [JUDGE_CALIBRATION.md](JUDGE_CALIBRATION.md) | LLM judge, its calibration against the Milestone 2 human labels, and production scores |
+| [run_ragas.py](run_ragas.py) / [RAGAS_COMPARISON.md](RAGAS_COMPARISON.md) | RAGAS metrics against the human labels and the judge; separate environment ([requirements-ragas.txt](requirements-ragas.txt)) |
 | [PLANNER_ABLATION.md](PLANNER_ABLATION.md) | `/ask` with and without the intent planner (`run_end_to_end --no-planner`) |
 
 ## No-key verification
@@ -125,6 +126,6 @@ Pilots used earlier labels; do not compare their recall directly to final v1.
 Evidence rescoring uses v2 and saved final top-five outputs; alternatives are
 accepted by explicit UUID membership, not semantic similarity. Quality summaries
 exclude unanswerable cases; those outputs remain inspectable. No generation
-evaluation has run. Root `eval_cases.json` and `run_eval.py` are legacy smoke
-artifacts, not these benchmarks; the script targets removed `/ask_routed` and
-should not be used as current reproduction guidance.
+evaluation has run. The former root `eval_cases.json` and `run_eval.py` were legacy smoke
+artifacts targeting a removed `/ask_routed` endpoint, not these benchmarks;
+they have been deleted.
