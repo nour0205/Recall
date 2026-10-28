@@ -124,23 +124,18 @@ def retrieve_bm25_candidates(
     k: int = 5,
     where: dict | None = None,
 ) -> list[dict]:
-    """Preserve Whoosh's existing top-k search followed by metadata filtering."""
-    bm25_results = search_whoosh(question, limit=k)
+    """Top-k keyword results within the scope, ranked like Chroma: filter, then cut."""
+    if where:
+        # Filtering after a global top-k would drop in-scope chunks ranked below it.
+        hits = search_whoosh(question, limit=None)
+        bm25_results = [item for item in hits if matches_scope(item.get("metadata", {}) or {}, where)][:k]
+    else:
+        bm25_results = search_whoosh(question, limit=k)
 
     for rank, item in enumerate(bm25_results):
         item["rank"] = rank + 1
         item["retrieval_type"] = "bm25"
         item["id"] = _get_chunk_key(item)
-
-    if where:
-        filtered_bm25 = []
-        for item in bm25_results:
-            meta = item.get("metadata", {}) or {}
-            ok = True
-            ok = matches_scope(meta, where)
-            if ok:
-                filtered_bm25.append(item)
-        bm25_results = filtered_bm25
 
     return bm25_results
 
