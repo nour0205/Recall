@@ -27,7 +27,7 @@ Kappa is Cohen's kappa, which corrects for agreement expected by chance. It is c
 | Citation correctness | 51/64 | 0.55 | 53/64 | 0.61 | **Not trusted yet** |
 | Refusal correctness | 12/13 | 0.63 | 12/13 | 0.63 | Too few refusal cases to judge |
 
-Raw results: [v1](results/judge_calibration_v1_20261012T081253Z.json), [v2](results/judge_calibration_judge_v2_20261012T084333Z.json). Completeness scores differ from the human scores by 0.02 on average.
+Raw results: [v1](results/judge_calibration_v1_20261012T081253Z.json), [v2](results/judge_calibration_judge_v2_20261012T084333Z.json). Completeness scores differ from the human scores by 0.02 on average. `python -m evaluation.verify_saved_results` recomputes this table from the raw judgments, offline, and CI runs it on every pull request. The `summary` saved inside the two raw files was written before this rule, with `N/A` counted as a label, so its correctness and citation figures are higher than the table's.
 
 **v2's numbers are optimistic.** Its conventions were written after reading the disagreements on these same 76 answers, so this is not a held-out test. A clean test needs new human-labelled answers; the larger benchmark will provide them.
 

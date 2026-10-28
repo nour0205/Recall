@@ -33,13 +33,15 @@ def dimension_agreement(pairs) -> dict:
 def compare(cases) -> dict:
     """cases: dicts with 'human' and 'judge' label dicts plus point judgments.
 
-    Each label dimension compares every case; "N/A" is treated as its own label,
-    so a judge saying N/A where the human gave 0/1 counts as a disagreement.
-    Completeness is compared point by point on answer cases.
+    Each label dimension compares the cases where the human label is 0 or 1:
+    human N/A marks a pure refusal, which is trivially easy to agree on and
+    would inflate kappa. A judge saying N/A where the human gave 0/1 still
+    counts as a disagreement. Completeness is compared point by point on
+    answer cases.
     """
     report = {}
     for dimension in ("groundedness", "correctness", "citation_correctness", "refusal_correctness"):
-        pairs = [(c["human"][dimension], c["judge"][dimension]) for c in cases]
+        pairs = [(c["human"][dimension], c["judge"][dimension]) for c in cases if c["human"][dimension] in (0, 1)]
         report[dimension] = dimension_agreement(pairs)
     point_pairs, score_errors = [], []
     for c in cases:

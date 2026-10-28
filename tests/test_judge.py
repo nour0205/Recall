@@ -127,6 +127,17 @@ class AgreementTests(unittest.TestCase):
         self.assertEqual(report['completeness_score_mean_abs_error'], 0.5)
         self.assertEqual([d['dimension'] for d in disagreements(cases)], ['groundedness', 'point:p'])
 
+    def test_compare_leaves_out_cases_the_human_labelled_not_applicable(self):
+        def case(human, judge):
+            labels = {'groundedness': 1, 'correctness': 1, 'citation_correctness': 1}
+            return {'run': 'r', 'question_id': 'q', 'expected_behavior': 'refuse',
+                    'human': {**labels, 'refusal_correctness': human, 'completeness_points': [], 'completeness_score': 'N/A'},
+                    'judge': {**labels, 'refusal_correctness': judge, 'point_judgments': []},
+                    'judge_completeness_score': 'N/A'}
+        report = compare([case('N/A', 'N/A'), case('N/A', 'N/A'), case(1, 1), case(0, 'N/A')])
+        self.assertEqual(report['refusal_correctness']['agreement'], '1/2')
+        self.assertEqual(report['refusal_correctness']['confusion'], {'human=0 judge=N/A': 1, 'human=1 judge=1': 1})
+
 
 if __name__ == '__main__':
     unittest.main()
