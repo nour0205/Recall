@@ -107,7 +107,7 @@ def ask(req: QuestionRequest):
     if answer == REFUSAL:
         return AnswerResponse(answer=REFUSAL, route=None, sources=[], study_hint=None)
     sources = to_source_items(results)
-    return AnswerResponse(answer=answer, route=None, sources=sources, study_hint=build_study_hint(None, sources))
+    return AnswerResponse(answer=answer, route=None, sources=sources, study_hint=build_study_hint(sources))
 
 
 # -------------------------------------------------------------------
