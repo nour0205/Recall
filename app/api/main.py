@@ -1,12 +1,13 @@
 from collections import defaultdict
+import logging
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from openai import APIError
 
 # ---- Core RAG imports ----
 from app.embeddings.embedder import embed_texts
 from app.vectordb.chroma_store import ChromaStore
-from app.rag.pipeline import rag_answer_with_sources
 from app.rag.hybrid_retriever import hybrid_retrieve
 from app.llm.client import chat
 from app.library import IngestionError, add_document, delete_document as remove_document
@@ -27,6 +28,7 @@ from app.schemas.api import (
 # -------------------------------------------------------------------
 # App + Store
 # -------------------------------------------------------------------
+logger = logging.getLogger(__name__)
 app = FastAPI(title="Recall API", version="3.0")
 store = ChromaStore(collection_name="api-demo")
 
@@ -93,32 +95,19 @@ def ask(req: QuestionRequest):
     if not results:
         return AnswerResponse(answer=REFUSAL, route=None, sources=[], study_hint=None)
 
-    # 2. Grounded generation. A refusal is a valid result, not a fallback trigger.
+    # 2. Grounded generation. A refusal is a valid result, not an error.
+    #    The OpenAI client already retries transient failures (2 retries with
+    #    backoff), so an APIError here is an outage: report it, don't hide it.
     try:
         answer = normalize_answer(chat(build_answer_prompt(question=req.question, sources=results, route=None)))
-    except Exception:
-        answer = None
+    except APIError as exc:
+        logger.warning("Answer model unavailable: %s", exc)
+        raise HTTPException(status_code=503, detail="The answer model is unavailable. Please try again.") from exc
 
     if answer == REFUSAL:
         return AnswerResponse(answer=REFUSAL, route=None, sources=[], study_hint=None)
-    if answer is not None:
-        sources = to_source_items(results)
-        return AnswerResponse(answer=answer, route=None, sources=sources, study_hint=build_study_hint(None, sources))
-
-    # 3. Generation failed: fall back to the generic RAG pipeline.
-    fallback = rag_answer_with_sources(
-        question=req.question,
-        store=store,
-        k=5,
-        where=where,
-    )
-    source_items = to_source_items(fallback.sources or [])
-    return AnswerResponse(
-        answer=fallback.answer,
-        route=None,
-        sources=source_items,
-        study_hint=build_study_hint(None, source_items),
-    )
+    sources = to_source_items(results)
+    return AnswerResponse(answer=answer, route=None, sources=sources, study_hint=build_study_hint(sources))
 
 
 # -------------------------------------------------------------------

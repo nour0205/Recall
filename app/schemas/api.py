@@ -32,8 +32,3 @@ class IngestRequest(BaseModel):
     document_type: Literal["lecture_note"] | None = None
     course: str | None = None
     topic_tags: list[str] = Field(default_factory=list)
-
-
-class RagAnswerResult(BaseModel):
-    answer: str
-    sources: list[SourceItem] = Field(default_factory=list)

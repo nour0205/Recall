@@ -48,7 +48,6 @@ class ProductionPromotionTests(unittest.TestCase):
         self.rows = chunks()
         self.retrieve = patch.object(self.api, 'hybrid_retrieve', return_value=self.rows).start()
         self.chat = patch.object(self.api, 'chat', return_value='Supplied point 0 [S1] and point 1 [S2].').start()
-        self.fallback = patch.object(self.api, 'rag_answer_with_sources', side_effect=AssertionError('Unexpected fallback')).start()
         self.addCleanup(patch.stopall)
 
     def test_default_ask_uses_hybrid_top5_and_preserves_all_chunks_labels_and_schema(self):
@@ -84,22 +83,20 @@ class ProductionPromotionTests(unittest.TestCase):
         self.api.ask(QuestionRequest(question='Review',document_ids=['a','b','a']))
         self.assertEqual(self.retrieve.call_args.kwargs['where'], {'document_id':{'$in':['a','b']}})
 
-    def test_refusal_is_exact_stops_trailing_content_and_never_falls_back(self):
+    def test_refusal_is_exact_and_stops_trailing_content(self):
         self.chat.return_value = "  I don't know.\nSupporting Points: unsupported details"
         result = self.api.ask(QuestionRequest(question='Unsupported request'))
         self.assertEqual(result.answer, "I don't know.")
         self.assertEqual(result.sources, [])
         self.assertIsNone(result.study_hint)
         self.chat.assert_called_once()
-        self.fallback.assert_not_called()
 
-    def test_absent_or_blank_context_refuses_without_generator_or_fallback(self):
+    def test_absent_or_blank_context_refuses_without_generator(self):
         for rows in ([], [RetrievedChunk(id='empty',document_id='notes',text='  ')]):
             self.retrieve.return_value = rows
             result = self.api.ask(QuestionRequest(question='Unsupported'))
             self.assertEqual(result.answer,"I don't know.")
         self.chat.assert_not_called()
-        self.fallback.assert_not_called()
 
     def test_supported_multi_part_response_is_preserved(self):
         result = self.api.ask(QuestionRequest(question='Identify the problem and its mechanism'))
@@ -110,14 +107,23 @@ class ProductionPromotionTests(unittest.TestCase):
         self.assertIn('identification and a supported explanation/mechanism',messages[0]['content'])
         self.assertIn('Do not refuse when',messages[0]['content'])
 
-    def test_generation_exception_uses_same_scoped_nonreranked_fallback(self):
-        from app.schemas.api import RagAnswerResult
-        self.chat.side_effect = RuntimeError('fixture outage')
-        self.fallback.side_effect = None
-        self.fallback.return_value = RagAnswerResult(answer="I don't know.",sources=[])
-        result = self.api.ask(QuestionRequest(question='Q',document_id='notes'))
-        self.assertEqual(result.answer,"I don't know.")
-        self.fallback.assert_called_once_with(question='Q',store=self.api.store,k=5,where={'document_id':'notes'})
+    def test_model_outage_is_reported_as_503_without_a_second_call(self):
+        # The OpenAI client has already retried by the time an APIError reaches /ask.
+        import httpx
+        from fastapi.testclient import TestClient
+        from openai import APIConnectionError
+        self.chat.side_effect = APIConnectionError(request=httpx.Request('POST', 'https://api.example/v1'))
+        with TestClient(self.api.app) as client, self.assertLogs(self.api.logger, 'WARNING'):
+            response = client.post('/ask', json={'question': 'Q', 'document_id': 'notes'})
+        self.assertEqual(response.status_code, 503)
+        self.assertIn('unavailable', response.json()['detail'])
+        self.chat.assert_called_once()
+        self.retrieve.assert_called_once()
+
+    def test_programming_errors_are_not_swallowed(self):
+        self.chat.side_effect = KeyError('bug')
+        with self.assertRaises(KeyError):
+            self.api.ask(QuestionRequest(question='Q'))
 
     def test_critical_prompt_rules_no_benchmark_metadata_and_no_forced_expansion(self):
         messages = prompts.build_answer_prompt('A user question',self.rows,'exam_preparation')
@@ -147,7 +153,7 @@ class ProductionPromotionTests(unittest.TestCase):
         self.assertAlmostEqual(rows[0].hybrid_score,2/61)
         self.assertEqual(store.query_with_scores.call_args.kwargs['k'],10)
         bm25.assert_called_once_with('Q',limit=10)
-        for path in ('app/api/main.py','app/rag/pipeline.py','app/rag/hybrid_retriever.py'):
+        for path in ('app/api/main.py','app/rag/hybrid_retriever.py'):
             tree = ast.parse(Path(path).read_text(encoding='utf-8'))
             for node in ast.walk(tree):
                 if isinstance(node,ast.ImportFrom):
@@ -162,19 +168,6 @@ class ProductionPromotionTests(unittest.TestCase):
         with patch.object(hybrid,'search_whoosh',return_value=candidates):
             result = hybrid.retrieve_bm25_candidates('Q',k=10,where=where)
         self.assertEqual([r['id'] for r in result],['0'])
-
-    def test_fallback_uses_plain_hybrid_and_same_prompt(self):
-        from app.rag import pipeline
-        with patch.object(pipeline,'hybrid_retrieve',return_value=self.rows) as retrieve, patch.object(pipeline,'chat',return_value='Point [S1].') as chat:
-            result = pipeline.rag_answer_with_sources('Q',Mock(),k=5)
-            self.assertEqual(len(result.sources),5)
-            self.assertEqual(retrieve.call_args.kwargs['candidate_k'],10)
-            self.assertEqual(retrieve.call_args.kwargs['k'],5)
-            self.assertIn('[S5]',chat.call_args.args[0][1]['content'])
-            self.assertIn(prompts.SYSTEM_PROMPT,chat.call_args.args[0][0]['content'])
-            chat.return_value="I don't know. More text"
-            refusal = pipeline.rag_answer_with_sources('Q',Mock(),k=5)
-            self.assertEqual((refusal.answer, refusal.sources), ("I don't know.", []))
 
     def test_ingest_and_delete_endpoints_use_the_library(self):
         # Index behaviour itself is tested on real indexes in tests/test_library.py.
@@ -193,10 +186,3 @@ class ProductionPromotionTests(unittest.TestCase):
                 deleted = client.delete('/documents/n').json()
                 self.assertEqual((deleted['status'], deleted['bm25_chunks_deleted']), ('deleted', 2))
 
-    def test_fallback_empty_context_refuses_without_model(self):
-        from app.rag import pipeline
-        with patch.object(pipeline,'hybrid_retrieve',return_value=[]), patch.object(pipeline,'chat') as chat:
-            result = pipeline.rag_answer_with_sources('Q',Mock(),k=5)
-        self.assertEqual(result.answer,"I don't know.")
-        self.assertEqual(result.sources,[])
-        chat.assert_not_called()

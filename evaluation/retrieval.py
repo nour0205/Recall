@@ -28,7 +28,7 @@ def retrieve(
     the same full candidate union before truncation or heuristic reranking.
     List order is the final ranking; rank retains its backend input meaning.
     Scores retain existing meanings (vector distance, Whoosh score, RRF score).
-    Whoosh filters after top-k search, as in production. Legacy chunks lacking
+    Whoosh applies the scope before its top-k cut, as in production. Legacy chunks lacking
     chunk_id retain the production document_id:chunk_index identity fallback.
     """
     if mode not in ("vector", "bm25", "hybrid", "hybrid_reranked"):

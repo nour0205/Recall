@@ -65,7 +65,7 @@ class RetrievalModesTest(unittest.TestCase):
         self.assertTrue(results[0].found_by_vector)
         self.assertFalse(results[0].found_by_bm25)
 
-    def test_bm25_only_preserves_post_limit_filtering_and_ranks(self):
+    def test_bm25_only_filters_scope_before_the_limit_and_reranks(self):
         self.whoosh.return_value = [whoosh_row("b1", document_id="other"), whoosh_row("b2")]
         results = retrieve(
             self.store, "question", mode="bm25", k=2,
@@ -73,9 +73,9 @@ class RetrievalModesTest(unittest.TestCase):
         )
         self.embedding.assert_not_called()
         self.store.query_with_scores.assert_not_called()
-        self.whoosh.assert_called_once_with("question", limit=2)
+        self.whoosh.assert_called_once_with("question", limit=None)
         self.assertEqual([item.id for item in results], ["b2"])
-        self.assertEqual(results[0].rank, 2)
+        self.assertEqual(results[0].rank, 1)
         self.assertEqual(results[0].score, 2.5)
         self.assertTrue(results[0].found_by_bm25)
         self.assertEqual(results[0].metadata, whoosh_row("b2")["metadata"])
@@ -115,9 +115,10 @@ class RetrievalModesTest(unittest.TestCase):
         self.store.query_with_scores.assert_called_once_with(
             query_embedding=[0.1, 0.2], k=2, where=where
         )
-        self.whoosh.assert_called_once_with("question", limit=2)
+        self.whoosh.assert_called_once_with("question", limit=None)
         self.assertEqual([item.id for item in results], ["shared", "vector"])
-        self.assertAlmostEqual(results[0].hybrid_score, 1 / 61 + 1 / 62)
+        # "shared" is the first in-scope keyword hit, so it ranks 1 in both lists.
+        self.assertAlmostEqual(results[0].hybrid_score, 1 / 61 + 1 / 61)
         self.assertEqual(results[0].retrieval_type, "hybrid")
         self.assertEqual(results[0].bm25_score, 2.5)
         self.assertTrue(results[0].found_by_vector)
